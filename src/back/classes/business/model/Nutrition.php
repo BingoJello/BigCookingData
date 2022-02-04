@@ -26,7 +26,7 @@ class Nutrition
     /**
      * @var string
      */
-    private $saturatedFat;
+    private $saturated_fat;
 
     /**
      * @var string
@@ -48,17 +48,17 @@ class Nutrition
      * @param string $calories
      * @param string $carbohydrates
      * @param string $sugars
-     * @param string $saturatedFat
+     * @param string $saturated_fat
      * @param string $fat
      * @param string $cholesterol
      * @param string $protein
      */
-    public function __construct($calories, $carbohydrates, $sugars, $saturatedFat, $fat, $cholesterol, $protein)
+    public function __construct($calories, $carbohydrates, $sugars, $saturated_fat, $fat, $cholesterol, $protein)
     {
         $this->calories = $calories;
         $this->carbohydrates = $carbohydrates;
         $this->sugars = $sugars;
-        $this->saturatedFat = $saturatedFat;
+        $this->saturated_fat = $saturated_fat;
         $this->fat = $fat;
         $this->cholesterol = $cholesterol;
         $this->protein = $protein;
@@ -117,15 +117,15 @@ class Nutrition
      */
     public function getSaturatedFat()
     {
-        return $this->saturatedFat;
+        return $this->saturated_fat;
     }
 
     /**
-     * @param string $saturatedFat
+     * @param string $saturated_fat
      */
-    public function setSaturatedFat($saturatedFat)
+    public function setSaturatedFat($saturated_fat)
     {
-        $this->saturatedFat = $saturatedFat;
+        $this->saturated_fat = $saturated_fat;
     }
 
     /**

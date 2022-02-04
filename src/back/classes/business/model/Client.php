@@ -15,12 +15,12 @@ class Client
     /**
      * @var string
      */
-    private $firstName;
+    private $first_name;
 
     /**
      * @var string
      */
-    private $lastName;
+    private $last_name;
 
     /**
      * @var string
@@ -50,45 +50,45 @@ class Client
     /**
      * @var array
      */
-    private $assessedRecipes;
+    private $assessed_recipes;
 
     /**
      * @var array
      */
-    private $recordedRecipes;
+    private $recorded_recipes;
 
     /**
      * @var array
      */
-    private $preferencesCategories;
+    private $preferences_categories;
 
     /**
      * Client constructor.
      * @param int $id
-     * @param string $firstName
-     * @param string $lastName
+     * @param string $first_name
+     * @param string $last_name
      * @param string $civility
      * @param string $pseudo
      * @param string $mail
      * @param string $password
      * @param string $diet
-     * @param array $assessedRecipes
-     * @param array $recordedRecipes
-     * @param array $preferencesCategories
+     * @param array $assessed_recipes
+     * @param array $recorded_recipes
+     * @param array $preferences_categories
      */
-    public function __construct($id, $firstName, $lastName, $civility, $pseudo, $mail, $password, $diet, array $assessedRecipes, array $recordedRecipes, array $preferencesCategories)
+    public function __construct($id, $first_name, $last_name, $civility, $pseudo, $mail, $password, $diet, array $assessed_recipes, array $recorded_recipes, array $preferences_categories)
     {
         $this->id = $id;
-        $this->firstName = $firstName;
-        $this->lastName = $lastName;
+        $this->first_name = $first_name;
+        $this->last_name = $last_name;
         $this->civility = $civility;
         $this->pseudo = $pseudo;
         $this->mail = $mail;
         $this->password = $password;
         $this->diet = $diet;
-        $this->assessedRecipes = $assessedRecipes;
-        $this->recordedRecipes = $recordedRecipes;
-        $this->preferencesCategories = $preferencesCategories;
+        $this->assessed_recipes = $assessed_recipes;
+        $this->recorded_recipes = $recorded_recipes;
+        $this->preferences_categories = $preferences_categories;
     }
 
     /**
@@ -112,15 +112,15 @@ class Client
      */
     public function getFirstName()
     {
-        return $this->firstName;
+        return $this->first_name;
     }
 
     /**
-     * @param string $firstName
+     * @param string $first_name
      */
-    public function setFirstName($firstName)
+    public function setFirstName($first_name)
     {
-        $this->firstName = $firstName;
+        $this->first_name = $first_name;
     }
 
     /**
@@ -128,15 +128,15 @@ class Client
      */
     public function getLastName()
     {
-        return $this->lastName;
+        return $this->last_name;
     }
 
     /**
-     * @param string $lastName
+     * @param string $last_name
      */
-    public function setLastName($lastName)
+    public function setLastName($last_name)
     {
-        $this->lastName = $lastName;
+        $this->last_name = $last_name;
     }
 
     /**
@@ -224,15 +224,15 @@ class Client
      */
     public function getAssessedRecipes()
     {
-        return $this->assessedRecipes;
+        return $this->assessed_recipes;
     }
 
     /**
-     * @param array $assessedRecipes
+     * @param array $assessed_recipes
      */
-    public function setAssessedRecipes($assessedRecipes)
+    public function setAssessedRecipes($assessed_recipes)
     {
-        $this->assessedRecipes = $assessedRecipes;
+        $this->assessed_recipes = $assessed_recipes;
     }
 
     /**
@@ -240,15 +240,15 @@ class Client
      */
     public function getRecordedRecipes()
     {
-        return $this->recordedRecipes;
+        return $this->recorded_recipes;
     }
 
     /**
-     * @param array $recordedRecipes
+     * @param array $recorded_recipes
      */
-    public function setRecordedRecipes($recordedRecipes)
+    public function setRecordedRecipes($recorded_recipes)
     {
-        $this->recordedRecipes = $recordedRecipes;
+        $this->recorded_recipes = $recorded_recipes;
     }
 
     /**
@@ -256,14 +256,14 @@ class Client
      */
     public function getPreferencesCategories()
     {
-        return $this->preferencesCategories;
+        return $this->preferences_categories;
     }
 
     /**
-     * @param array $preferencesCategories
+     * @param array $preferences_categories
      */
-    public function setPreferencesCategories($preferencesCategories)
+    public function setPreferencesCategories($preferences_categories)
     {
-        $this->preferencesCategories = $preferencesCategories;
+        $this->preferences_categories = $preferences_categories;
     }
 }

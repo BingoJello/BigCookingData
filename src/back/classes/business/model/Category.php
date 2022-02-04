@@ -25,19 +25,19 @@ class Category
     /**
      * @var Category
      */
-    private $childOf;
+    private $child_of;
 
     /**
      * Category constructor.
      * @param int $id
      * @param string $name
-     * @param Category $childOf
+     * @param Category $child_of
      */
-    public function __construct($id, $name, Category $childOf = null)
+    public function __construct($id, $name, Category $child_of = null)
     {
         $this->id = $id;
         $this->name = $name;
-        $this->childOf = $childOf;
+        $this->child_of = $child_of;
     }
 
     /**
@@ -93,15 +93,15 @@ class Category
      */
     public function getChildOf()
     {
-        return $this->childOf;
+        return $this->child_of;
     }
 
     /**
-     * @param Category $childOf
+     * @param Category $child_of
      */
-    public function setChildOf($childOf)
+    public function setChildOf($child_of)
     {
-        $this->childOf = $childOf;
+        $this->child_of = $child_of;
     }
 
 }

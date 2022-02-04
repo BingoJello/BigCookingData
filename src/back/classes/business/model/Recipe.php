@@ -20,7 +20,7 @@ class Recipe
     /**
      * @var string
      */
-    private $urlPic;
+    private $url_pic;
 
     /**
      * @var string
@@ -35,12 +35,12 @@ class Recipe
     /**
      * @var int
      */
-    private $prepTime;
+    private $prep_time;
 
     /**
      * @var int
      */
-    private $cookTime;
+    private $cook_time;
 
     /**
      * @var string
@@ -76,11 +76,11 @@ class Recipe
      * Recipe constructor.
      * @param int $id
      * @param string $name
-     * @param string $urlPic
+     * @param string $url_pic
      * @param string $summary
      * @param array $directions
-     * @param int $prepTime
-     * @param int $cookTime
+     * @param int $prep_time
+     * @param int $cook_time
      * @param string $yield
      * @param int $serving
      * @param Nutrition $nutrition
@@ -88,16 +88,16 @@ class Recipe
      * @param array $categories
      * @param double $score
      */
-    public function __construct($id, $name, $urlPic, $summary, $directions, $prepTime, $cookTime, $yield, $serving,
+    public function __construct($id, $name, $url_pic, $summary, $directions, $prep_time, $cook_time, $yield, $serving,
                                 Nutrition $nutrition, $ingredients, $categories, $score = 0)
     {
         $this->id = $id;
         $this->name = $name;
-        $this->urlPic = $urlPic;
+        $this->url_pic = $url_pic;
         $this->summary = $summary;
         $this->directions = $directions;
-        $this->prepTime = $prepTime;
-        $this->cookTime = $cookTime;
+        $this->prep_time = $prep_time;
+        $this->cook_time = $cook_time;
         $this->yield = $yield;
         $this->serving = $serving;
         $this->nutrition = $nutrition;
@@ -147,15 +147,15 @@ class Recipe
      */
     public function getUrlPic()
     {
-        return $this->urlPic;
+        return $this->url_pic;
     }
 
     /**
-     * @param string $urlPic
+     * @param string $url_pic
      */
-    public function setUrlPic($urlPic)
+    public function setUrlPic($url_pic)
     {
-        $this->urlPic = $urlPic;
+        $this->url_pic = $url_pic;
     }
 
     /**
@@ -195,15 +195,15 @@ class Recipe
      */
     public function getPrepTime()
     {
-        return $this->prepTime;
+        return $this->prep_time;
     }
 
     /**
-     * @param int $prepTime
+     * @param int $prep_time
      */
-    public function setPrepTime($prepTime)
+    public function setPrepTime($prep_time)
     {
-        $this->prepTime = $prepTime;
+        $this->prep_time = $prep_time;
     }
 
     /**
@@ -211,15 +211,15 @@ class Recipe
      */
     public function getCookTime()
     {
-        return $this->cookTime;
+        return $this->cook_time;
     }
 
     /**
-     * @param int $cookTime
+     * @param int $cook_time
      */
-    public function setCookTime($cookTime)
+    public function setCookTime($cook_time)
     {
-        $this->cookTime = $cookTime;
+        $this->cook_time = $cook_time;
     }
 
     /**

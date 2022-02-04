@@ -13,7 +13,7 @@
     <title>Delicious - Food Blog | Meal Planner</title>
 
     <!-- Favicon -->
-    <link rel="icon" href="img/core-img/favicon.ico">
+    <link rel="icon" href="../img/core-img/favicon.ico">
 	
     <!-- Core Stylesheet -->
 	<link rel="stylesheet" href="../css/etm1.css">
@@ -294,7 +294,7 @@
 																			<div class="row">
 																				<div class="food_name col-12">
 																					<div class="print_name">
-																						Vomi sauté à l'ail et au persil du canada
+																						Poulet sauté à l'ail et au persil du canada
 																					</div>
 																				</div>
 																				<div class="food_units col-12">
@@ -322,7 +322,7 @@
 														<div class="col-auto">
 															<div class="row">
 																<div class="col-auto text-dark-gray text-large text-strong print_meal_title wrap_or_truncate pr-0">
-																	Breakfast
+																	Lunch
 																</div>
 															</div>
 															<div class="row">
@@ -361,7 +361,7 @@
 																			<div class="row">
 																				<div class="food_name col-12">
 																					<div class="print_name">
-																						Vomi sauté à l'ail et au persil du canada
+																						Pates carbonara
 																					</div>
 																				</div>
 																				<div class="food_units col-12">
@@ -389,7 +389,7 @@
 														<div class="col-auto">
 															<div class="row">
 																<div class="col-auto text-dark-gray text-large text-strong print_meal_title wrap_or_truncate pr-0">
-																	Breakfast
+																	Dinner
 																</div>
 															</div>
 															<div class="row">
@@ -428,7 +428,7 @@
 																			<div class="row">
 																				<div class="food_name col-12">
 																					<div class="print_name">
-																						Vomi sauté à l'ail et au persil du canada
+																						Burger maison
 																					</div>
 																				</div>
 																				<div class="food_units col-12">
@@ -457,7 +457,7 @@
 																			<div class="row">
 																				<div class="food_name col-12">
 																					<div class="print_name">
-																						Vomi sauté à l'ail et au persil du canada
+																						Tarte aux pommes
 																					</div>
 																				</div>
 																				<div class="food_units col-12">
