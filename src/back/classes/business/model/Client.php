@@ -61,6 +61,43 @@ class Client
      * @var array
      */
     private $preferences_categories;
+    
+    /**
+        DATE: 05/02/2022
+        Member: Matthieu SAUVAGEOT
+        
+        Ajout des attributs suivants pour le Client:
+        - Weight
+        - Size
+        - Age
+        - Activty (en option)
+        - Gender
+    */
+    /**
+     * @var int
+     */
+    private $weight;
+
+    /**
+     * @var int
+     */
+    private $size;
+
+    /**
+     * @var int
+     */
+    private $age;
+
+    /**
+     * @var string
+     */
+    private $activty;
+
+    /**
+     * @var string
+     */
+    private $gender;
+    
 
     /**
      * Client constructor.
@@ -75,8 +112,18 @@ class Client
      * @param array $assessed_recipes
      * @param array $recorded_recipes
      * @param array $preferences_categories
+     
+     * @param int $weight
+     * @param int $size
+     * @param int $age
+     * @param string $activity
+     * @param string $gender
+     
      */
-    public function __construct($id, $first_name, $last_name, $civility, $pseudo, $mail, $password, $diet, array $assessed_recipes, array $recorded_recipes, array $preferences_categories)
+    // public function __construct($id, $first_name, $last_name, $civility, $pseudo, $mail, $password, $diet, array $assessed_recipes, array $recorded_recipes, array $preferences_categories)
+    {
+    public function __construct($id, $first_name, $last_name, $civility, $pseudo, $mail, $password, $diet, array $assessed_recipes, array $recorded_recipes, 
+                                array $preferences_categories, int $weight, int $size, int $age, string $activity, string $gender )
     {
         $this->id = $id;
         $this->first_name = $first_name;
@@ -89,6 +136,12 @@ class Client
         $this->assessed_recipes = $assessed_recipes;
         $this->recorded_recipes = $recorded_recipes;
         $this->preferences_categories = $preferences_categories;
+        
+        $this->weight = $weight;
+        $this->size = $size;
+        $this->age = $age:
+        $this->activity = $activity;
+        $this->gender = $gender;
     }
 
     /**
@@ -265,5 +318,85 @@ class Client
     public function setPreferencesCategories($preferences_categories)
     {
         $this->preferences_categories = $preferences_categories;
+    }
+        
+     /**
+     * @return int
+     */
+    public function getWeight()
+    {
+        return $this->weight;
+    }
+
+    /**
+     * @param int $weight
+     */
+    public function setWeight($weight)
+    {
+        $this->weight = $weight;
+    }
+        
+     /**
+     * @return int
+     */
+    public function getSize()
+    {
+        return $this->size;
+    }
+
+    /**
+     * @param int $size
+     */
+    public function setSize($size)
+    {
+        $this->size = $size;
+    }
+        
+     /**
+     * @return int
+     */
+    public function getAge()
+    {
+        return $this->age;
+    }
+
+    /**
+     * @param int $age
+     */
+    public function setAge($age)
+    {
+        $this->age = $age;
+    }
+
+    /**
+     * @return string
+     */
+    public function getActivity()
+    {
+        return $this->activity;
+    }
+
+    /**
+     * @param string $activity
+     */
+    public function setActivity($activity)
+    {
+        $this->activity = $activity;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGender()
+    {
+        return $this->gender;
+    }
+
+    /**
+     * @param string $gender
+     */
+    public function setActivity($gender)
+    {
+        $this->gender = $gender;
     }
 }
