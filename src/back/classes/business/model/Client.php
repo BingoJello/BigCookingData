@@ -378,6 +378,10 @@ class Client
 
     /**
      * @param string $activity
+     * Une activité peut être:
+     *  - Légère (light)
+     *  - Modérée (moderate)
+     *  - ou Intense (intense)
      */
     public function setActivity($activity)
     {
