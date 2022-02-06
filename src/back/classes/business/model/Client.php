@@ -378,6 +378,7 @@ class Client
 
     /**
      * @param string $activity
+     *
      * Une activité peut être:
      *  - Légère (light)
      *  - Modérée (moderate)
@@ -390,6 +391,10 @@ class Client
 
     /**
      * @return string
+     *
+     * Le "genre" du client peut avoir les valeurs suivantes:
+     *  - "woman"
+     *  - Ou "man"
      */
     public function getGender()
     {
