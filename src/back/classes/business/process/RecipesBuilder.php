@@ -7,6 +7,6 @@ AutoLoader::register();
 
 interface RecipesBuilder
 {
-    public function buildRecipes();
-    public function getRecipes();
+    public function buildRecipes(array $session);
+    public function getRecipes():array;
 }

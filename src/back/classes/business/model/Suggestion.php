@@ -7,34 +7,30 @@ AutoLoader::register();
 
 class Suggestion
 {
-    /**
-     * @var array
-     */
-    private $recipes;
+    private array $recipes;
 
     /**
      * Suggestion constructor.
-     * @param array $recipes
      */
-    public function __construct($recipes = array())
+    public function __construct(array $recipes = array())
     {
         $this->recipes = $recipes;
     }
 
-    public function addRecipes($recipe){
+    public function addRecipes(Recipe $recipe){
         array_push($this->recipes, $recipe);
     }
 
-    public function deleteRecipe($id){
+    public function deleteRecipe(int $id){
         foreach ($this->recipes as $key => $recipe){
             if($recipe->getId() == $id){
                 array_splice($this->recipes, $id);
             }
         }
-        return null;
     }
 
-    public function getRecipe($id){
+    public function getRecipe(int $id):Recipe|null
+    {
         foreach ($this->recipes as $key => $recipe){
             if($recipe->getId() == $id){
                 return $recipe;
@@ -43,7 +39,7 @@ class Suggestion
         return null;
     }
 
-    public function alreadyExist($id){
+    public function alreadyExist(int $id){
         foreach ($this->recipes as $key => $recipe){
             if($recipe->getId() == $id){
                 return True;
@@ -52,18 +48,12 @@ class Suggestion
         return False;
     }
 
-    /**
-    * @return array
-    */
-    public function getRecipes()
+    public function getRecipes():array
     {
         return $this->recipes;
     }
 
-    /**
-    * @param array $recipes
-    */
-    public function setRecipes($recipes)
+    public function setRecipes(array $recipes)
     {
         $this->recipes = $recipes;
     }

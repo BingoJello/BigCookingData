@@ -7,89 +7,26 @@ AutoLoader::register();
 
 class Recipe
 {
-    /**
-     * @var int
-     */
-    private $id;
-
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var string
-     */
-    private $url_pic;
-
-    /**
-     * @var string
-     */
-    private $summary;
-
-    /**
-     * @var array
-     */
-    private $directions;
-
-    /**
-     * @var int
-     */
-    private $prep_time;
-
-    /**
-     * @var int
-     */
-    private $cook_time;
-
-    /**
-     * @var string
-     */
-    private $yield;
-
-    /**
-     * @var int
-     */
-    private $serving;
-
-    /**
-     * @var Nutrition
-     */
-    private $nutrition;
-
-    /**
-     * @var array
-     */
-    private $ingredients;
-
-    /**
-     * @var array
-     */
-    private $categories;
-
-    /**
-     * @var double
-     */
-    private $score;
+    private int $id;
+    private string $name;
+    private string $url_pic;
+    private string $summary;
+    private array $directions;
+    private int $prep_time;
+    private int $cook_time;
+    private string $yield;
+    private int $serving;
+    private array $ingredients;
+    private Cluster $cluster;
+    private array $categories;
+    private float $score;
 
     /**
      * Recipe constructor.
-     * @param int $id
-     * @param string $name
-     * @param string $url_pic
-     * @param string $summary
-     * @param array $directions
-     * @param int $prep_time
-     * @param int $cook_time
-     * @param string $yield
-     * @param int $serving
-     * @param Nutrition $nutrition
-     * @param array $ingredients
-     * @param array $categories
-     * @param double $score
      */
-    public function __construct($id, $name, $url_pic, $summary, $directions, $prep_time, $cook_time, $yield, $serving,
-                                Nutrition $nutrition, $ingredients, $categories, $score = 0)
+    public function __construct(int $id, string $name, string $url_pic, string $summary, array $directions, int $prep_time,
+                                int $cook_time, string $yield, int $serving, array $ingredients,
+                                Cluster $cluster, array $categories, float $score = 0)
     {
         $this->id = $id;
         $this->name = $name;
@@ -100,8 +37,8 @@ class Recipe
         $this->cook_time = $cook_time;
         $this->yield = $yield;
         $this->serving = $serving;
-        $this->nutrition = $nutrition;
         $this->ingredients = $ingredients;
+        $this->cluster = $cluster;
         $this->categories = $categories;
         $this->score = $score;
     }
@@ -110,214 +47,134 @@ class Recipe
         $this->score = $this->score++;
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId():int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
-    public function setId($id)
+    public function setId(int $id)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName():string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
     }
 
-    /**
-     * @return string
-     */
-    public function getUrlPic()
+    public function getUrlPic():string
     {
         return $this->url_pic;
     }
 
-    /**
-     * @param string $url_pic
-     */
-    public function setUrlPic($url_pic)
+    public function setUrlPic(string $url_pic)
     {
         $this->url_pic = $url_pic;
     }
 
-    /**
-     * @return string
-     */
-    public function getSummary()
+    public function getSummary():string
     {
         return $this->summary;
     }
 
-    /**
-     * @param string $summary
-     */
-    public function setSummary($summary)
+    public function setSummary(string $summary)
     {
         $this->summary = $summary;
     }
 
-    /**
-     * @return array
-     */
-    public function getDirections()
+    public function getDirections():array
     {
         return $this->directions;
     }
 
-    /**
-     * @param array $directions
-     */
-    public function setDirections($directions)
+    public function setDirections(array $directions)
     {
         $this->directions = $directions;
     }
 
-    /**
-     * @return int
-     */
-    public function getPrepTime()
+    public function getPrepTime():int
     {
         return $this->prep_time;
     }
 
-    /**
-     * @param int $prep_time
-     */
-    public function setPrepTime($prep_time)
+    public function setPrepTime(int $prep_time)
     {
         $this->prep_time = $prep_time;
     }
 
-    /**
-     * @return int
-     */
-    public function getCookTime()
+    public function getCookTime():int
     {
         return $this->cook_time;
     }
 
-    /**
-     * @param int $cook_time
-     */
-    public function setCookTime($cook_time)
+    public function setCookTime(int $cook_time)
     {
         $this->cook_time = $cook_time;
     }
 
-    /**
-     * @return string
-     */
-    public function getYield()
+    public function getYield():string
     {
         return $this->yield;
     }
 
-    /**
-     * @param string $yield
-     */
-    public function setYield($yield)
+    public function setYield(string $yield)
     {
         $this->yield = $yield;
     }
 
-    /**
-     * @return int
-     */
-    public function getServing()
+    public function getServing():int
     {
         return $this->serving;
     }
 
-    /**
-     * @param int $serving
-     */
-    public function setServing($serving)
+    public function setServing(int $serving)
     {
         $this->serving = $serving;
     }
 
-    /**
-     * @return Nutrition
-     */
-    public function getNutrition()
-    {
-        return $this->nutrition;
-    }
-
-    /**
-     * @param Nutrition $nutrition
-     */
-    public function setNutrition($nutrition)
-    {
-        $this->nutrition = $nutrition;
-    }
-
-    /**
-     * @return array
-     */
-    public function getIngredients()
+    public function getIngredients():array
     {
         return $this->ingredients;
     }
 
-    /**
-     * @param array $ingredients
-     */
-    public function setIngredients($ingredients)
+    public function setIngredients(array $ingredients)
     {
         $this->ingredients = $ingredients;
     }
 
-    /**
-     * @return array
-     */
-    public function getCategories()
+    public function getCluster():Cluster
+    {
+        return $this->cluster;
+    }
+
+    public function setCluster(Cluster $cluster)
+    {
+        $this->cluster = $cluster;
+    }
+
+    public function getCategories(): array
     {
         return $this->categories;
     }
 
-    /**
-     * @param array $categories
-     */
-    public function setCategories($categories)
+    public function setCategories(array $categories): void
     {
         $this->categories = $categories;
     }
 
-    /**
-     * @return double
-     */
-    public function getScore()
+
+    public function getScore():float
     {
         return $this->score;
     }
 
-    /**
-     * @param double $score
-     */
-    public function setScore($score)
+    public function setScore(float $score)
     {
         $this->score = $score;
     }
-
-
-
 }

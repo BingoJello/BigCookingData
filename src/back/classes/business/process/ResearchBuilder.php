@@ -3,24 +3,15 @@
 
 namespace classes\business\process;
 
-
 use classes\business\manager\RecipeManager;
 
 class ResearchBuilder implements RecipesBuilder
 {
-    /**
-     * @var RecipeManager
-     */
-    private $recipeManager;
-
-    /**
-     * @var array
-     */
-    private $recipes;
+    private RecipeManager $recipeManager;
+    private array $recipes;
 
     /**
      * SuggestionBuilder constructor.
-     * @param RecipeManager $recipeManager
      */
     public function __construct(RecipeManager $recipeManager)
     {
@@ -28,15 +19,12 @@ class ResearchBuilder implements RecipesBuilder
         $this->recipes = array();
     }
 
-    public function buildRecipes()
+    public function buildRecipes(array $session)
     {
         // TODO: Implement buildRecipes() method.
     }
 
-    /**
-     * @return array
-     */
-    public function getRecipes()
+    public function getRecipes():array
     {
         return $this->recipes;
     }

@@ -7,83 +7,51 @@ AutoLoader::register();
 
 class Ingredient
 {
-    /**
-     * @var int
-     */
-
-    private $id;
-
-    /**
-     * @var string
-     */
-    private $name;
-
-    /**
-     * @var double
-     */
-    private $score;
+    private int $id;
+    private string $name;
+    private float $score;
 
     /**
      * Ingredient constructor.
-     * @param int $id
-     * @param string $name
-     * @param double $score
      */
-    public function __construct($id, $name, $score = 0)
+    public function __construct(int $id, string $name, float $score = 0)
     {
         $this->id = $id;
         $this->name = $name;
         $this->score = $score;
     }
 
-    public function incrementScore(){
+    public function incrementScore()
+    {
         $this->score = $this->score++;
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
+    public function getId():int
     {
         return $this->id;
     }
 
-    /**
-     * @param int $id
-     */
-    public function setId($id)
+    public function setId(int $id)
     {
         $this->id = $id;
     }
 
-    /**
-     * @return string
-     */
-    public function getName()
+    public function getName():string
     {
         return $this->name;
     }
 
-    /**
-     * @param string $name
-     */
-    public function setName($name)
+    public function setName(string $name)
     {
         $this->name = $name;
     }
 
-    /**
-     * @return double
-     */
-    public function getScore()
+    public function getScore():float
     {
         return $this->score;
     }
 
-    /**
-     * @param double $score
-     */
-    public function setScore($score)
+    public function setScore(float $score)
     {
         $this->score = $score;
     }
