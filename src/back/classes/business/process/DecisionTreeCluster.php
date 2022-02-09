@@ -2,9 +2,10 @@
 
 
 namespace classes\business\process;
-
-
 use classes\business\model\Cluster;
+
+use classes\AutoLoader;
+AutoLoader::register();
 
 class DecisionTreeCluster
 {

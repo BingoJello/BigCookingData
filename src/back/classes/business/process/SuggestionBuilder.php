@@ -81,9 +81,9 @@ class SuggestionBuilder implements RecipesBuilder
         else{
             $max_score_cluster = -1;
             $best_cluster = null;
-            foreach(['historic' => $historic_cluster, 'rated' => $rated_cluster, 'visualization' => $visualization_cluster] as $key => $cluster)
+            foreach([$historic_cluster, $rated_cluster, $visualization_cluster] as $cluster)
             {
-                $score_cluster = $this->calculateScoreCluster($key, $cluster, $session);
+                $score_cluster = $this->calculateScoreCluster($cluster, $session);
                 if($score_cluster > $max_score_cluster)
                 {
                     $max_score_cluster = $score_cluster;
@@ -95,32 +95,37 @@ class SuggestionBuilder implements RecipesBuilder
     }
 
 
-    private function calculateScoreCluster(string $name, Cluster $cluster, array $session = null):float
+    private function calculateScoreCluster(Cluster $cluster, array $session):float
     {
-        switch($name) {
-            case 'historic':
-                return (float)RecipePersistence::getNbrRecordedRecipes($this->client->getId(), $cluster->getId()) * 0.5;
+        $score_cluster = 0;
+        foreach (['historic', 'rated', 'visualization'] as $type)
+        {
+            switch($type) {
+                case 'historic':
+                    $score_cluster += (float)RecipePersistence::getNbrRecordedRecipes($this->client->getId(), $cluster->getId()) * 0.5;
 
-            case 'rated':
-                $rating_recipes = RecipePersistence::getRatedRecipes($this->client->getId(), $cluster->getId());
-                $score = 0;
-                foreach ($rating_recipes as $rating)
-                {
-                    $score += $rating;
-                }
-                return (float)($score / count($rating_recipes));
-
-            default:
-                $id_recipes_visualization = array();
-                if (count($session['visualization']['id_recipe']) > 0)
-                {
-                    foreach ($session['visualization']['id_recipe'] as $id_recipe)
+                case 'rated':
+                    $rating_recipes = RecipePersistence::getRatedRecipes($this->client->getId(), $cluster->getId());
+                    $score_rated = 0;
+                    foreach ($rating_recipes as $rating)
                     {
-                        array_push($id_recipes_visualization, $id_recipe);
+                        $score_rated += $rating;
                     }
-                    return (float)RecipePersistence::getNbrVisualizedRecipes($this->client->getId(), $cluster->getId(), $id_recipes_visualization);
-                }
+                    $score_cluster += (float)($score_cluster / count($rating_recipes));
+
+                default:
+                    $id_recipes_visualization = array();
+                    if (count($session['visualization']['id_recipe']) > 0)
+                    {
+                        foreach ($session['visualization']['id_recipe'] as $id_recipe)
+                        {
+                            array_push($id_recipes_visualization, $id_recipe);
+                        }
+                        $score_cluster += (float)RecipePersistence::getNbrVisualizedRecipes($this->client->getId(), $cluster->getId(), $id_recipes_visualization);
+                    }
+            }
         }
+        return $score_cluster;
     }
 
     public function getRecipes():array

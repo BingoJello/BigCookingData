@@ -14,7 +14,8 @@ class DatabaseQuery
         try
         {
             $stmt->execute($params);
-        } catch(PDOException $error) {
+        } catch(PDOException $error)
+        {
             echo $error->getMessage();
         }
         return $stmt->fetchAll(PDO::FETCH_ASSOC);

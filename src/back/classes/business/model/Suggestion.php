@@ -17,13 +17,17 @@ class Suggestion
         $this->recipes = $recipes;
     }
 
-    public function addRecipes(Recipe $recipe){
+    public function addRecipes(Recipe $recipe)
+    {
         array_push($this->recipes, $recipe);
     }
 
-    public function deleteRecipe(int $id){
-        foreach ($this->recipes as $key => $recipe){
-            if($recipe->getId() == $id){
+    public function deleteRecipe(int $id)
+    {
+        foreach ($this->recipes as $recipe)
+        {
+            if($recipe->getId() == $id)
+            {
                 array_splice($this->recipes, $id);
             }
         }
@@ -31,17 +35,22 @@ class Suggestion
 
     public function getRecipe(int $id):Recipe|null
     {
-        foreach ($this->recipes as $key => $recipe){
-            if($recipe->getId() == $id){
+        foreach ($this->recipes as $recipe)
+        {
+            if($recipe->getId() == $id)
+            {
                 return $recipe;
             }
         }
         return null;
     }
 
-    public function alreadyExist(int $id){
-        foreach ($this->recipes as $key => $recipe){
-            if($recipe->getId() == $id){
+    public function alreadyExist(int $id): bool
+    {
+        foreach ($this->recipes as $recipe)
+        {
+            if($recipe->getId() == $id)
+            {
                 return True;
             }
         }
