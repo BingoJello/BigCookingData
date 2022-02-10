@@ -43,7 +43,7 @@ class RecipePersistence
 				INNER JOIN recipe ON recipe.id_recipe = assess.id_recipe
 				WHERE assess.id_client = ?
 				GROUP BY (recipe.id_cluster)
-                ORDER BY AVG(assess.mark) DESC LIMIT 1";
+                ORDER BY AVG(assess.rating) DESC LIMIT 1";
         $params = [$id_client];
 
         $result = DatabaseQuery::selectQuery($query, $params);

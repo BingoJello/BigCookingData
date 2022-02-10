@@ -24,7 +24,7 @@ class Cluster
         return $this->id;
     }
 
-    public function setId(int $id)
+    public function setId(int $id):void
     {
         $this->id = $id;
     }
@@ -34,7 +34,7 @@ class Cluster
         return $this->score;
     }
 
-    public function setScore(float $score)
+    public function setScore(float $score):void
     {
         $this->score = $score;
     }

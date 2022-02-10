@@ -24,9 +24,9 @@ class Recipe
     /**
      * Recipe constructor.
      */
-    public function __construct(int $id, string $name, string $url_pic, string $summary, array $directions, int $prep_time,
-                                int $cook_time, string $yield, int $serving, array $ingredients,
-                                Cluster $cluster, array $categories, float $score = 0)
+    public function __construct(int $id, string $name = '', string $url_pic = '', string $summary = '', array $directions = array(),
+                                int $prep_time = 0, int $cook_time = 0, string $yield = '', int $serving = 0, array $ingredients = array(),
+                                ?Cluster $cluster = null, array $categories = array(), float $score = 0)
     {
         $this->id = $id;
         $this->name = $name;
@@ -43,7 +43,8 @@ class Recipe
         $this->score = $score;
     }
 
-    public function incrementScore(){
+    public function incrementScore():void
+    {
         $this->score = $this->score++;
     }
 
@@ -52,7 +53,7 @@ class Recipe
         return $this->id;
     }
 
-    public function setId(int $id)
+    public function setId(int $id):void
     {
         $this->id = $id;
     }
@@ -62,7 +63,7 @@ class Recipe
         return $this->name;
     }
 
-    public function setName(string $name)
+    public function setName(string $name):void
     {
         $this->name = $name;
     }
@@ -72,7 +73,7 @@ class Recipe
         return $this->url_pic;
     }
 
-    public function setUrlPic(string $url_pic)
+    public function setUrlPic(string $url_pic):void
     {
         $this->url_pic = $url_pic;
     }
@@ -82,7 +83,7 @@ class Recipe
         return $this->summary;
     }
 
-    public function setSummary(string $summary)
+    public function setSummary(string $summary):void
     {
         $this->summary = $summary;
     }
@@ -92,7 +93,7 @@ class Recipe
         return $this->directions;
     }
 
-    public function setDirections(array $directions)
+    public function setDirections(array $directions):void
     {
         $this->directions = $directions;
     }
@@ -102,7 +103,7 @@ class Recipe
         return $this->prep_time;
     }
 
-    public function setPrepTime(int $prep_time)
+    public function setPrepTime(int $prep_time):void
     {
         $this->prep_time = $prep_time;
     }
@@ -112,7 +113,7 @@ class Recipe
         return $this->cook_time;
     }
 
-    public function setCookTime(int $cook_time)
+    public function setCookTime(int $cook_time):void
     {
         $this->cook_time = $cook_time;
     }
@@ -122,7 +123,7 @@ class Recipe
         return $this->yield;
     }
 
-    public function setYield(string $yield)
+    public function setYield(string $yield):void
     {
         $this->yield = $yield;
     }
@@ -132,7 +133,7 @@ class Recipe
         return $this->serving;
     }
 
-    public function setServing(int $serving)
+    public function setServing(int $serving):void
     {
         $this->serving = $serving;
     }
@@ -142,7 +143,7 @@ class Recipe
         return $this->ingredients;
     }
 
-    public function setIngredients(array $ingredients)
+    public function setIngredients(array $ingredients):void
     {
         $this->ingredients = $ingredients;
     }
@@ -152,7 +153,7 @@ class Recipe
         return $this->cluster;
     }
 
-    public function setCluster(Cluster $cluster)
+    public function setCluster(Cluster $cluster):void
     {
         $this->cluster = $cluster;
     }
@@ -173,7 +174,7 @@ class Recipe
         return $this->score;
     }
 
-    public function setScore(float $score)
+    public function setScore(float $score):void
     {
         $this->score = $score;
     }
