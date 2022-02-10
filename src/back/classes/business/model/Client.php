@@ -48,6 +48,14 @@ class Client
         array_push($this->rated_recipes['ratings'], $rating);
     }
 
+    public function getRatingRecipe(int $id_recipe):float
+    {
+        foreach($this->rated_recipes as $recipe)
+            if($recipe->getId() == $id_recipe)
+                return $recipe->getScore();
+        return 0;
+    }
+
     public function getId(): int
     {
         return $this->id;

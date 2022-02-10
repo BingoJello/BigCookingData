@@ -5,11 +5,13 @@ class PairsItem
 {
     private int $item1;
     private int $item2;
+    private float $score;
 
     public function __construct(int $item1, int $item2)
     {
         $this->item1 = $item1;
         $this->item2 = $item2;
+        $this->score = 0.0;
     }
 
     public function getItem1(): int
@@ -31,4 +33,17 @@ class PairsItem
     {
         $this->item2 = $item2;
     }
+
+
+    public function getScore(): float
+    {
+        return $this->score;
+    }
+
+
+    public function setScore(float $score): void
+    {
+        $this->score = $score;
+    }
+
 }
