@@ -21,7 +21,7 @@ class Ingredient
         $this->score = $score;
     }
 
-    public function incrementScore()
+    public function incrementScore():void
     {
         $this->score = $this->score++;
     }
@@ -31,7 +31,7 @@ class Ingredient
         return $this->id;
     }
 
-    public function setId(int $id)
+    public function setId(int $id):void
     {
         $this->id = $id;
     }
@@ -41,7 +41,7 @@ class Ingredient
         return $this->name;
     }
 
-    public function setName(string $name)
+    public function setName(string $name):void
     {
         $this->name = $name;
     }
@@ -51,7 +51,7 @@ class Ingredient
         return $this->score;
     }
 
-    public function setScore(float $score)
+    public function setScore(float $score):void
     {
         $this->score = $score;
     }
