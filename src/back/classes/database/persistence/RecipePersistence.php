@@ -2,6 +2,8 @@
 
 use classes\AutoLoader;
 use classes\business\model\Cluster;
+use classes\business\model\Ingredient;
+
 AutoLoader::register();
 
 class RecipePersistence
@@ -142,12 +144,12 @@ class RecipePersistence
         return $nbr_visualized_recipes;
     }
 
-    public static function getRecipesCluster(int $id_cluster):array
+    public static function getRecipesCluster(array $id_cluster):array
     {
         $recipes_cluster = array();
         $query="SELECT recipe.* as FROM recipe
-				WHERE recipe.id_cluster = ?";
-        $params = [$id_cluster];
+				WHERE recipe.id_cluster IN(?)";
+        $params = [implode(",", $id_cluster)];
 
         $result = DatabaseQuery::selectQuery($query, $params);
 
@@ -157,5 +159,38 @@ class RecipePersistence
                 new Cluster($row['cluster']), $row['categories']));
 
         return $recipes_cluster;
+    }
+
+    public static function getIngredientsByCluster(array $id_cluster):array
+    {
+        $ingredients = array();
+        $query="SELECT * FROM ingredient
+                INNER JOIN recipe ON recipe.id = ingredient.id
+                WHERE recipe.id_cluster IN(?)";
+        $params = [implode(",", $id_cluster)];
+
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        while($row = $result->fetch())
+            array_push($ingredients, new Ingredient($row['id'], $row['name']));
+
+        return $ingredients;
+    }
+
+    public static function getIngredientsByClient($id_client):array
+    {
+        $ingredients = array();
+        $query="SELECT * FROM ingredient
+                INNER JOIN recipe ON recipe.id = ingredient.id
+                INNER JOIN client ON client.id = recipe.id
+                WHERE client.id_client = ?";
+        $params = [$id_client];
+
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        while($row = $result->fetch())
+            array_push($ingredients, new Ingredient($row['id'], $row['name']));
+
+        return $ingredients;
     }
 }
