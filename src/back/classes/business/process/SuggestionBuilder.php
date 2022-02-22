@@ -40,97 +40,65 @@ class SuggestionBuilder implements RecipesBuilder
         if(is_null($best_cluster_historic_user) and is_null($best_cluster_rated_user) and is_null($best_cluster_visualization_user))
         {
             $preferences_ingredients = ClientPersistence::getPreferencesIngredients($this->client->getId());
-            $preferences_ingredients = implode(";", $preferences_ingredients));
+            $preferences_ingredients = implode(";", $preferences_ingredients);
             $best_cluster_preferences = DecisionTreeCluster::getCluster($preferences_ingredients);
         }
 
-        $best_cluster_user = $this->getBestCluster($best_cluster_historic_user, $best_cluster_rated_user,
+        $best_cluster_user = $this->buildContentBasedRecommender($best_cluster_historic_user, $best_cluster_rated_user,
             $best_cluster_visualization_user, $best_cluster_preferences, $session);
     }
 
     /**
      * @throws Exception
      */
-    private function getBestCluster(Cluster $historic_cluster, Cluster $rated_cluster, Cluster $visualization_cluster,
-                                    CLuster $preferences_cluster, array $session):Cluster
+    private function buildContentBasedRecommender(int $historic_cluster, int $rated_cluster, int $visualization_cluster,
+                                    int $preferences_cluster = -1, array $session):int
     {
-        foreach(['historic' => $historic_cluster, 'rated' => $rated_cluster, 'visualization' => $visualization_cluster] as $key => $cluster)
+        $recipes = RecipePersistence::getRecipesCluster($historic_cluster, $rated_recipes, $visualization_cluster);
+        $ingredients = RecipePersistence::getIngredientsByCluster(array($historic_cluster, $rated_cluster, $visualization_cluster));
+        $matrix = array();
+        $ingredients_user = RecipePersistence::getIngredientsByClient($this->client->getId());
+        $percent_ingredients_user = array();
+
+        foreach ($recipes as $recipe)
         {
-            if(empty($cluster) or is_null($cluster))
+            $row = array();
+            array_push($row, $recipe->getId());
+
+            foreach ($ingredients as $ingredient)
             {
-                if(empty($preferences_ingredients_user) or !isset($preferences_ingredients_user))
+                if($recipe->hasIngredient($ingredient))
                 {
-                    $preferences_ingredients_user = ClientPersistence::getPreferencesIngredients($this->client->getId());
+                    array_push($row, 1);
                 }
-                switch($key)
+                else
                 {
-                    case 'historic':
-                        $historic_cluster = DecisionTreeCluster::getCluster($preferences_ingredients_user);
-                        break;
-                    case 'rated':
-                        $rated_cluster = DecisionTreeCluster::getCluster($preferences_ingredients_user);
-                        break;
-                    default:
-                        $visualization_cluster = DecisionTreeCluster::getCluster($preferences_ingredients_user);
+                    array_push($row, 0);
                 }
             }
+            array_push($matrix, $row);
         }
-        if($historic_cluster->getId() == $rated_cluster->getId() or $historic_cluster->getId() == $visualization_cluster->getId())
+
+
+        foreach($ingredients_user as $ingredient_user)
         {
-            return $historic_cluster;
-        }
-        if ($rated_cluster->getId() == $visualization_cluster->getId())
-        {
-            return $rated_cluster;
-        }
-        else{
-            $max_score_cluster = -1;
-            $best_cluster = null;
-            foreach([$historic_cluster, $rated_cluster, $visualization_cluster] as $cluster)
+            if (!array_key_exists($ingredient_user->getId(), $percent_ingredients_user))
             {
-                $score_cluster = $this->calculateScoreCluster($cluster, $session);
-                if($score_cluster > $max_score_cluster)
-                {
-                    $max_score_cluster = $score_cluster;
-                    $best_cluster = $cluster;
-                }
+                $percent_ingredients_user[$ingredient_user->getId()] = 1;
             }
-            return $best_cluster;
+            else
+            {
+                $percent_ingredients_user[$ingredient_user->getId()] += 1;
+            }
         }
-    }
 
+        $total_ingredients_user = count($ingredients_user);
 
-    private function calculateScoreCluster(Cluster $cluster, array $session):float
-    {
-        $score_cluster = 0;
-        foreach (['historic', 'rated', 'visualization'] as $type)
+        foreach ($percent_ingredients_user as $key=>$value)
         {
-            switch($type) {
-                case 'historic':
-                    $score_cluster += (float)RecipePersistence::getNbrRecordedRecipes($this->client->getId(), $cluster->getId()) * 0.5;
-
-                case 'rated':
-                    $rating_recipes = RecipePersistence::getRatedRecipes($this->client->getId(), $cluster->getId());
-                    $score_rated = 0;
-                    foreach ($rating_recipes as $rating)
-                    {
-                        $score_rated += $rating;
-                    }
-                    $score_cluster += (float)($score_cluster / count($rating_recipes));
-
-                default:
-                    $id_recipes_visualization = array();
-                    if (count($session['visualization']['id_recipe']) > 0)
-                    {
-                        foreach ($session['visualization']['id_recipe'] as $id_recipe)
-                        {
-                            array_push($id_recipes_visualization, $id_recipe);
-                        }
-                        $score_cluster += (float)RecipePersistence::getNbrVisualizedRecipes($this->client->getId(), $cluster->getId(), $id_recipes_visualization);
-                    }
-            }
+            $value /= $total_ingredients_user;
+            $percent_ingredients_user[$key] = $value;
         }
-        return $score_cluster;
     }
 
     public function getRecipes():array

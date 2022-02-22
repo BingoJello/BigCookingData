@@ -43,6 +43,17 @@ class Recipe
         $this->score = $score;
     }
 
+    public function hasIngredient($id_ingredient):bool
+    {
+        foreach ($this->ingredients as $ingredient)
+        {
+            if($ingredient->getId() == $id_ingredient)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public function incrementScore():void
     {
         $this->score = $this->score++;
