@@ -49,7 +49,7 @@ class ClientPersistence
 
         while($row = $result->fetch())
         {
-            array_push($preferences_ingredients_user, new Ingredient($row['id_ingredient'], $row['name']));
+            array_push($preferences_ingredients_user, $row['name']);
         }
         return $preferences_ingredients_user;
     }
