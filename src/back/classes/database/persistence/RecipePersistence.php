@@ -26,7 +26,8 @@ class RecipePersistence
 
         while($row = $result->fetch())
         {
-            $favorites_history_cluster = new Cluster($row['id_cluster']);
+           // $favorites_history_cluster = new Cluster($row['id_cluster']);
+            $favorites_history_cluster = $row['id_cluster'];
         }
         return $favorites_history_cluster;
     }
@@ -50,7 +51,8 @@ class RecipePersistence
 
         while($row = $result->fetch())
         {
-            $favorites_rated_cluster = new Cluster($row['id_cluster']);
+            //$favorites_rated_cluster = new Cluster($row['id_cluster']);
+            $favorites_rated_cluster = $row['id_cluster'];
         }
         return $favorites_rated_cluster;
     }
@@ -81,7 +83,8 @@ class RecipePersistence
             $result = DatabaseQuery::selectQuery($query, $params);
 
             while ($row = $result->fetch()) {
-                $visualization_cluster = new Cluster($row['id_cluster']);
+                //$visualization_cluster = new Cluster($row['id_cluster']);
+                $visualization_cluster = $row['id_cluster'];
             }
         }
         return $visualization_cluster;

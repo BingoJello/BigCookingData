@@ -35,19 +35,24 @@ class SuggestionBuilder implements RecipesBuilder
         $best_cluster_historic_user = RecipePersistence::getBestHistoricClusterUser($this->client->getId());
         $best_cluster_rated_user = RecipePersistence::getBestRatedClusterUser($this->client->getId());
         $best_cluster_visualization_user = RecipePersistence::getBestVisualizationClusterUser($this->client->getId(), $session);
+        $best_cluster_preferences = -1;
 
         if(is_null($best_cluster_historic_user) and is_null($best_cluster_rated_user) and is_null($best_cluster_visualization_user))
         {
-            //TODO
+            $preferences_ingredients = ClientPersistence::getPreferencesIngredients($this->client->getId());
+            $preferences_ingredients = implode(";", $preferences_ingredients));
+            $best_cluster_preferences = DecisionTreeCluster::getCluster($preferences_ingredients);
         }
 
-        $best_cluster_user = $this->getBestCluster($best_cluster_historic_user, $best_cluster_rated_user, $best_cluster_visualization_user, $session);
+        $best_cluster_user = $this->getBestCluster($best_cluster_historic_user, $best_cluster_rated_user,
+            $best_cluster_visualization_user, $best_cluster_preferences, $session);
     }
 
     /**
      * @throws Exception
      */
-    private function getBestCluster(Cluster $historic_cluster, Cluster $rated_cluster, Cluster $visualization_cluster, array $session):Cluster
+    private function getBestCluster(Cluster $historic_cluster, Cluster $rated_cluster, Cluster $visualization_cluster,
+                                    CLuster $preferences_cluster, array $session):Cluster
     {
         foreach(['historic' => $historic_cluster, 'rated' => $rated_cluster, 'visualization' => $visualization_cluster] as $key => $cluster)
         {
