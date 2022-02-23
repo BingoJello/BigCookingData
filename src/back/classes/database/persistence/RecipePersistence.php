@@ -165,7 +165,8 @@ class RecipePersistence
     {
         $ingredients = array();
         $query="SELECT * FROM ingredient
-                INNER JOIN recipe ON recipe.id = ingredient.id
+                INNER JOIN contain_recipe_ingredient ON contain_recipe_ingredient.id_ingredient = ingredient.id_ingredient
+                INNER JOIN recipe ON recipe.id_recipe = contain_recipe_ingredient.id_recipe
                 WHERE recipe.id_cluster IN(?)";
         $params = [implode(",", $id_cluster)];
 
@@ -177,14 +178,34 @@ class RecipePersistence
         return $ingredients;
     }
 
-    public static function getIngredientsByClient($id_client):array
+    public static function getIngredientsByClient(int $id_client):array
     {
         $ingredients = array();
         $query="SELECT * FROM ingredient
-                INNER JOIN recipe ON recipe.id = ingredient.id
-                INNER JOIN client ON client.id = recipe.id
+                INNER JOIN contain_recipe_ingredient ON contain_recipe_ingredient.id_ingredient = ingredient.id_ingredient
+                INNER JOIN recipe ON recipe.id_recipe = contain_recipe_ingredient.id_recipe
+                INNER JOIN assess ON assess.id_recipe = recipe.id_recipe
+                INNER JOIN record ON record.id_recipe = recipe.id_recipe
+                INNER JOIN client ON client.id_client = assess.id_client OR client.id_client = record.id_client
                 WHERE client.id_client = ?";
         $params = [$id_client];
+
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        while($row = $result->fetch())
+            array_push($ingredients, new Ingredient($row['id'], $row['name']));
+
+        return $ingredients;
+    }
+
+    public static function getIngredientsByRecipes(array $id_recipes):array
+    {
+        $ingredients = array();
+        $query="SELECT * FROM ingredient
+                INNER JOIN contain_recipe_ingredient ON contain_recipe_ingredient.id_ingredient = ingredient.id_ingredient
+                INNER JOIN recipe ON recipe.id_recipe = contain_recipe_ingredient.id_recipe
+                WHERE id_recipe IN(?)";
+        $params = [implode(",", $id_recipes)];
 
         $result = DatabaseQuery::selectQuery($query, $params);
 

@@ -1,10 +1,5 @@
 <?php
 
-namespace classes\business\model;
-
-use classes\AutoLoader;
-AutoLoader::register();
-
 class Client
 {
     private int $id;
