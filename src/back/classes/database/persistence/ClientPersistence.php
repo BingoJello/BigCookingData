@@ -1,9 +1,9 @@
 <?php
 
-use classes\AutoLoader;
-use classes\business\model\Client;
-use classes\business\model\Ingredient;
-use classes\business\model\Recipe;
+require('src/back/classes/business/model/Client.php');
+require('src/back/classes/business/model/Ingredient.php');
+require('src/back/classes/business/model/Recipe.php');
+
 use JetBrains\PhpStorm\ArrayShape;
 
 AutoLoader::register();

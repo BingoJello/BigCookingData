@@ -1,16 +1,9 @@
 <?php
 
-
-namespace classes\business\process;
-
-use classes\AutoLoader;
-use classes\business\model\Client;
-use classes\business\model\Cluster;
-use Exception;
-use RecipePersistence;
-use ClientPersistence;
-
-AutoLoader::register();
+require('src/back/classes/business/model/Client.php');
+require('src/back/classes/business/model/Cluster.php');
+require('src/back/classes/business/model/RecipePersistence.php');
+require('src/back/classes/business/model/ClientPersistence.php');
 
 class SuggestionBuilder implements RecipesBuilder
 {

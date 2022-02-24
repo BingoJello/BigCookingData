@@ -1,10 +1,7 @@
 <?php
 
-use classes\AutoLoader;
-use classes\business\model\Cluster;
-use classes\business\model\Ingredient;
-
-AutoLoader::register();
+require('src/back/classes/business/model/Cluster.php');
+require('src/back/classes/business/model/Ingredient.php');
 
 class RecipePersistence
 {

@@ -1,8 +1,5 @@
 <?php
 
-use classes\AutoLoader;
-AutoLoader::register();
-
 class DatabaseQuery
 {
     /**

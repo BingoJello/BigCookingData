@@ -1,9 +1,6 @@
 <?php
 
-namespace classes\business\model;
-
-use classes\AutoLoader;
-AutoLoader::register();
+require('src/back/classes/business/model/Cluster.php');
 
 class Recipe
 {

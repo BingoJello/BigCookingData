@@ -1,6 +1,5 @@
 <?php
 
-
 class DatabaseConnection
 {
     private static PDO $instance;
