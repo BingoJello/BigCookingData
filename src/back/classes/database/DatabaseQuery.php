@@ -5,7 +5,7 @@ class DatabaseQuery
     /**
      * @brief Generic select query in database
      */
-    public static function selectQuery($query, $params=array()):array
+    public static function selectQuery($query, $params=array())
     {
         $stmt = DatabaseConnection::getInstance()->prepare($query);
         try

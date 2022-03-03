@@ -12,7 +12,7 @@ class DatabaseConnection
 
     protected function __construct() {}
 
-    public static function getInstance(): PDO
+    public static function getInstance():PDO
     {
         if(empty(self::$instance) OR is_null(self::$instance))
         {
@@ -23,10 +23,9 @@ class DatabaseConnection
                 "db_pass" => self::$dp_pass,
                 "db_name" => self::$db_name,
                 "db_charset" => self::$db_charset);
-
             try
             {
-                self::$instance = new PDO("mysql:host=".$db_info['db_host'].';port='.$db_info['db_port'].';dbname='.$db_info['db_name'], $db_info['db_user'], $db_info['db_pass']);
+                self::$instance = new PDO("mysql:host=".$db_info['db_host'].';dbname='.$db_info['db_name'].';charset=utf8', $db_info['db_user'], $db_info['db_pass']);
                 self::$instance->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
                 self::$instance->query('SET NAMES utf8');
                 self::$instance->query('SET CHARACTER SET utf8');

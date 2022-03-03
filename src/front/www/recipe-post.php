@@ -67,7 +67,6 @@
         <!-- Recipe Content Area -->
         <div class="recipe-content-area">
             <div class="container">
-
                 <div class="row">
                     <div class="col-12 col-md-8">
                         <div class="recipe-headline my-5">

@@ -1,3 +1,11 @@
+<?php
+require_once('../../back/classes/business/model/Ingredient.php');
+require_once('../../back/classes/business/model/Recipe.php');
+require_once('../../back/classes/database/DatabaseQuery.php');
+require_once('../../back/classes/database/DatabaseConnection.php');
+require_once('../../back/classes/database/persistence/RecipePersistence.php');
+include('../../back/functions/functions.php');
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -113,119 +121,7 @@
             </div>
 
             <div class="row">
-                <!-- Single Best Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-best-recipe-area mb-30">
-                        <img src="../img/bg-img/r1.jpg" alt="">
-                        <div class="recipe-content">
-                            <a href="recipe-post.php">
-                                <h5>Sushi Easy Receipy</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Single Best Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-best-recipe-area mb-30">
-                        <img src="../img/bg-img/r2.jpg" alt="">
-                        <div class="recipe-content">
-                            <a href="recipe-post.php">
-                                <h5>Homemade Burger</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Single Best Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-best-recipe-area mb-30">
-                        <img src="../img/bg-img/r3.jpg" alt="">
-                        <div class="recipe-content">
-                            <a href="recipe-post.php">
-                                <h5>Vegan Smoothie</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Single Best Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-best-recipe-area mb-30">
-                        <img src="../img/bg-img/r4.jpg" alt="">
-                        <div class="recipe-content">
-                            <a href="recipe-post.php">
-                                <h5>Calabasa soup</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Single Best Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-best-recipe-area mb-30">
-                        <img src="../img/bg-img/r5.jpg" alt="">
-                        <div class="recipe-content">
-                            <a href="recipe-post.php">
-                                <h5>Homemade Breakfast</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Single Best Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-best-recipe-area mb-30">
-                        <img src="../img/bg-img/r6.jpg" alt="">
-                        <div class="recipe-content">
-                            <a href="recipe-post.php">
-                                <h5>Healthy Fruit Desert</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <?php print_recipes() ?>
             </div>
         </div>
     </section>

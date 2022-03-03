@@ -18,9 +18,9 @@ class TestSuggestion
         6=>array("lardon", "moutarde", "yaourt", "bouillon", "eau")
     );
 
-    public $ingredients_user = array(
-        "jambon", "sel", "cumin", "patate", "banane", "banane", "jambon", "jambon", "jambon","foie gras","poire","chocolat",
-        "chocolat", "oeuf", "oeuf", "oeuf", "oeuf", "agneau", "oignon"
+    public $ingredients_user = array("salakis","saumon"
+        //"jambon", "sel", "cumin", "patate", "banane", "banane", "jambon", "jambon", "jambon","foie gras","poire","chocolat",
+        //"chocolat", "oeuf", "oeuf", "oeuf", "oeuf", "agneau", "oignon"
     );
 
 
@@ -39,7 +39,47 @@ class TestSuggestion
     public function testRecommendation()
     {
         $similarity_recipes = $this->testCosinusSimilarityRecipes($this->matrix, $this->row_user);
-        print_r($similarity_recipes);
+        if(count($similarity_recipes) <= 0) return array();
+        print_r($this->testGetBestSimilarity($similarity_recipes));
+    }
+
+    function testGetBestSimilarity(array $recipes):array
+    {
+        $best_similarity = array();
+
+        $mean_similarity = 0;
+        foreach($recipes as $k=>$v){
+            $mean_similarity += $v['score'];
+        }
+        $mean_similarity /= count($recipes);
+
+        foreach($recipes as $k=>$v)
+        {
+            if($v['score'] >= $mean_similarity)
+            {
+                array_push($best_similarity, $recipes[$k]);
+            }
+        }
+        return $this->testSortRecipes($best_similarity);
+    }
+
+    function testSortRecipes(array $recipes):array
+    {
+        $sort_recipes = array();
+
+        foreach($recipes as $recipe){
+            foreach($recipe as $key=>$value){
+                if(!isset($sort_recipes[$key])){
+                    $sort_recipes[$key] = array();
+                }
+                $sort_recipes[$key][] = $value;
+            }
+        }
+        $orderby = "score";
+
+        array_multisort($sort_recipes[$orderby],SORT_DESC,$recipes);
+
+        return $sort_recipes;
     }
 
     private function testBuildMatrix($matrix):array

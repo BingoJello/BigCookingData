@@ -3,7 +3,16 @@ from sklearn.model_selection import train_test_split
 from sklearn import tree
 import pandas as pd
 import graphviz as graphviz
+import pickle
 
+def createDecisionTree(dataset,):
+    clusters_kmean, list_ingredients = ut.normalizeForClassification(recipes_kmeans, clusters_kmean, list_ingredients)
+    X, Y, X_train, x_test, Y_train, y_test = dt.split_dataset(recipes_kmeans, list_ingredients, 0)
+    outputTree = dt.trainDecisionTree(X, Y,'entropy', 6)
+
+    file_to_store = open("../files/decisionTree", "wb")
+    pickle.dump(outputTree, file_to_store)
+    file_to_store.close()
 
 def split_dataset(dataset, features, test_size):
     df_data = pd.DataFrame(dataset, columns=features)
