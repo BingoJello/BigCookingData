@@ -6,11 +6,8 @@ require('src/back/classes/business/model/Recipe.php');
 
 use JetBrains\PhpStorm\ArrayShape;
 
-AutoLoader::register();
-
 class ClientPersistence
 {
-
     /**
      * @throws Exception
      */
@@ -35,14 +32,14 @@ class ClientPersistence
     /**
      * @throws Exception
      */
-    public static function getPreferencesIngredients(int $id_client): array
+    public static function getPreferencesIngredients(int $id_client, string $select="*"): array
     {
         $preferences_ingredients_user = array();
 
-        $query = "SELECT ingredient.id_ingredient, ingredient.name FROM ingredient 
-                  INNER JOIN preferences_ingredient_client as pic ON pic.id_ingredient = ingredient.id
-                  INNER JOIN client ON client.id = pic.id_client
-                  WHERE client.id = ?";
+        $query = "SELECT ingredient.$select FROM ingredient 
+                  INNER JOIN have_preferences_ingredient as hpi ON hpi.id_ingredient = ingredient.id
+                  INNER JOIN client ON client.id_client = hpi.id_client
+                  WHERE client.id_client = ?";
         $params = [$id_client];
 
         $result = DatabaseQuery::selectQuery($query, $params);
