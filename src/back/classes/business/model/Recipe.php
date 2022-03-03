@@ -1,42 +1,45 @@
 <?php
 
-require('src/back/classes/business/model/Cluster.php');
-
 class Recipe
 {
     private int $id;
     private string $name;
+    private string $categories;
     private string $url_pic;
-    private string $summary;
-    private array $directions;
+    private string $directions;
     private int $prep_time;
     private int $cook_time;
-    private string $yield;
+    private int $break_time;
+    private string $difficulty;
+    private string $budget;
     private int $serving;
+    private string $coord;
     private array $ingredients;
-    private Cluster $cluster;
-    private array $categories;
+    private int $cluster;
     private float $score;
 
     /**
      * Recipe constructor.
      */
-    public function __construct(int $id, string $name = '', string $url_pic = '', string $summary = '', array $directions = array(),
-                                int $prep_time = 0, int $cook_time = 0, string $yield = '', int $serving = 0, array $ingredients = array(),
-                                ?Cluster $cluster = null, array $categories = array(), float $score = 0)
+    public function __construct(int $id, string $name = '', string $categories = '', string $url_pic = '',
+                                string $directions = '', int $prep_time = 0, int $cook_time = 0, int $break_time = 0,
+                                string $difficulty = '', string $budget = '', int $serving = 0,  string $coord='',
+                                array $ingredients = array(), int $cluster = -1, float $score = 0)
     {
         $this->id = $id;
         $this->name = $name;
+        $this->categories = $categories;
         $this->url_pic = $url_pic;
-        $this->summary = $summary;
         $this->directions = $directions;
         $this->prep_time = $prep_time;
         $this->cook_time = $cook_time;
-        $this->yield = $yield;
+        $this->break_time = $break_time;
+        $this->difficulty = $difficulty;
+        $this->budget = $budget;
         $this->serving = $serving;
+        $this->coord = $coord;
         $this->ingredients = $ingredients;
         $this->cluster = $cluster;
-        $this->categories = $categories;
         $this->score = $score;
     }
 
@@ -76,6 +79,16 @@ class Recipe
         $this->name = $name;
     }
 
+    public function getCategories(): string
+    {
+        return $this->categories;
+    }
+
+    public function setCategories(string $categories): void
+    {
+        $this->categories = $categories;
+    }
+
     public function getUrlPic():string
     {
         return $this->url_pic;
@@ -85,23 +98,12 @@ class Recipe
     {
         $this->url_pic = $url_pic;
     }
-
-    public function getSummary():string
-    {
-        return $this->summary;
-    }
-
-    public function setSummary(string $summary):void
-    {
-        $this->summary = $summary;
-    }
-
-    public function getDirections():array
+    public function getDirections():string
     {
         return $this->directions;
     }
 
-    public function setDirections(array $directions):void
+    public function setDirections(string $directions):void
     {
         $this->directions = $directions;
     }
@@ -126,14 +128,34 @@ class Recipe
         $this->cook_time = $cook_time;
     }
 
-    public function getYield():string
+    public function getBreakTime():int
     {
-        return $this->yield;
+        return $this->cook_time;
     }
 
-    public function setYield(string $yield):void
+    public function setBreakTime(int $break_time):void
     {
-        $this->yield = $yield;
+        $this->break_time = $break_time;
+    }
+
+    public function getDifficulty(): string
+    {
+        return $this->difficulty;
+    }
+
+    public function setDifficulty(string $difficulty): void
+    {
+        $this->difficulty = $difficulty;
+    }
+
+    public function getBudget(): string
+    {
+        return $this->budget;
+    }
+
+    public function setBudget(string $budget): void
+    {
+        $this->budget = $budget;
     }
 
     public function getServing():int
@@ -156,6 +178,16 @@ class Recipe
         $this->ingredients = $ingredients;
     }
 
+    public function getCoord(): string
+    {
+        return $this->coord;
+    }
+
+    public function setCoord(string $coord): void
+    {
+        $this->coord = $coord;
+    }
+
     public function getCluster():Cluster
     {
         return $this->cluster;
@@ -165,17 +197,6 @@ class Recipe
     {
         $this->cluster = $cluster;
     }
-
-    public function getCategories(): array
-    {
-        return $this->categories;
-    }
-
-    public function setCategories(array $categories): void
-    {
-        $this->categories = $categories;
-    }
-
 
     public function getScore():float
     {
