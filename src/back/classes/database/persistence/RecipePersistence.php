@@ -230,7 +230,6 @@ class RecipePersistence
 
         $result = DatabaseQuery::selectQuery($query);
         foreach($result as $row)
-
             array_push($recipes, new Recipe($row['id_recipe'], $row['name'], $row['categories'], $row['url_pic'],
                 $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'],
                 $row['budget'], $row['serving'], $row['coordonnees']

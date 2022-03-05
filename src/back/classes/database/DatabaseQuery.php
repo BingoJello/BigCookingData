@@ -17,4 +17,20 @@ class DatabaseQuery
         }
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * @brief Generic insert query in database
+     */
+    public static function insertQuery($query, $params=array())
+    {
+        $stmt = DatabaseConnection::getInstance()->prepare($query);
+        try
+        {
+            $stmt->execute($params);
+        } catch(PDOException $error)
+        {
+            echo $error->getMessage();
+        }
+        return $stmt;
+    }
 }

@@ -5,16 +5,13 @@
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <!-- The above 2 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js" integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-
-  <!-- Title -->
+    <!-- Title -->
     <title>Delicious - Food Blog | Meal Planner</title>
-
     <!-- Favicon -->
     <link rel="icon" href="../img/core-img/favicon.ico">
-	
     <!-- Core Stylesheet -->
 	<link rel="stylesheet" href="../css/etm1.css">
 	<link rel="stylesheet" href="../css/css_libs1.css">
@@ -787,7 +784,7 @@
     <!-- All Plugins js -->
     <script src="../js/plugins/plugins.js"></script>
     <!-- Active js -->
-    <script src="../js/active2.js"></script>
+    <script src="../js/tools/active/active2.js"></script>
 	<!-- Active js -->
 	<script src="../js/canvas.js"></script>
 	<!-- Meal Planner tools js -->

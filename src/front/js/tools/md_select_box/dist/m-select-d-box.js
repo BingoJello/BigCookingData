@@ -1116,6 +1116,7 @@
 				this.set("dbox", dbox);
 
 				dbox.className = "m-select-d-box m-select-d-box_hidden";
+				dbox.style = "z-index: 100";
 				// jqDBox.addClass("m-select-d-box");
 				// jqDBox.addClass("m-select-d-box_hidden");
 
@@ -1659,7 +1660,7 @@
 					target = this.get("target", null, !1),
 					dboxInput = this.get("dbox_input", null, !1);
 
-				dboxInput.value =  listLabel.join("; ") + (!listLabel.length || !this.get("multiple") ? "" : ";");
+				dboxInput.value =  listLabel.join(";") + (!listLabel.length || !this.get("multiple") ? "" : ";");
 
 				var tagName = target.tagName.toLowerCase();
 

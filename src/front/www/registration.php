@@ -1,5 +1,38 @@
 <?php
 require_once('../../back/classes/business/model/Client.php');
+require('../../back/classes/business/model/Ingredient.php');
+require('../../back/classes/business/model/Recipe.php');
+require_once('../../back/classes/database/DatabaseQuery.php');
+require_once('../../back/classes/database/DatabaseConnection.php');
+require_once('../../back/classes/database/persistence/ClientPersistence.php');
+include('../../back/functions/functions_mysql.php');
+?>
+
+<?php
+if ((isset($_POST['pseudo']) and (!empty($_POST['pseudo'])))
+    and (isset($_POST['civility']) and (!empty($_POST['civility'])))
+    and (isset($_POST['email']) and (!empty($_POST['email'])))
+    and (isset($_POST['password']) and (!empty($_POST['password'])))
+    and (isset($_POST['password_confirm']) and (!empty($_POST['password_confirm'])))) {
+
+    if ((isset($_POST['firstname'])) and (isset($_POST['lastname'])) and (isset($_POST['ingredients']))){
+        $pseudo = $_POST['pseudo'];
+        $civility = $_POST['civility'];
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+        $password_confirm = $_POST['password_confirm'];
+        $last_name = $_POST['lastname'];
+        $first_name = $_POST['firstname'];
+        $ingredients = $_POST['ingredients'];
+
+        registerInscriptionClient($pseudo,$civility,$email,$password,$password_confirm,$last_name,$first_name,$ingredients);
+    }
+}
+if (((isset($_SESSION['email'])) and (!empty($_SESSION['email'])))
+    and ((isset($_SESSION['password'])) and (!empty($_SESSION['password'])))) {
+    $email = $_SESSION['email'];
+    $password = $_SESSION['password'];
+}
 ?>
 
 <!DOCTYPE html>
@@ -12,13 +45,10 @@ require_once('../../back/classes/business/model/Client.php');
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js" integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script type="application/javascript" src="../js/tools/m-select-d-box.js"></script>
     <!-- Title -->
     <title>Delicious - Food Blog | Log in</title>
-
     <!-- Favicon -->
     <link rel="icon" href="../img/core-img/favicon.ico">
-
     <!-- Core Stylesheet -->
 	<link rel="stylesheet" href="../css/etm1.css">
 	<link rel="stylesheet" href="../css/css_libs1.css">
@@ -132,17 +162,13 @@ require_once('../../back/classes/business/model/Client.php');
                         <div class="row form-group">
                             <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="password-confirm">Confirmation mot de passe*</label>
                             <div class="col-12 col-sm-9 col-md-6 col-lg-6 col-xl-5">
-                                <input type="text" id="example"></input>
+                                <input type="text" id="list_ingredients" class="form-control" name="ingredients"></input>
                             </div>
                         </div>
 
 					    <div class="row form-group small_top_spacer">
 						    <div class="col-12 col-md-3 offset-md-4 offset-lg-5">
-                                <button type="submit" class="btn btn-lg btn-block btn-orange gen_button" id="generate-btn">SUBMIT</button>
-							    <!--<button class="btn btn-lg btn-block btn-orange gen_button" id="generate-btn" type="submit" data-loading-text="Generate">
-								    Submit
-							    </button>
-							    -->
+                                <button type="submit"  id="generate-btn" class="btn btn-lg btn-block btn-orange gen_button"  data-loading-text="Generate">SUBMIT</button>
 						    </div>
 					    </div>
                     </form>
@@ -151,13 +177,11 @@ require_once('../../back/classes/business/model/Client.php');
 		</div>
 	</section>
 
-	
     <!-- ##### Footer Area Start ##### -->
     <footer class="footer-area">
         <div class="container h-100">
             <div class="row h-100">
                 <div class="col-12 h-100 d-flex flex-wrap align-items-center justify-content-between">
-
                     <!-- Footer Logo -->
                     <div class="footer-logo">
                         <a href="index.php"><img src="../img/core-img/logo.png" alt=""></a>
@@ -166,44 +190,24 @@ require_once('../../back/classes/business/model/Client.php');
             </div>
         </div>
     </footer>
-    <!-- ##### Footer Area End ##### -->
-	
-    <!-- ##### Footer Area Start ##### -->
+     <!-- ##### Footer Area End ##### -->
 
     <!-- ##### All Javascript Files ##### -->
     <!-- jQuery-2.2.4 js -->
-    <script src="../js/jquery/jquery-2.2.4.min.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
-             integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
-             crossorigin="anonymous">
-     </script>
-    <!-- Bootstrap js -->
-    <script src="../js/bootstrap/bootstrap.min.js"></script>
-    <!-- All Plugins js -->
-    <script src="../js/plugins/plugins.js"></script>
-    <!-- Active js -->
-    <script src="../js/active2.js"></script>
-	<!-- Canvas js -->
-	<script src="../js/canvas.js"></script>
-	<?php include('./include/connexion_profil.php'); ?>
+     <script src="../js/jquery/jquery-2.2.4.min.js"></script>
+     <script src="../js/tools/md_select_box/dist/m-select-d-box.js"></script>
+     <!-- Bootstrap js -->
+     <script src="../js/bootstrap/bootstrap.min.js"></script>
+     <!-- All Plugins js -->
+     <script src="../js/plugins/plugins.js"></script>
+     <!-- Active js -->
+     <script src="../js/tools/active/active2.js"></script>
+     <!-- Canvas js -->
+     <script src="../js/canvas.js"></script>
 
      <script src="../js/registration.js"></script>
+     <script src="../js/tools/list_ingredients_select.js"></script>
 
-     <script>
-         var greeceAlphabet = [
-             "alpha", "beta", "gamma", "delta",
-             "epsilon", "zeta", "eta", "theta", "iota",
-             "kappa", "lambda", "mu", "nu", "xi",
-             "omicron", "pi", "rho", "sigma", "tau",
-             "upsilon", "phi", "chi", "psi", "omega"
-         ];
-         $("#example").mSelectDBox({
-             "list": greeceAlphabet,
-             "builtInInput": 0,
-             "multiple": true,
-             "autoComplete": true,
-             "name": "b"
-         });
-     </script>
+     <?php include('./include/connexion_profil.php'); ?>
 </body>
 </html>

@@ -304,7 +304,7 @@
             </div>
         </div>
     </footer>
-    <!-- ##### Footer Area Start ##### -->
+    <!-- ##### Footer Area End ##### -->
 
    <!-- ##### All Javascript Files ##### -->
     <!-- jQuery-2.2.4 js -->
@@ -313,18 +313,14 @@
     <script src="../js/bootstrap/popper.min.js"></script>
     <!-- Bootstrap js -->
     <script src="../js/bootstrap/bootstrap.min.js"></script>
+    <script src="http://bootstrap-tagsinput.github.io/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
     <!-- All Plugins js -->
     <script src="../js/plugins/plugins.js"></script>
     <!-- Active js -->
-    <script src="../js/active.js"></script>
+    <script src="../js/tools/active/active.js"></script>
 	<!-- Recipes Category js -->
 	<script src="../js/categoryRecipes.js"></script>
-	
-	<script src="http://bootstrap-tagsinput.github.io/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
-	
-		
-	<?php include('./include/connexion_profil.php'); ?>
-	
-</body>
 
+	<?php include('./include/connexion_profil.php'); ?>
+</body>
 </html>
