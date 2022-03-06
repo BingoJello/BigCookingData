@@ -7,21 +7,19 @@ class ClientPersistence
     /**
      * @throws Exception
      */
-    public static function getClient(string $mail, string $password): Client
+    public static function getClient(string $mail, string $password)
     {
-        $query = "SELECT id_client FROM client WHERE client.mail = ? AND client.password = ?";
+        $query = "SELECT * FROM client WHERE client.mail = ? AND client.password = ?";
         $params = [$mail, $password];
 
         $result = DatabaseQuery::selectQuery($query, $params);
 
-        if (empty($result))
-            throw new Exception("Aucun client n'existe pour ce mail et ce mot de passe");
-
         foreach($result as $row) {
-            $client = new Client($row['id_client'], $row['lastName'], $row['civility'], $row['pseudo'], $row['mail'], $row['password']);
-            $client->setPreferencesCategories(ClientPersistence::getPreferencesIngredientsClient($row['id']));
+            $client = new Client($row['id_client'], $row['firstname'], $row['lastname'], $row['civility'], $row['pseudo'], $row['mail'], $row['password']);
+            $client->setPreferencesIngredients(ClientPersistence::getPreferencesIngredientsClient($row['id_client']));
             return $client;
         }
+        return null;
     }
 
     /**

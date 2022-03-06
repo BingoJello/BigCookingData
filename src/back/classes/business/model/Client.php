@@ -146,8 +146,10 @@ class Client
         return $this->preferences_ingredients;
     }
 
-    public function setPreferencesCategories(array $preferences_ingredients):void
+    public function setPreferencesIngredients(array $preferences_ingredients): void
     {
         $this->preferences_ingredients = $preferences_ingredients;
     }
+
+
 }

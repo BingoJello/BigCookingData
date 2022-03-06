@@ -54,6 +54,20 @@ function registerInscriptionClient($pseudo,$civility,$mail,$password,$password_c
 ?>
 
 <?php
+    function connexionToProfil($email,$password)
+    {
+        $client = ClientPersistence::getClient($email, $password);
+
+        if (null == $client) {
+            header('location:./connexion.php?error=Erreur dauthentification. Vérifier votre mail ou mot de passe.');
+        }
+        else {
+            $_SESSION['client'] = serialize($client);
+            header('location:./profil.php');
+        }
+    }
+?>
+<?php
 function updatePreferencesIngredients($id_client, $ingredients){
     ClientPersistence::updateIngredientsPreferencesClient($id_client, $ingredients);
 }

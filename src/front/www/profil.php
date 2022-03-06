@@ -2,21 +2,19 @@
     session_start();
     require_once('../../back/classes/business/model/Client.php');
     require_once('../../back/classes/business/model/Ingredient.php');
-    require_once('../../back/classes/business/model/Recipe.php');
     require_once('../../back/classes/database/DatabaseQuery.php');
     require_once('../../back/classes/database/DatabaseConnection.php');
     require_once('../../back/classes/database/persistence/ClientPersistence.php');
     require_once('../../back/classes/database/persistence/RecipePersistence.php');
     include('../../back/functions/functions_mysql.php');
+    include('../../back/functions/functions.php');
 ?>
 
 <?php
     if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
         $client = unserialize($_SESSION['client']);
     }else{
-        // header('location:./inscription.php?error=Veuillez vous inscrire pour voir votre profil');
-        $client = new Client(1, "Arthur", "Mimouni", "Mr", "Art", "a.gmzil.com",'AZERTYUIOP',
-            array(0,1));
+        header('location:./connexion.php?error=Veuillez vous connecter pour voir votre profil');
     }
 
     if(isset($_POST['ingredients'])) {
@@ -90,7 +88,7 @@
 						 <img style="margin:1em auto" src="../img/core-img/logo-account-black.png" width="50" height="60" alt="">
 					</div>
 					<div class="row">
-						<h1 style="margin:0 auto;font-size:24px" for="num_meals_selector">My profil</h1>
+						<h1 style="margin:0 auto;font-size:24px" for="num_meals_selector">Mon profil</h1>
 					</div>
 
                     <?php
@@ -112,7 +110,7 @@
 					    <div class="row form-group">
 						    <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="civility">Civilité</label>
 						    <div class="col-12 col-sm-9 col-md-6 col-lg-6 col-xl-5">
-                                <select id="civility-select" name="civility" class="form-control" readonly>
+                                <select id="civility-select" name="civility" class="form-control" disabled readonly>
                                     <?php
                                         if ('1' == $client->getCivility()){
                                             echo "<option value='Mme' selected='selected'>Mme</option>";
@@ -170,9 +168,9 @@
                             </div>
                         </div>
                         <div class="row form-group">
-                            <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="password-confirm">Ingredients préférés</label>
+                            <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="list_ingredients">Ingredients préférés</label>
                             <div class="col-12 col-sm-9 col-md-6 col-lg-6 col-xl-5">
-                                <input type="text" id="list_ingredients" class="form-control" name="ingredients" value="<?php echo $_POST['ingredients']?>"/>
+                                <input type="text" id="list_ingredients" class="form-control" name="ingredients" value="<?php printPreferencesIngredients($client)?>"/>
                             </div>
                         </div>
                         <div class="row form-group small_top_spacer">

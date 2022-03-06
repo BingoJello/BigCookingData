@@ -62,7 +62,7 @@
     <section class="hero-area">
         <div class="hero-slides owl-carousel">
             <!-- Single Hero Slide -->
-            <div class="single-hero-slide bg-img" style="background-image: url(../img/bg-img/bg1.jpg);">
+            <div class="single-hero-slide bg-img" style="background-image: url(https://assets.afcdn.com/recipe/20131106/63010_w1024h778c1cx1633cy2449.webp);">
                 <div class="container h-100">
                     <div class="row h-100 align-items-center">
                         <div class="col-12 col-md-9 col-lg-7 col-xl-6">
@@ -77,7 +77,7 @@
             </div>
 
             <!-- Single Hero Slide -->
-            <div class="single-hero-slide bg-img" style="background-image: url(../img/bg-img/bg6.jpg);">
+            <div class="single-hero-slide bg-img" style="background-image: url(https://assets.afcdn.com/recipe/20130924/13020_w1024h778c1cx2376cy1584.webp);">
                 <div class="container h-100">
                     <div class="row h-100 align-items-center">
                         <div class="col-12 col-md-9 col-lg-7 col-xl-6">

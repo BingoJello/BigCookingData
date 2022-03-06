@@ -535,8 +535,8 @@ textarea:focus {
 .hero-area {
   position: relative;
   z-index: 1;
-  margin-left: 4%;
-  margin-right: 4%; }
+  margin-left: 7%;
+  margin-right: 7%; }
 
 .hero-slides {
   position: relative;
@@ -1415,5 +1415,44 @@ textarea:focus {
 	.space-p{
 		height:20px;
 	}
+}
+
+.recipe-book-link{
+  font-size: 18px;
+}
+.recipe-book-div{
+  float:left;
+  word-wrap: break-word;
+  width:72%;
+}
+
+@media screen and (max-width:1200px) {
+  .recipe-book-div{
+    float:left;
+    word-wrap: break-word;
+    width:65%;
+  }
+}
+
+@media screen and (max-width:770px) {
+  .recipe-book-div{
+    float:left;
+    word-wrap: break-word;
+    width:43%;
+  }
+  .recipe-book-link{
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width:470px) {
+  .recipe-book-div{
+    float:left;
+    word-wrap: break-word;
+    width:40%;
+  }
+  .recipe-book-link{
+    font-size: 14px;
+  }
 }
 
