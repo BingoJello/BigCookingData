@@ -1,10 +1,16 @@
 <?php
-require_once('../../back/classes/business/model/Ingredient.php');
-require_once('../../back/classes/business/model/Recipe.php');
-require_once('../../back/classes/database/DatabaseQuery.php');
-require_once('../../back/classes/database/DatabaseConnection.php');
-require_once('../../back/classes/database/persistence/RecipePersistence.php');
-include('../../back/functions/functions.php');
+    session_start();
+    require_once('../../back/classes/business/model/Ingredient.php');
+    require_once('../../back/classes/business/model/Recipe.php');
+    require_once('../../back/classes/database/DatabaseQuery.php');
+    require_once('../../back/classes/database/DatabaseConnection.php');
+    require_once('../../back/classes/database/persistence/RecipePersistence.php');
+    include('../../back/functions/functions.php');
+?>
+
+<?php
+    if(isset($_SESSION['client']) and !empty($_SESSION['client']))
+    $client = unserialize($_SESSION['client']);
 ?>
 
 <!DOCTYPE html>
@@ -38,7 +44,6 @@ include('../../back/functions/functions.php');
     <div class="search-wrapper">
         <!-- Close Btn -->
         <div class="close-btn"><i class="fa fa-times" aria-hidden="true"></i></div>
-
         <div class="container">
             <div class="row">
                 <div class="col-12">

@@ -29,10 +29,8 @@ class GlobalSuggestionBuilder implements RecipesBuilder
         $best_cluster_visualization_user = RecipePersistence::getBestVisualizationClusterUser($this->client->getId(), $session);
         $best_cluster_preferences = -1;
 
-        if(is_null($best_cluster_historic_user) and is_null($best_cluster_rated_user) and is_null($best_cluster_visualization_user))
-        {
-            $preferences_ingredients = ClientPersistence::getPreferencesIngredients($this->client->getId(), 'name');
-            $preferences_ingredients = implode(";", $preferences_ingredients);
+        if(is_null($best_cluster_historic_user) and is_null($best_cluster_rated_user) and is_null($best_cluster_visualization_user)){
+            $preferences_ingredients = ClientPersistence::getPreferencesIngredientsClient($this->client->getId());
             $best_cluster_preferences = DecisionTreeCluster::getCluster($preferences_ingredients);
         }
 
@@ -122,35 +120,28 @@ class GlobalSuggestionBuilder implements RecipesBuilder
             $product_vector = 0;
             $recipe_vector = 0;
             $index_item = 0;
-            foreach($row as $ingredient_recipe)
-            {
-                if($index_item == 0)
-                {
+            foreach($row as $ingredient_recipe) {
+                if($index_item == 0) {
                     $id_recipe = $ingredient_recipe;
-                }
-                else
-                {
+                } else {
                     $product_vector += $row_user[$index_item] * $ingredient_recipe;
                     $recipe_vector += pow($ingredient_recipe, 2);
 
                     if($bool_user_vector == false)
-                    {
                         $user_vector +=pow($row_user[$index_item], 2);
-                    }
+
                 }
                 $index_item++;
             }
             $recipe_vector = sqrt($recipe_vector);
 
             if($bool_user_vector == false)
-            {
                 $user_vector = sqrt($user_vector);
-            }
+
             $bool_user_vector = true;
             $cross_product_vector = $user_vector * $recipe_vector;
 
-            if($cross_product_vector != 0 and $product_vector !=0)
-            {
+            if($cross_product_vector != 0 and $product_vector !=0) {
                 $similarity_recipes[$index_similarity]['id_recipe'] = $id_recipe;
                 $similarity_recipes[$index_similarity]['score'] = $product_vector / ($cross_product_vector);
             }
@@ -188,12 +179,9 @@ class GlobalSuggestionBuilder implements RecipesBuilder
         }
         $mean_similarity /= count($recipes);
 
-        foreach($recipes as $k=>$v)
-        {
+        foreach($recipes as $k=>$v) {
             if($v['score'] >= $mean_similarity)
-            {
                 array_push($best_similarity, $recipes[$k]);
-            }
         }
         return $this->sortRecipes($best_similarity);
     }

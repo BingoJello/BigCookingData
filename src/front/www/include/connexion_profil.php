@@ -8,7 +8,7 @@
 				</div>
 				<div class="modal-body">
 					<div class="calculator_form">
-						<form class="form-horizontal condensed_form" id="calculator_form">
+						<form class="form-horizontal condensed_form" id="calculator_form" action="./connexion.php" method="POST">
 							<fieldset>	
 								<div class="form-group row">
 									<label for="email-login" class="col-12 col-sm-4 col-form-label label-email-login">Email</label>
@@ -18,9 +18,9 @@
 								</div>
 								
 								<div class="form-group row">
-									<label for="password-login" class="col-12 col-sm-4 col-form-label label-password-login">Password</label>
+									<label for="password-login" class="col-12 col-sm-4 col-form-label label-password-login">Mot de passe</label>
 									<div class="inline_block col-12 col-sm-7 col-md-7 col-lg-7" id="password-login">
-										<input id="password-login" name="email" class="form-control inline_block" type="password">
+										<input id="password-login" name="password" class="form-control inline_block" type="password">
 									</div>
 								</div>
 							

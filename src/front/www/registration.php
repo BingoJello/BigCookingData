@@ -1,38 +1,39 @@
 <?php
-require_once('../../back/classes/business/model/Client.php');
-require('../../back/classes/business/model/Ingredient.php');
-require('../../back/classes/business/model/Recipe.php');
-require_once('../../back/classes/database/DatabaseQuery.php');
-require_once('../../back/classes/database/DatabaseConnection.php');
-require_once('../../back/classes/database/persistence/ClientPersistence.php');
-include('../../back/functions/functions_mysql.php');
+    session_start();
+    require_once('../../back/classes/business/model/Client.php');
+    require_once('../../back/classes/business/model/Ingredient.php');
+    require_once('../../back/classes/business/model/Recipe.php');
+    require_once('../../back/classes/database/DatabaseQuery.php');
+    require_once('../../back/classes/database/DatabaseConnection.php');
+    require_once('../../back/classes/database/persistence/ClientPersistence.php');
+    require_once('../../back/classes/database/persistence/RecipePersistence.php');
+    include('../../back/functions/functions_mysql.php');
 ?>
 
 <?php
-if ((isset($_POST['pseudo']) and (!empty($_POST['pseudo'])))
-    and (isset($_POST['civility']) and (!empty($_POST['civility'])))
-    and (isset($_POST['email']) and (!empty($_POST['email'])))
-    and (isset($_POST['password']) and (!empty($_POST['password'])))
-    and (isset($_POST['password_confirm']) and (!empty($_POST['password_confirm'])))) {
+    if ((isset($_POST['pseudo']) and (!empty($_POST['pseudo'])))
+        and (isset($_POST['civility']) and (!empty($_POST['civility'])))
+        and (isset($_POST['email']) and (!empty($_POST['email'])))
+        and (isset($_POST['password']) and (!empty($_POST['password'])))
+        and (isset($_POST['password_confirm']) and (!empty($_POST['password_confirm'])))) {
 
-    if ((isset($_POST['firstname'])) and (isset($_POST['lastname'])) and (isset($_POST['ingredients']))){
-        $pseudo = $_POST['pseudo'];
-        $civility = $_POST['civility'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $password_confirm = $_POST['password_confirm'];
-        $last_name = $_POST['lastname'];
-        $first_name = $_POST['firstname'];
-        $ingredients = $_POST['ingredients'];
+        if ((isset($_POST['firstname'])) and (isset($_POST['lastname'])) and (isset($_POST['ingredients']))){
+            $pseudo = $_POST['pseudo'];
+            $civility = $_POST['civility'];
+            $email = $_POST['email'];
+            $password = $_POST['password'];
+            $password_confirm = $_POST['password_confirm'];
+            $last_name = $_POST['lastname'];
+            $first_name = $_POST['firstname'];
+            $ingredients = $_POST['ingredients'];
 
-        registerInscriptionClient($pseudo,$civility,$email,$password,$password_confirm,$last_name,$first_name,$ingredients);
+            registerInscriptionClient($pseudo,$civility,$email,$password,$password_confirm,$last_name,$first_name,$ingredients);
+        }
     }
-}
-if (((isset($_SESSION['email'])) and (!empty($_SESSION['email'])))
-    and ((isset($_SESSION['password'])) and (!empty($_SESSION['password'])))) {
-    $email = $_SESSION['email'];
-    $password = $_SESSION['password'];
-}
+
+    if (isset($_SESSION['client']) and !empty($_SESSION['client'])){
+        $client = unserialize($_SESSION['client']);
+    }
 ?>
 
 <!DOCTYPE html>
@@ -42,7 +43,7 @@ if (((isset($_SESSION['email'])) and (!empty($_SESSION['email'])))
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <!-- The above 2 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js" integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <!-- Title -->
@@ -55,6 +56,7 @@ if (((isset($_SESSION['email'])) and (!empty($_SESSION['email'])))
 	<link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/style_registration.css">
 </head>
+
 <body>
 	 <!-- Preloader -->
     <div id="preloader">
@@ -66,7 +68,6 @@ if (((isset($_SESSION['email'])) and (!empty($_SESSION['email'])))
     <div class="search-wrapper">
         <!-- Close Btn -->
         <div class="close-btn"><i class="fa fa-times" aria-hidden="true"></i></div>
-
         <div class="container">
             <div class="row">
                 <div class="col-12">
@@ -92,16 +93,18 @@ if (((isset($_SESSION['email'])) and (!empty($_SESSION['email'])))
 						<h1 style="margin:0 auto;font-size:24px" for="num_meals_selector">Inscription</h1>
 					</div>
 					<div class="row">
-						<a href="#" style="font-size:16px;color:#1E90FF;margin:0 auto">Se connecter</a>
+						<a href="#" data-toggle="modal" data-target="#loginIHM" style="font-size:16px;color:#1E90FF;margin:0 auto">Se connecter</a>
 					</div>
+
                     <?php
-                    if((isset($_GET['error'])) AND (!empty($_GET['error']))){
-                        $error=$_GET['error'];
-                        echo "<div style ='margin-top:1em' class='row alert-warning'>
-						        <label style='margin:0 auto'>".$error."</label>
-					        </div>";
-                    }
+                        if((isset($_GET['error'])) AND (!empty($_GET['error']))){
+                            $error=$_GET['error'];
+                            echo "<div style ='margin-top:1em' class='row alert-warning'>
+						            <label style='margin:0 auto'>".$error."</label>
+					            </div>";
+                        }
                     ?>
+
                     <form id="registration-form" action="./registration.php" method="POST">
 					    <div style="margin-top:2em" class="row form-group">
 						    <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="pseudo">Pseudo*</label>
@@ -158,17 +161,15 @@ if (((isset($_SESSION['email'])) and (!empty($_SESSION['email'])))
                                    placeholder="Confirmez votre mot de passe"  onfocus="enterElement('error-password-confirm')" onblur="passwordValidation()"  required />
 						    </div>
 					    </div>
-
                         <div class="row form-group">
-                            <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="password-confirm">Confirmation mot de passe*</label>
+                            <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="password-confirm">Ingredients préférés</label>
                             <div class="col-12 col-sm-9 col-md-6 col-lg-6 col-xl-5">
                                 <input type="text" id="list_ingredients" class="form-control" name="ingredients"></input>
                             </div>
                         </div>
-
 					    <div class="row form-group small_top_spacer">
 						    <div class="col-12 col-md-3 offset-md-4 offset-lg-5">
-                                <button type="submit"  id="generate-btn" class="btn btn-lg btn-block btn-orange gen_button"  data-loading-text="Generate">SUBMIT</button>
+                                <button type="submit"  id="generate-btn" class="btn btn-lg btn-block btn-orange gen_button">SOUMETTRE</button>
 						    </div>
 					    </div>
                     </form>
@@ -204,8 +205,9 @@ if (((isset($_SESSION['email'])) and (!empty($_SESSION['email'])))
      <script src="../js/tools/active/active2.js"></script>
      <!-- Canvas js -->
      <script src="../js/canvas.js"></script>
-
+     <!-- Registration security js -->
      <script src="../js/registration.js"></script>
+     <!-- List Ingredient multiple select js -->
      <script src="../js/tools/list_ingredients_select.js"></script>
 
      <?php include('./include/connexion_profil.php'); ?>

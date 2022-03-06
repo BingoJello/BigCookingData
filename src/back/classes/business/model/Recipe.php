@@ -16,7 +16,6 @@ class Recipe
     private string $coord;
     private array $ingredients;
     private int $cluster;
-    private float $score;
 
     /**
      * Recipe constructor.
@@ -24,7 +23,7 @@ class Recipe
     public function __construct(int $id, string $name = '', string $categories = '', string $url_pic = '',
                                 string $directions = '', int $prep_time = 0, int $cook_time = 0, int $break_time = 0,
                                 string $difficulty = '', string $budget = '', int $serving = 0,  string $coord='',
-                                array $ingredients = array(), int $cluster = -1, float $score = 0)
+                                array $ingredients = array(), int $cluster = -1)
     {
         $this->id = $id;
         $this->name = $name;
@@ -40,7 +39,6 @@ class Recipe
         $this->coord = $coord;
         $this->ingredients = $ingredients;
         $this->cluster = $cluster;
-        $this->score = $score;
     }
 
     public function hasIngredient($id_ingredient):bool
@@ -48,15 +46,9 @@ class Recipe
         foreach ($this->ingredients as $ingredient)
         {
             if($ingredient->getId() == $id_ingredient)
-            {
                 return true;
-            }
         }
         return false;
-    }
-    public function incrementScore():void
-    {
-        $this->score = $this->score++;
     }
 
     public function getId():int
@@ -196,15 +188,5 @@ class Recipe
     public function setCluster(Cluster $cluster):void
     {
         $this->cluster = $cluster;
-    }
-
-    public function getScore():float
-    {
-        return $this->score;
-    }
-
-    public function setScore(float $score):void
-    {
-        $this->score = $score;
     }
 }

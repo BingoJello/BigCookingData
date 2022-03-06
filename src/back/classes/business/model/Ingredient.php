@@ -4,21 +4,15 @@ class Ingredient
 {
     private int $id;
     private string $name;
-    private float $score;
+    private string $url_pic;
 
     /**
      * Ingredient constructor.
      */
-    public function __construct(int $id, string $name, float $score = 0)
+    public function __construct(int $id, string $name, string $url_pic)
     {
         $this->id = $id;
         $this->name = $name;
-        $this->score = $score;
-    }
-
-    public function incrementScore():void
-    {
-        $this->score = $this->score++;
     }
 
     public function getId():int
@@ -41,13 +35,13 @@ class Ingredient
         $this->name = $name;
     }
 
-    public function getScore():float
+    public function getUrlPic(): string
     {
-        return $this->score;
+        return $this->url_pic;
     }
 
-    public function setScore(float $score):void
+    public function setUrlPic(string $url_pic): void
     {
-        $this->score = $score;
+        $this->url_pic = $url_pic;
     }
 }

@@ -9,16 +9,16 @@ class Client
     private string $pseudo;
     private string $mail;
     private string $password;
+    private array $preferences_ingredients;
     private array $rated_recipes;
     private array $recorded_recipes;
-    private array $preferences_ingredients;
 
     /**
      * Client constructor.
      */
     public function __construct(int $id, string $first_name = '', string $last_name = '', string $civility = '', string $pseudo = '',
-                                string $mail = '', string $password = '', array $rated_recipes = array('recipes' => array(), 'ratings' => array()),
-                                array $recorded_recipes = array(), array $preferences_ingredients = array())
+                                string $mail = '', string $password = '', array $preferences_ingredients = array(),
+                                array $rated_recipes = array('recipes' => array(), 'ratings' => array()), array $recorded_recipes = array())
     {
         $this->id = $id;
         $this->first_name = $first_name;
@@ -27,9 +27,9 @@ class Client
         $this->pseudo = $pseudo;
         $this->mail = $mail;
         $this->password = $password;
+        $this->preferences_ingredients = $preferences_ingredients;
         $this->rated_recipes = $rated_recipes;
         $this->recorded_recipes = $recorded_recipes;
-        $this->preferences_ingredients = $preferences_ingredients;
     }
 
     public function addRecordedRecipes(Recipe $recipe):void

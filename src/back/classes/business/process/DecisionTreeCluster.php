@@ -2,7 +2,7 @@
 
 class DecisionTreeCluster
 {
-    public static function getCluster(string $ingredients):int
+    public static function getCluster(array $ingredients):int
     {
         try{
             /*Connection to the soap service */
@@ -10,8 +10,7 @@ class DecisionTreeCluster
             $query = array('ingredients'=>'ingredients');
             $cluster = $soap_client->add($query);
             return $cluster->result;
-        }
-        catch(SoapFault $exception){
+        } catch(SoapFault $exception){
             echo $exception->getMessage();
         }
 

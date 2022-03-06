@@ -8,11 +8,9 @@ class DatabaseQuery
     public static function selectQuery($query, $params=array())
     {
         $stmt = DatabaseConnection::getInstance()->prepare($query);
-        try
-        {
+        try {
             $stmt->execute($params);
-        } catch(PDOException $error)
-        {
+        } catch(PDOException $error) {
             echo $error->getMessage();
         }
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -24,11 +22,23 @@ class DatabaseQuery
     public static function insertQuery($query, $params=array())
     {
         $stmt = DatabaseConnection::getInstance()->prepare($query);
-        try
-        {
+        try {
             $stmt->execute($params);
-        } catch(PDOException $error)
-        {
+        } catch(PDOException $error) {
+            echo $error->getMessage();
+        }
+        return $stmt;
+    }
+
+    /**
+     * @brief Generic insert query in database
+     */
+    public static function updateQuery($query, $params=array())
+    {
+        $stmt = DatabaseConnection::getInstance()->prepare($query);
+        try {
+            $stmt->execute($params);
+        } catch(PDOException $error) {
             echo $error->getMessage();
         }
         return $stmt;
