@@ -1,4 +1,15 @@
 <?php
+/**
+ * @param $pseudo
+ * @param $civility
+ * @param $mail
+ * @param $password
+ * @param $password_confirm
+ * @param $lastname
+ * @param $firstname
+ * @param $ingredients
+ * @throws Exception
+ */
 function registerInscriptionClient($pseudo,$civility,$mail,$password,$password_confirm,$lastname,$firstname,$ingredients)
 {
     if("0" != $civility) {
@@ -54,6 +65,11 @@ function registerInscriptionClient($pseudo,$civility,$mail,$password,$password_c
 ?>
 
 <?php
+/**
+ * @param $email
+ * @param $password
+ * @throws Exception
+ */
     function connexionToProfil($email,$password)
     {
         $client = ClientPersistence::getClient($email, $password);
@@ -68,12 +84,20 @@ function registerInscriptionClient($pseudo,$civility,$mail,$password,$password_c
     }
 ?>
 <?php
+/**
+ * @param $id_client
+ * @param $ingredients
+ */
 function updatePreferencesIngredients($id_client, $ingredients){
     ClientPersistence::updateIngredientsPreferencesClient($id_client, $ingredients);
 }
 ?>
 
 <?php
+/**
+ * @param $id_client
+ * @param $password
+ */
 function updatePasswordClient($id_client, $password){
     ClientPersistence::updatePasswordClient($id_client, $password);
 }

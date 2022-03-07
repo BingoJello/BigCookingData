@@ -2,7 +2,11 @@
 
 class DecisionTreeCluster
 {
-    public static function getCluster(array $ingredients):int
+    /**
+     * @param array $ingredients
+     * @return int
+     */
+    public static function getCluster($ingredients)
     {
         try{
             /*Connection to the soap service */

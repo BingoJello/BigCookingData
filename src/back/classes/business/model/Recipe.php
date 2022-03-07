@@ -2,28 +2,83 @@
 
 class Recipe
 {
-    private int $id;
-    private string $name;
-    private string $categories;
-    private string $url_pic;
-    private string $directions;
-    private int $prep_time;
-    private int $cook_time;
-    private int $break_time;
-    private string $difficulty;
-    private string $budget;
-    private int $serving;
-    private string $coord;
-    private array $ingredients;
-    private int $cluster;
+    /**
+     * @var int
+     */
+    private $id;
+    /**
+     * @var string
+     */
+    private $name;
+    /**
+     * @var string
+     */
+    private $categories;
+    /**
+     * @var string
+     */
+    private $url_pic;
+    /**
+     * @var string
+     */
+    private $directions;
+    /**
+     * @var int
+     */
+    private $prep_time;
+    /**
+     * @var int
+     */
+    private $cook_time;
+    /**
+     * @var int
+     */
+    private $break_time;
+    /**
+     * @var string
+     */
+    private $difficulty;
+    /**
+     * @var string
+     */
+    private $budget;
+    /**
+     * @var int
+     */
+    private $serving;
+    /**
+     * @var string
+     */
+    private $coord;
+    /**
+     * @var array
+     */
+    private $ingredients;
+    /**
+     * @var int
+     */
+    private $cluster;
 
     /**
      * Recipe constructor.
+     * @param int $id
+     * @param string $name
+     * @param string $categories
+     * @param string $url_pic
+     * @param string $directions
+     * @param int $prep_time
+     * @param int $cook_time
+     * @param int $break_time
+     * @param string $difficulty
+     * @param string $budget
+     * @param int $serving
+     * @param string $coord
+     * @param array $ingredients
+     * @param int $cluster
      */
-    public function __construct(int $id, string $name = '', string $categories = '', string $url_pic = '',
-                                string $directions = '', int $prep_time = 0, int $cook_time = 0, int $break_time = 0,
-                                string $difficulty = '', string $budget = '', int $serving = 0,  string $coord='',
-                                array $ingredients = array(), int $cluster = -1)
+    public function __construct($id, $name = '', $categories = '', $url_pic = '', $directions = '', $prep_time = 0,
+                                $cook_time = 0, $break_time = 0, $difficulty = '', $budget = '', $serving = 0, $coord='',
+                                $ingredients = array(), $cluster = -1)
     {
         $this->id = $id;
         $this->name = $name;
@@ -41,6 +96,10 @@ class Recipe
         $this->cluster = $cluster;
     }
 
+    /**
+     * @param int $id_ingredient
+     * @return bool
+     */
     public function hasIngredient($id_ingredient):bool
     {
         foreach ($this->ingredients as $ingredient)
@@ -51,142 +110,228 @@ class Recipe
         return false;
     }
 
-    public function getId():int
+    /**
+     * @return int
+     */
+    public function getId()
     {
         return $this->id;
     }
 
-    public function setId(int $id):void
+    /**
+     * @param int $id
+     */
+    public function setId(int $id)
     {
         $this->id = $id;
     }
 
-    public function getName():string
+    /**
+     * @return string
+     */
+    public function getName()
     {
         return $this->name;
     }
 
-    public function setName(string $name):void
+    /**
+     * @param string $name
+     */
+    public function setName($name)
     {
         $this->name = $name;
     }
 
-    public function getCategories(): string
+    /**
+     * @return string
+     */
+    public function getCategories()
     {
         return $this->categories;
     }
 
-    public function setCategories(string $categories): void
+    /**
+     * @param string $categories
+     */
+    public function setCategories($categories)
     {
         $this->categories = $categories;
     }
 
-    public function getUrlPic():string
+    /**
+     * @return string
+     */
+    public function getUrlPic()
     {
         return $this->url_pic;
     }
 
-    public function setUrlPic(string $url_pic):void
+    /**
+     * @param string $url_pic
+     */
+    public function setUrlPic($url_pic)
     {
         $this->url_pic = $url_pic;
     }
-    public function getDirections():string
+
+    /**
+     * @return string
+     */
+    public function getDirections()
     {
         return $this->directions;
     }
 
-    public function setDirections(string $directions):void
+    /**
+     * @param string $directions
+     */
+    public function setDirections($directions)
     {
         $this->directions = $directions;
     }
 
-    public function getPrepTime():int
+    /**
+     * @return int
+     */
+    public function getPrepTime()
     {
         return $this->prep_time;
     }
 
-    public function setPrepTime(int $prep_time):void
+    /**
+     * @param int $prep_time
+     */
+    public function setPrepTime($prep_time)
     {
         $this->prep_time = $prep_time;
     }
 
-    public function getCookTime():int
+    /**
+     * @return int
+     */
+    public function getCookTime()
     {
         return $this->cook_time;
     }
 
-    public function setCookTime(int $cook_time):void
+    /**
+     * @param int $cook_time
+     */
+    public function setCookTime($cook_time)
     {
         $this->cook_time = $cook_time;
     }
 
-    public function getBreakTime():int
+    /**
+     * @return int
+     */
+    public function getBreakTime()
     {
-        return $this->cook_time;
+        return $this->break_time;
     }
 
-    public function setBreakTime(int $break_time):void
+    /**
+     * @param int $break_time
+     */
+    public function setBreakTime($break_time)
     {
         $this->break_time = $break_time;
     }
 
-    public function getDifficulty(): string
+    /**
+     * @return string
+     */
+    public function getDifficulty()
     {
         return $this->difficulty;
     }
 
-    public function setDifficulty(string $difficulty): void
+    /**
+     * @param string $difficulty
+     */
+    public function setDifficulty($difficulty)
     {
         $this->difficulty = $difficulty;
     }
 
-    public function getBudget(): string
+    /**
+     * @return string
+     */
+    public function getBudget()
     {
         return $this->budget;
     }
 
-    public function setBudget(string $budget): void
+    /**
+     * @param string $budget
+     */
+    public function setBudget($budget)
     {
         $this->budget = $budget;
     }
 
-    public function getServing():int
+    /**
+     * @return int
+     */
+    public function getServing()
     {
         return $this->serving;
     }
 
-    public function setServing(int $serving):void
+    /**
+     * @param int $serving
+     */
+    public function setServing($serving)
     {
         $this->serving = $serving;
     }
 
-    public function getIngredients():array
-    {
-        return $this->ingredients;
-    }
-
-    public function setIngredients(array $ingredients):void
-    {
-        $this->ingredients = $ingredients;
-    }
-
-    public function getCoord(): string
+    /**
+     * @return string
+     */
+    public function getCoord()
     {
         return $this->coord;
     }
 
-    public function setCoord(string $coord): void
+    /**
+     * @param string $coord
+     */
+    public function setCoord($coord)
     {
         $this->coord = $coord;
     }
 
-    public function getCluster():Cluster
+    /**
+     * @return array
+     */
+    public function getIngredients()
+    {
+        return $this->ingredients;
+    }
+
+    /**
+     * @param array $ingredients
+     */
+    public function setIngredients($ingredients)
+    {
+        $this->ingredients = $ingredients;
+    }
+
+    /**
+     * @return int
+     */
+    public function getCluster()
     {
         return $this->cluster;
     }
 
-    public function setCluster(Cluster $cluster):void
+    /**
+     * @param int $cluster
+     */
+    public function setCluster($cluster)
     {
         $this->cluster = $cluster;
     }
+
 }

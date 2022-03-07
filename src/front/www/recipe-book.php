@@ -37,6 +37,7 @@ include('../../back/functions/functions.php');
     <link rel="stylesheet" href="../css/css_libs1.css">
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/style_profil.css">
+    <link rel="stylesheet" href="../css/style_recipe_book.css">
 </head>
 
 <body>
@@ -75,20 +76,46 @@ include('../../back/functions/functions.php');
                     <h1 style="margin:0 auto;font-size:24px" for="num_meals_selector">Mon carnet de recettes</h1>
                 </div>
                 <form id="profil-form" action="./profil.php" method="POST">
-                    <div class="generator_header col-12 col-md-9 col-lg-9" style="margin:0 auto">
+                    <div class="generator_header col-12 col-md-9 col-lg-9" style="margin:0 auto;margin-top:20px">
                         <div class="row">
                             <div style="float:left">
                                 <img src="https://assets.afcdn.com/recipe/20131106/63010_w1024h778c1cx1633cy2449.webp" width="116" height="132" alt="">
                             </div>
                             <div class="recipe-book-div">
                                 <div>
-                                    <p class = "recipe-book-link">Pasta alla caprese and f...</p>
+                                    <p class = "recipe-book-link">Pasta alla caprese and fjuifnruhvn cnuiergccr crr...</p>
                                     <p style="color:red;margin-top:-10px">Supprimer</p>
                                 </div>
                             </div>
                         </div>
                     </div>
-
+                    <div class="generator_header col-12 col-md-9 col-lg-9" style="margin:0 auto;margin-top:20px">
+                        <div class="row">
+                            <div style="float:left">
+                                <img src="https://assets.afcdn.com/recipe/20131106/63010_w1024h778c1cx1633cy2449.webp" width="116" height="132" alt="">
+                            </div>
+                            <div class="recipe-book-div">
+                                <div>
+                                    <p class = "recipe-book-link">Pasta alla caprese and fjuifnruhvn cnuiergccr crr...</p>
+                                    <p style="color:red;margin-top:-10px">Supprimer</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="generator_header col-12 col-md-9 col-lg-9" style="margin:0 auto;margin-top:20px">
+                        <div class="row">
+                            <div style="float:left">
+                                <img src="https://assets.afcdn.com/recipe/20131106/63010_w1024h778c1cx1633cy2449.webp" width="116" height="132" alt="">
+                            </div>
+                            <div class="recipe-book-div">
+                                <div>
+                                    <p class = "recipe-book-link">Pasta alla caprese and fjuifnruhvn cnuiergccr crr...</p>
+                                    <p style="color:red;margin-top:-10px">Supprimer</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="height: 10px"></p>
                 </form>
             </div>
         </div>

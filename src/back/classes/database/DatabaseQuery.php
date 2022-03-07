@@ -4,6 +4,9 @@ class DatabaseQuery
 {
     /**
      * @brief Generic select query in database
+     * @param string $query
+     * @param array $params
+     * @return array
      */
     public static function selectQuery($query, $params=array())
     {
@@ -18,6 +21,9 @@ class DatabaseQuery
 
     /**
      * @brief Generic insert query in database
+     * @param $query
+     * @param array $params
+     * @return false|PDOStatement
      */
     public static function insertQuery($query, $params=array())
     {
@@ -32,6 +38,9 @@ class DatabaseQuery
 
     /**
      * @brief Generic insert query in database
+     * @param $query
+     * @param array $params
+     * @return false|PDOStatement
      */
     public static function updateQuery($query, $params=array())
     {

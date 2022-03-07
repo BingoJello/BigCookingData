@@ -6,23 +6,32 @@ require('src/back/classes/business/model/ClientPersistence.php');
 
 class GlobalSuggestionBuilder implements RecipesBuilder
 {
-    private Client $client;
-    private array $recipes;
+    /**
+     * @var Client $client
+     */
+    private $client;
+    /**
+     * @var array
+     */
+    private $recipes;
 
     /**
      * GlobalSuggestionBuilder constructor.
+     * @param string $mail
+     * @param string $password
      * @throws Exception
      */
-    public function __construct(string $mail, string $password)
+    public function __construct($mail, $password)
     {
         $this->recipes = array();
         $this->client = ClientPersistence::getClient($mail, $password);
     }
 
     /**
+     * @param array $session
      * @throws Exception
      */
-    public function buildRecipes(array $session):void
+    public function buildRecipes($session)
     {
         $best_cluster_historic_user = RecipePersistence::getBestHistoricClusterUser($this->client->getId());
         $best_cluster_rated_user = RecipePersistence::getBestRatedClusterUser($this->client->getId());
@@ -39,10 +48,15 @@ class GlobalSuggestionBuilder implements RecipesBuilder
     }
 
     /**
-     * @throws Exception
+     * @param int $historic_cluster
+     * @param int $rated_cluster
+     * @param int $visualization_cluster
+     * @param int $preferences_cluster
+     * @param array $session
+     * @return array
      */
-    private function buildContentBasedRecommender(int $historic_cluster, int $rated_cluster, int $visualization_cluster,
-                                    int $preferences_cluster = -1, array $session):array
+    private function buildContentBasedRecommender($historic_cluster, $rated_cluster, $visualization_cluster,
+                                    $preferences_cluster = -1, $session)
     {
         $recipes = RecipePersistence::getRecipesByCluster([$historic_cluster, $rated_cluster, $visualization_cluster]);
         $ingredients = RecipePersistence::getIngredientsByCluster(array($historic_cluster, $rated_cluster, $visualization_cluster));
@@ -56,7 +70,12 @@ class GlobalSuggestionBuilder implements RecipesBuilder
         return $this->getBestSimilarity($similarity_recipes);
     }
 
-    private function buildMatrix(array $recipes, array $ingredients):array
+    /**
+     * @param array $recipes
+     * @param array $ingredients
+     * @return array
+     */
+    private function buildMatrix($recipes, $ingredients)
     {
         $matrix = array();
 
@@ -77,7 +96,12 @@ class GlobalSuggestionBuilder implements RecipesBuilder
         return $matrix;
     }
 
-    private function buildVectorUser(array $ingredients, array $ingredients_user):array
+    /**
+     * @param array $ingredients
+     * @param array $ingredients_user
+     * @return array
+     */
+    private function buildVectorUser($ingredients, $ingredients_user)
     {
         $row_user = array();
         $percent_ingredients_user = array();
@@ -108,7 +132,12 @@ class GlobalSuggestionBuilder implements RecipesBuilder
         return $row_user;
     }
 
-    private function cosinusSimilarityRecipes(array $matrix, array $row_user):array
+    /**
+     * @param array $matrix
+     * @param array $row_user
+     * @return array
+     */
+    private function cosinusSimilarityRecipes($matrix, $row_user)
     {
         $user_vector = 0;
         $bool_user_vector = false;
@@ -150,7 +179,11 @@ class GlobalSuggestionBuilder implements RecipesBuilder
         return $similarity_recipes;
     }
 
-    function sortRecipes(array $recipes):array
+    /**
+     * @param array $recipes
+     * @return array
+     */
+    function sortRecipes($recipes)
     {
         $sort_recipes = array();
 
@@ -169,7 +202,11 @@ class GlobalSuggestionBuilder implements RecipesBuilder
         return $sort_recipes;
     }
 
-    function getBestSimilarity(array $recipes):array
+    /**
+     * @param array $recipes
+     * @return array
+     */
+    function getBestSimilarity($recipes)
     {
         $best_similarity = array();
 
@@ -185,8 +222,14 @@ class GlobalSuggestionBuilder implements RecipesBuilder
         }
         return $this->sortRecipes($best_similarity);
     }
-    public function getRecipes():array
+
+    /**
+     * @return array
+     */
+    public function getRecipes()
     {
         return $this->recipes;
     }
+
+
 }

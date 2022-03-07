@@ -7,8 +7,10 @@ class RecipePersistence
 
     /**
      * @brief Récupère le meilleur cluster des recettes enregistrés en favoris
+     * @param int $id_client
+     * @return int
      */
-    public static function getBestHistoricClusterUser(int $id_client):int
+    public static function getBestHistoricClusterUser($id_client)
     {
         $favorites_history_cluster = null;
 
@@ -31,9 +33,10 @@ class RecipePersistence
 
     /**
      * @brief Récupère le meilleur cluster des recettes évaluéés par l'utilisateur
-     * @throws Exception
+     * @param int $id_client
+     * @return int
      */
-    public static function getBestRatedClusterUser(int $id_client):int
+    public static function getBestRatedClusterUser($id_client)
     {
         $favorites_rated_cluster = null;
 
@@ -54,9 +57,10 @@ class RecipePersistence
 
     /**
      * @brief Récupère le meilleur cluster des recettes visualisées par l'utilisateur durant sa session
-     * @throws Exception
+     * @param array $session
+     * @return int
      */
-    public static function getBestVisualizationClusterUser(int $id_client, array $session):int
+    public static function getBestVisualizationClusterUser($session)
     {
         $visualization_cluster = null;
         $id_recipes_visualization = array();
@@ -82,7 +86,11 @@ class RecipePersistence
         return $visualization_cluster;
     }
 
-    public static function getRecipesByCluster(array $id_cluster):array
+    /**
+     * @param array $id_cluster
+     * @return array
+     */
+    public static function getRecipesByCluster($id_cluster)
     {
         $recipes_cluster = array();
         $query="SELECT recipe.* as FROM recipe
@@ -99,7 +107,11 @@ class RecipePersistence
         return $recipes_cluster;
     }
 
-    public static function getIngredientsByCluster(array $id_clusters):array
+    /**
+     * @param array $id_clusters
+     * @return array
+     */
+    public static function getIngredientsByCluster($id_clusters)
     {
         $ingredients = array();
         $id_clusters = join(",", $id_clusters);
@@ -117,7 +129,11 @@ class RecipePersistence
         return $ingredients;
     }
 
-    public static function getIngredientsByClient(int $id_client):array
+    /**
+     * @param int $id_client
+     * @return array
+     */
+    public static function getIngredientsByClient($id_client)
     {
         $ingredients = array();
         $query="SELECT * FROM ingredient
@@ -137,7 +153,11 @@ class RecipePersistence
         return $ingredients;
     }
 
-    public static function getIngredientsByRecipes(array $id_recipes):array
+    /**
+     * @param array $id_recipes
+     * @return array
+     */
+    public static function getIngredientsByRecipes($id_recipes)
     {
         $ingredients = array();
         $id_recipes = join(",", $id_recipes);
@@ -154,7 +174,13 @@ class RecipePersistence
         return $ingredients;
     }
 
-    public static function getRecipesByIngredientsAndCluster(int $id_cluster, array $ingredients_include, array $ingredients_exclude):array
+    /**
+     * @param int $id_cluster
+     * @param array $ingredients_include
+     * @param array $ingredients_exclude
+     * @return array
+     */
+    public static function getRecipesByIngredientsAndCluster($id_cluster, $ingredients_include, $ingredients_exclude)
     {
         $ingredients = array();
         $ingredients_include = "'".join("','",$ingredients_include)."'";
@@ -173,7 +199,11 @@ class RecipePersistence
         return $ingredients;
     }
 
-    public static function getIdIngredientByName(array $ingredients_name):array
+    /**
+     * @param array $ingredients_name
+     * @return array
+     */
+    public static function getIdIngredientByName($ingredients_name)
     {
         $id_ingredients = array();
         $ingredients_name_join = "'".join("','",$ingredients_name)."'";
@@ -190,7 +220,10 @@ class RecipePersistence
     }
 
 
-    public static function getRecipes():array
+    /**
+     * @return array
+     */
+    public static function getRecipes()
     {
         $recipes = array();
         $query="SELECT * FROM recipe";

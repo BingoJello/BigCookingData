@@ -5,9 +5,12 @@ class ClientPersistence
     //Select method
 
     /**
+     * @param string $mail
+     * @param string $password
+     * @return Client|null
      * @throws Exception
      */
-    public static function getClient(string $mail, string $password)
+    public static function getClient($mail, $password)
     {
         $query = "SELECT * FROM client WHERE client.mail = ? AND client.password = ?";
         $params = [$mail, $password];
@@ -23,9 +26,10 @@ class ClientPersistence
     }
 
     /**
-     * @throws Exception
+     * @param int $id_client
+     * @return array
      */
-    public static function getPreferencesIngredientsClient(int $id_client): array
+    public static function getPreferencesIngredientsClient($id_client)
     {
         $preferences_ingredients_user = array();
 
@@ -42,7 +46,10 @@ class ClientPersistence
         return $preferences_ingredients_user;
     }
 
-    public static function getLastIdClient():int
+    /**
+     * @return int
+     */
+    public static function getLastIdClient()
     {
         $query="SELECT id_client FROM client ORDER BY id_client DESC LIMIT 1";
         $result = DatabaseQuery::selectQuery($query, []);
@@ -53,7 +60,13 @@ class ClientPersistence
         return 0;
     }
 
-    public static function findClientExist($email = false, $password = false, $pseudo = false):bool
+    /**
+     * @param $email
+     * @param $password
+     * @param $pseudo
+     * @return bool
+     */
+    public static function findClientExist($email = false, $password = false, $pseudo = false)
     {
         if(false == $password) {
             $query = "SELECT COUNT(id_client) AS client_exist FROM client WHERE mail=?";
@@ -76,6 +89,16 @@ class ClientPersistence
 
     //insert methods
 
+    /**
+     * @param int $id_client
+     * @param string $firstname
+     * @param string $lastname
+     * @param string $civility
+     * @param string $pseudo
+     * @param string $mail
+     * @param string $password
+     * @return false|PDOStatement
+     */
     public static function insertClient($id_client, $firstname, $lastname, $civility, $pseudo, $mail, $password)
     {
         $query = "INSERT INTO client(id_client,firstname,lastname,civility,pseudo,mail,password) VALUES (?,?,?,?,?,?,?)";
@@ -84,17 +107,26 @@ class ClientPersistence
         return DatabaseQuery::insertQuery($query, $params);
     }
 
+    /**
+     * @param int $id_client
+     * @param array $ingredients
+     */
     public static function insertIngredientsPreferences($id_client, $ingredients)
     {
         foreach($ingredients as $ingredient) {
-            $query = "INSERT INTO have_preferences_ingredient(id_client,$ingredient) VALUES (?,?)";
+            $query = "INSERT INTO have_preferences_ingredient(id_client,ingredient) VALUES (?,?)";
             $params=[$id_client, $ingredient];
             DatabaseQuery::insertQuery($query, $params);
         }
     }
 
     //delete methods
-    public static function deleteIngredientPreferencesClient(int $id_client, array $ingredients)
+
+    /**
+     * @param int $id_client
+     * @param array $ingredients
+     */
+    public static function deleteIngredientPreferencesClient($id_client, $ingredients)
     {
         $ingredients = join(",", $ingredients);
         $query = "DELETE FROM have_preferences_ingredient 
@@ -105,7 +137,12 @@ class ClientPersistence
     }
 
     //update methods
-    public static function updateIngredientsPreferencesClient(int $id_client, array $ingredients)
+
+    /**
+     * @param int $id_client
+     * @param array $ingredients
+     */
+    public static function updateIngredientsPreferencesClient($id_client, $ingredients)
     {
         $old_ingredients_client = ClientPersistence::getPreferencesIngredientsClient($id_client);
         $old_ingredients_name_client = array();
@@ -141,7 +178,12 @@ class ClientPersistence
         }
     }
 
-    public static function updatePasswordClient(int $id_client, string $password):void{
+    /**
+     * @param int $id_client
+     * @param string $password
+     */
+    public static function updatePasswordClient($id_client, $password)
+    {
         $query ="UPDATE client SET password = ? WHERE id_client = ?";
         $params=[$password, $id_client];
 
