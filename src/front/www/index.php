@@ -1,27 +1,30 @@
+<?php
+require_once('../../back/classes/business/model/Ingredient.php');
+require_once('../../back/classes/business/model/Recipe.php');
+require_once('../../back/classes/database/DatabaseQuery.php');
+require_once('../../back/classes/database/DatabaseConnection.php');
+require_once('../../back/classes/database/persistence/RecipePersistence.php');
+include('../../back/functions/functions.php');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <!-- The above 2 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js" integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-
     <!-- Title -->
     <title>Delicious | Home</title>
-
     <!-- Favicon -->
     <link rel="icon" href="../img/core-img/favicon.ico">
-
     <!-- Core Stylesheet -->
 	<link rel="stylesheet" href="../css/etm1.css">
 	<link rel="stylesheet" href="../css/css_libs1.css">
     <link rel="stylesheet" href="../css/style.css">
-
-
 </head>
 
 <body>
@@ -113,119 +116,7 @@
             </div>
 
             <div class="row">
-                <!-- Single Best Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-best-recipe-area mb-30">
-                        <img src="../img/bg-img/r1.jpg" alt="">
-                        <div class="recipe-content">
-                            <a href="recipe-post.php">
-                                <h5>Sushi Easy Receipy</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Single Best Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-best-recipe-area mb-30">
-                        <img src="../img/bg-img/r2.jpg" alt="">
-                        <div class="recipe-content">
-                            <a href="recipe-post.php">
-                                <h5>Homemade Burger</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Single Best Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-best-recipe-area mb-30">
-                        <img src="../img/bg-img/r3.jpg" alt="">
-                        <div class="recipe-content">
-                            <a href="recipe-post.php">
-                                <h5>Vegan Smoothie</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Single Best Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-best-recipe-area mb-30">
-                        <img src="../img/bg-img/r4.jpg" alt="">
-                        <div class="recipe-content">
-                            <a href="recipe-post.php">
-                                <h5>Calabasa soup</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Single Best Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-best-recipe-area mb-30">
-                        <img src="../img/bg-img/r5.jpg" alt="">
-                        <div class="recipe-content">
-                            <a href="recipe-post.php">
-                                <h5>Homemade Breakfast</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Single Best Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-best-recipe-area mb-30">
-                        <img src="../img/bg-img/r6.jpg" alt="">
-                        <div class="recipe-content">
-                            <a href="recipe-post.php">
-                                <h5>Healthy Fruit Desert</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <?php print_recipes() ?>
             </div>
         </div>
     </section>
@@ -557,7 +448,7 @@
     <!-- All Plugins js -->
     <script src="../js/plugins/plugins.js"></script>
     <!-- Active js -->
-    <script src="../js/active.js"></script>
+    <script src="../js/tools/active/active.js"></script>
 	
 	<?php include('./include/connexion_profil.php'); ?>
 </body>

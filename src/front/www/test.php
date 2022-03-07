@@ -48,7 +48,7 @@
     <!-- All Plugins js -->
     <script src="../js/plugins/plugins.js"></script>
     <!-- Active js -->
-    <script src="../js/active2.js"></script>
+    <script src="../js/tools/active/active2.js"></script>
 	<script src="../js/canvas.js"></script>
 
 	<script src="../js/categoryRecipes.js"></script>

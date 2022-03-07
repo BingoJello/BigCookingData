@@ -1,16 +1,7 @@
 <?php
 
-use classes\AutoLoader;
-use classes\business\model\Client;
-use classes\business\model\Ingredient;
-use classes\business\model\Recipe;
-use JetBrains\PhpStorm\ArrayShape;
-
-AutoLoader::register();
-
 class ClientPersistence
 {
-
     /**
      * @throws Exception
      */
@@ -22,68 +13,81 @@ class ClientPersistence
         $result = DatabaseQuery::selectQuery($query, $params);
 
         if (empty($result))
-        {
             throw new Exception("Aucun client n'existe pour ce mail et ce mot de passe");
-        }
 
-        while($row = $result->fetch())
-        {
+        foreach($result as $row)
             return new Client($row['id'], $row['lastName'], $row['civility'], $row['pseudo'], $row['mail'], $row['password']);
-        }
     }
 
     /**
      * @throws Exception
      */
-    public static function getPreferencesIngredients(int $id_client): array
+    public static function getPreferencesIngredients(int $id_client, string $select="*"): array
     {
         $preferences_ingredients_user = array();
 
-        $query = "SELECT ingredient.id_ingredient, ingredient.name FROM ingredient 
-                  INNER JOIN preferences_ingredient_client as pic ON pic.id_ingredient = ingredient.id
-                  INNER JOIN client ON client.id = pic.id_client
-                  WHERE client.id = ?";
+        $query = "SELECT ingredient.$select FROM ingredient 
+                  INNER JOIN have_preferences_ingredient as hpi ON hpi.id_ingredient = ingredient.id
+                  INNER JOIN client ON client.id_client = hpi.id_client
+                  WHERE client.id_client = ?";
         $params = [$id_client];
 
         $result = DatabaseQuery::selectQuery($query, $params);
 
-        while($row = $result->fetch())
-        {
+        foreach($result as $row)
             array_push($preferences_ingredients_user, $row['name']);
-        }
+
         return $preferences_ingredients_user;
     }
 
-    #[ArrayShape(['id_client' => "array", 'object_client' => "array"])]
-    public static function getClientsWithRatingRecipes(int $id_cluster, array $id_recipes):array
+    public static function findClientExist($email = false, $password = false, $pseudo = false)
     {
-        $clients = array('id_client'=>array(), 'object_client'=>array());
-
-        $query = "SELECT client.id_client, recipe.id_recipe, assess.rating AS rate FROM assess
-				INNER JOIN client ON client.id_client = assess.id_client
-				INNER JOIN recipe ON recipe.id_recipe = assess.id_recipe
-                WHERE recipe.id_cluster = ? and recipe.id_recipe IN (?)
-				ORDER BY (client.id_client)";
-
-        $params = [$id_cluster, implode(",", $id_recipes)];
-
+        if(false == $password)
+        {
+            $query = "SELECT COUNT(id_client) AS client_exist FROM client WHERE mail=?";
+            $params = [$email];
+        }elseif (false !== $pseudo)
+        {
+            $query = "SELECT COUNT(id_client) AS client_exist FROM client WHERE pseudo=?";
+            $params = [$pseudo];
+        }else{
+            $query = "SELECT COUNT(id_client) AS client_exist FROM client WHERE mail=? AND password=?";
+            $params = [$email, $password];
+        }
         $result = DatabaseQuery::selectQuery($query, $params);
 
-        while($row = $result->fetch())
+        foreach($result as $row)
+            if(0 < $row['client_exist'])
+                return true;
+
+            return false;
+    }
+
+    public static function getLastIdClient()
+    {
+        $query="SELECT id_client FROM client ORDER BY id_client DESC LIMIT 1";
+        $result = DatabaseQuery::selectQuery($query, []);
+        foreach($result as $row)
+            return $row['id_client'];
+
+        return 0;
+    }
+
+    public static function insertClient($id_client, $firstname, $lastname, $civility, $pseudo, $mail, $password)
+    {
+        $query = "INSERT INTO client(id_client,firstname,lastname,civility,pseudo,mail,password) VALUES (?,?,?,?,?,?,?)";
+        $params=[$id_client, $firstname, $lastname, $civility, $pseudo, $mail, $password];
+        return DatabaseQuery::insertQuery($query, $params);
+    }
+
+    public static function insertIngredientsPreferences($id_client, $ingredients)
+    {
+        $ingredients = explode(';', $ingredients);
+        foreach($ingredients as $ingredient)
         {
-            if(!empty($index = array_search($row['id_client'], $clients['id_client'])))
-            {
-                $client = $clients['object_client'][$index];
-                $client->addRatedRecipes(new Recipe(id:$row['id_recipe']), $row['rate']);
-            }
-            else
-            {
-                $client = new Client($row['id_client']);
-                array_push($clients['id_client'], $row['id_client']);
-                array_push($clients['object_client'], $client);
-                $client->addRatedRecipes(new Recipe(id:$row['id_recipe']),$row['rate']);
-            }
+            $query = "INSERT INTO have_preferences_ingredient(id_client,$ingredient) VALUES (?,?)";
+            $params=[$id_client, $ingredient];
+            DatabaseQuery::insertQuery($query, $params);
         }
-        return $clients;
     }
 }
