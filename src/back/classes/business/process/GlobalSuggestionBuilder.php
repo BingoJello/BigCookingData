@@ -6,33 +6,40 @@ require('src/back/classes/business/model/ClientPersistence.php');
 
 class GlobalSuggestionBuilder implements RecipesBuilder
 {
-    private Client $client;
-    private array $recipes;
+    /**
+     * @var Client $client
+     */
+    private $client;
+    /**
+     * @var array
+     */
+    private $recipes;
 
     /**
      * GlobalSuggestionBuilder constructor.
+     * @param string $mail
+     * @param string $password
      * @throws Exception
      */
-    public function __construct(string $mail, string $password)
+    public function __construct($mail, $password)
     {
         $this->recipes = array();
         $this->client = ClientPersistence::getClient($mail, $password);
     }
 
     /**
+     * @param array $session
      * @throws Exception
      */
-    public function buildRecipes(array $session):void
+    public function buildRecipes($session)
     {
         $best_cluster_historic_user = RecipePersistence::getBestHistoricClusterUser($this->client->getId());
         $best_cluster_rated_user = RecipePersistence::getBestRatedClusterUser($this->client->getId());
         $best_cluster_visualization_user = RecipePersistence::getBestVisualizationClusterUser($this->client->getId(), $session);
         $best_cluster_preferences = -1;
 
-        if(is_null($best_cluster_historic_user) and is_null($best_cluster_rated_user) and is_null($best_cluster_visualization_user))
-        {
-            $preferences_ingredients = ClientPersistence::getPreferencesIngredients($this->client->getId(), 'name');
-            $preferences_ingredients = implode(";", $preferences_ingredients);
+        if(is_null($best_cluster_historic_user) and is_null($best_cluster_rated_user) and is_null($best_cluster_visualization_user)){
+            $preferences_ingredients = ClientPersistence::getPreferencesIngredientsClient($this->client->getId());
             $best_cluster_preferences = DecisionTreeCluster::getCluster($preferences_ingredients);
         }
 
@@ -41,10 +48,15 @@ class GlobalSuggestionBuilder implements RecipesBuilder
     }
 
     /**
-     * @throws Exception
+     * @param int $historic_cluster
+     * @param int $rated_cluster
+     * @param int $visualization_cluster
+     * @param int $preferences_cluster
+     * @param array $session
+     * @return array
      */
-    private function buildContentBasedRecommender(int $historic_cluster, int $rated_cluster, int $visualization_cluster,
-                                    int $preferences_cluster = -1, array $session):array
+    private function buildContentBasedRecommender($historic_cluster, $rated_cluster, $visualization_cluster,
+                                    $preferences_cluster = -1, $session)
     {
         $recipes = RecipePersistence::getRecipesByCluster([$historic_cluster, $rated_cluster, $visualization_cluster]);
         $ingredients = RecipePersistence::getIngredientsByCluster(array($historic_cluster, $rated_cluster, $visualization_cluster));
@@ -58,7 +70,12 @@ class GlobalSuggestionBuilder implements RecipesBuilder
         return $this->getBestSimilarity($similarity_recipes);
     }
 
-    private function buildMatrix(array $recipes, array $ingredients):array
+    /**
+     * @param array $recipes
+     * @param array $ingredients
+     * @return array
+     */
+    private function buildMatrix($recipes, $ingredients)
     {
         $matrix = array();
 
@@ -79,7 +96,12 @@ class GlobalSuggestionBuilder implements RecipesBuilder
         return $matrix;
     }
 
-    private function buildVectorUser(array $ingredients, array $ingredients_user):array
+    /**
+     * @param array $ingredients
+     * @param array $ingredients_user
+     * @return array
+     */
+    private function buildVectorUser($ingredients, $ingredients_user)
     {
         $row_user = array();
         $percent_ingredients_user = array();
@@ -110,7 +132,12 @@ class GlobalSuggestionBuilder implements RecipesBuilder
         return $row_user;
     }
 
-    private function cosinusSimilarityRecipes(array $matrix, array $row_user):array
+    /**
+     * @param array $matrix
+     * @param array $row_user
+     * @return array
+     */
+    private function cosinusSimilarityRecipes($matrix, $row_user)
     {
         $user_vector = 0;
         $bool_user_vector = false;
@@ -122,35 +149,28 @@ class GlobalSuggestionBuilder implements RecipesBuilder
             $product_vector = 0;
             $recipe_vector = 0;
             $index_item = 0;
-            foreach($row as $ingredient_recipe)
-            {
-                if($index_item == 0)
-                {
+            foreach($row as $ingredient_recipe) {
+                if($index_item == 0) {
                     $id_recipe = $ingredient_recipe;
-                }
-                else
-                {
+                } else {
                     $product_vector += $row_user[$index_item] * $ingredient_recipe;
                     $recipe_vector += pow($ingredient_recipe, 2);
 
                     if($bool_user_vector == false)
-                    {
                         $user_vector +=pow($row_user[$index_item], 2);
-                    }
+
                 }
                 $index_item++;
             }
             $recipe_vector = sqrt($recipe_vector);
 
             if($bool_user_vector == false)
-            {
                 $user_vector = sqrt($user_vector);
-            }
+
             $bool_user_vector = true;
             $cross_product_vector = $user_vector * $recipe_vector;
 
-            if($cross_product_vector != 0 and $product_vector !=0)
-            {
+            if($cross_product_vector != 0 and $product_vector !=0) {
                 $similarity_recipes[$index_similarity]['id_recipe'] = $id_recipe;
                 $similarity_recipes[$index_similarity]['score'] = $product_vector / ($cross_product_vector);
             }
@@ -159,7 +179,11 @@ class GlobalSuggestionBuilder implements RecipesBuilder
         return $similarity_recipes;
     }
 
-    function sortRecipes(array $recipes):array
+    /**
+     * @param array $recipes
+     * @return array
+     */
+    function sortRecipes($recipes)
     {
         $sort_recipes = array();
 
@@ -178,7 +202,11 @@ class GlobalSuggestionBuilder implements RecipesBuilder
         return $sort_recipes;
     }
 
-    function getBestSimilarity(array $recipes):array
+    /**
+     * @param array $recipes
+     * @return array
+     */
+    function getBestSimilarity($recipes)
     {
         $best_similarity = array();
 
@@ -188,17 +216,20 @@ class GlobalSuggestionBuilder implements RecipesBuilder
         }
         $mean_similarity /= count($recipes);
 
-        foreach($recipes as $k=>$v)
-        {
+        foreach($recipes as $k=>$v) {
             if($v['score'] >= $mean_similarity)
-            {
                 array_push($best_similarity, $recipes[$k]);
-            }
         }
         return $this->sortRecipes($best_similarity);
     }
-    public function getRecipes():array
+
+    /**
+     * @return array
+     */
+    public function getRecipes()
     {
         return $this->recipes;
     }
+
+
 }

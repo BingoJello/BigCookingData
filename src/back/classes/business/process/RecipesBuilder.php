@@ -2,6 +2,6 @@
 
 interface RecipesBuilder
 {
-    public function buildRecipes(array $session);
-    public function getRecipes():array;
+    public function buildRecipes($session);
+    public function getRecipes();
 }

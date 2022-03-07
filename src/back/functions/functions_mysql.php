@@ -1,40 +1,44 @@
 <?php
+/**
+ * @param $pseudo
+ * @param $civility
+ * @param $mail
+ * @param $password
+ * @param $password_confirm
+ * @param $lastname
+ * @param $firstname
+ * @param $ingredients
+ * @throws Exception
+ */
 function registerInscriptionClient($pseudo,$civility,$mail,$password,$password_confirm,$lastname,$firstname,$ingredients)
 {
-    if("0" != $civility)
-    {
+    if("0" != $civility) {
         if(0 != (strlen($pseudo)) AND (0 != strlen($mail))){
-            if((7 < strlen($password)) AND (31 > strlen($password)))
-            {
-                if($password_confirm == $password)
-                {
-                    if(true === ClientPersistence::findClientExist($mail, $password))
-                    {
+            if((7 < strlen($password)) AND (31 > strlen($password))) {
+                if($password_confirm == $password) {
+                    if(true === ClientPersistence::findClientExist($mail, $password)) {
                         $client = ClientPersistence::getClient($mail, $password);
                         header('location:./registration.php?error=Le compte contenant le pseudo "'.$client->getPseudo().'" possède cet mail et ce mot de passe. Veuillez choisir un autre email.');
                         return;
                     }
-                    if(true === ClientPersistence::findClientExist($mail))
-                    {
+                    if(true === ClientPersistence::findClientExist($mail)) {
                         header('location:./registration.php?error=Ce mail existe déjà. Veuillez en choisir un autre.');
                         return;
                     }
-                    if(true == ClientPersistence::findClientExist(false, false, $pseudo))
-                    {
+                    if(true == ClientPersistence::findClientExist(false, false, $pseudo)) {
                         header('location:./registration.php?error=Ce pseudo existe déjà. Veuillez en choisir un autre.');
                         return;
                     }
 
                     $id_client = ClientPersistence::getLastIdClient() + 1;
-                    //ClientPersistence::insertIngredientsPreferences($id_client, $ingredients);
                     $result = ClientPersistence::insertClient($id_client, $firstname, $lastname, $civility, $pseudo, $mail, $password);
 
-                    if($result)
-                    {
-                        $_SESSION['pseudo'] = $pseudo;
-                        $_SESSION['email'] = $mail;
-                        $_SESSION['password'] = $password;
-                        $_SESSION['visualization']=array();
+                    if($result) {
+                        $ingredients = explode(";", $ingredients);
+                        array_pop($ingredients);
+                        $id_ingredients = RecipePersistence::getIdIngredientByName($ingredients);
+                        ClientPersistence::insertIngredientsPreferences($id_client, $id_ingredients);
+                        $_SESSION['client'] = serialize(ClientPersistence::getClient($mail, $password));
 
                         header('location:./profil.php');
                     }else{
@@ -42,20 +46,59 @@ function registerInscriptionClient($pseudo,$civility,$mail,$password,$password_c
                         return;
                     }
                 }else{
-                    header('location:./inscription.php?error=Veuillez entrer le même mot de passe.');
+                    header('location:./registration.php?error=Veuillez entrer le même mot de passe.');
                     return;
                 }
             }else{
-                header('location:./inscription.php?error=Le mot de passe doit contenir entre 8 et 30 caractères.');
+                header('location:./registration.php?error=Le mot de passe doit contenir entre 8 et 30 caractères.');
                 return;
             }
         }else{
-            header('location:./inscription.php?error=Le mail et le pseudo ne doivent pas être vides.');
+            header('location:./registration.php?error=Le mail et le pseudo ne doivent pas être vides.');
             return;
         }
     }else{
-        header('location:./inscription.php?error=Veuillez entre votre civilité.');
+        header('location:./registration.php?error=Veuillez entre votre civilité.');
         return;
     }
+}
+?>
+
+<?php
+/**
+ * @param $email
+ * @param $password
+ * @throws Exception
+ */
+    function connexionToProfil($email,$password)
+    {
+        $client = ClientPersistence::getClient($email, $password);
+
+        if (null == $client) {
+            header('location:./connexion.php?error=Erreur dauthentification. Vérifier votre mail ou mot de passe.');
+        }
+        else {
+            $_SESSION['client'] = serialize($client);
+            header('location:./profil.php');
+        }
+    }
+?>
+<?php
+/**
+ * @param $id_client
+ * @param $ingredients
+ */
+function updatePreferencesIngredients($id_client, $ingredients){
+    ClientPersistence::updateIngredientsPreferencesClient($id_client, $ingredients);
+}
+?>
+
+<?php
+/**
+ * @param $id_client
+ * @param $password
+ */
+function updatePasswordClient($id_client, $password){
+    ClientPersistence::updatePasswordClient($id_client, $password);
 }
 ?>

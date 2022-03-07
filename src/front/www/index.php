@@ -1,10 +1,16 @@
 <?php
-require_once('../../back/classes/business/model/Ingredient.php');
-require_once('../../back/classes/business/model/Recipe.php');
-require_once('../../back/classes/database/DatabaseQuery.php');
-require_once('../../back/classes/database/DatabaseConnection.php');
-require_once('../../back/classes/database/persistence/RecipePersistence.php');
-include('../../back/functions/functions.php');
+    session_start();
+    require_once('../../back/classes/business/model/Ingredient.php');
+    require_once('../../back/classes/business/model/Recipe.php');
+    require_once('../../back/classes/database/DatabaseQuery.php');
+    require_once('../../back/classes/database/DatabaseConnection.php');
+    require_once('../../back/classes/database/persistence/RecipePersistence.php');
+    include('../../back/functions/functions.php');
+?>
+
+<?php
+    if(isset($_SESSION['client']) and !empty($_SESSION['client']))
+    $client = unserialize($_SESSION['client']);
 ?>
 
 <!DOCTYPE html>
@@ -38,7 +44,6 @@ include('../../back/functions/functions.php');
     <div class="search-wrapper">
         <!-- Close Btn -->
         <div class="close-btn"><i class="fa fa-times" aria-hidden="true"></i></div>
-
         <div class="container">
             <div class="row">
                 <div class="col-12">
@@ -57,7 +62,7 @@ include('../../back/functions/functions.php');
     <section class="hero-area">
         <div class="hero-slides owl-carousel">
             <!-- Single Hero Slide -->
-            <div class="single-hero-slide bg-img" style="background-image: url(../img/bg-img/bg1.jpg);">
+            <div class="single-hero-slide bg-img" style="background-image: url(https://assets.afcdn.com/recipe/20131106/63010_w1024h778c1cx1633cy2449.webp);">
                 <div class="container h-100">
                     <div class="row h-100 align-items-center">
                         <div class="col-12 col-md-9 col-lg-7 col-xl-6">
@@ -72,7 +77,7 @@ include('../../back/functions/functions.php');
             </div>
 
             <!-- Single Hero Slide -->
-            <div class="single-hero-slide bg-img" style="background-image: url(../img/bg-img/bg6.jpg);">
+            <div class="single-hero-slide bg-img" style="background-image: url(https://assets.afcdn.com/recipe/20130924/13020_w1024h778c1cx2376cy1584.webp);">
                 <div class="container h-100">
                     <div class="row h-100 align-items-center">
                         <div class="col-12 col-md-9 col-lg-7 col-xl-6">

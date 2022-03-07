@@ -31,6 +31,59 @@
     }
     return $clients;
 }
+
+ public static function getNbrVisualizedRecipes(int $id_client, int $id_cluster, array $id_recipes):int
+    {
+        $nbr_visualized_recipes = 0;
+
+        $query="SELECT COUNT(recipe.id_recipe) as nbr_recipes FROM recipe
+				WHERE recipe.id_cluster = ? AND recipe.id_recipe IN (?)";
+        $params = [$id_cluster, implode(",", $id_recipes)];
+
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        while($row = $result->fetch())
+            $nbr_visualized_recipes = $row['nbr_recipes'];
+
+        return $nbr_visualized_recipes;
+    }
+
+public static function getRatedRecipes($id_client, $id_cluster):array
+    {
+        $rated_recipes = array();
+
+        $query="SELECT assess.rating FROM assess
+				INNER JOIN recipe ON recipe.id_recipe = assess.id_recipe
+				WHERE assess.id_client = ? AND recipe.id_cluster = ?";
+        $params = [$id_client, $id_cluster];
+
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        while($row = $result->fetch())
+        {
+            array_push($rated_recipes, $row['rating']);
+        }
+        return $rated_recipes;
+    }
+
+ public static function getNbrRecordedRecipes(int $id_client, int $id_cluster):int
+    {
+        $nbr_recorded_recipes = 0;
+
+        $query="SELECT COUNT(recipe.id_recipe) as nbr_recipes FROM recipe
+				INNER JOIN record ON record.id_recipe = recipe.id_recipe
+				WHERE record.id_client = ? AND recipe.id_cluster = ?";
+        $params = [$id_client, $id_cluster];
+
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        while($row = $result->fetch())
+        {
+            $nbr_recorded_recipes = $row['nbr_recipes'];
+        }
+        return $nbr_recorded_recipes;
+    }
+
 /*
 ?>
 

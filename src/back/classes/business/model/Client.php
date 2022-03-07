@@ -2,23 +2,63 @@
 
 class Client
 {
-    private int $id;
-    private string $first_name;
-    private string $last_name;
-    private string $civility;
-    private string $pseudo;
-    private string $mail;
-    private string $password;
-    private array $rated_recipes;
-    private array $recorded_recipes;
-    private array $preferences_ingredients;
+    /**
+     * @var int
+     */
+    private $id;
+    /**
+     * @var string
+     */
+    private $first_name;
+    /**
+     * @var string
+     */
+    private $last_name;
+    /**
+     * @var string
+     */
+    private $civility;
+    /**
+     * @var string
+     */
+    private $pseudo;
+    /**
+     * @var string
+     */
+    private $mail;
+    /**
+     * @var string
+     */
+    private $password;
+    /**
+     * @var array
+     */
+    private $preferences_ingredients;
+    /**
+     * @var array|array[]
+     */
+    private $rated_recipes;
+    /**
+     * @var array
+     */
+    private $recorded_recipes;
 
     /**
      * Client constructor.
+     * @param int $id
+     * @param string $first_name
+     * @param string $last_name
+     * @param string $civility
+     * @param string $pseudo
+     * @param string $mail
+     * @param string $password
+     * @param array $preferences_ingredients
+     * @param array $rated_recipes
+     * @param array $recorded_recipes
      */
-    public function __construct(int $id, string $first_name = '', string $last_name = '', string $civility = '', string $pseudo = '',
-                                string $mail = '', string $password = '', array $rated_recipes = array('recipes' => array(), 'ratings' => array()),
-                                array $recorded_recipes = array(), array $preferences_ingredients = array())
+    public function __construct($id, $first_name = '', $last_name = '', $civility = '', $pseudo = '',
+                                $mail = '', $password = '', $preferences_ingredients = array(),
+                                $rated_recipes = array(), array $recorded_recipes = array())
     {
         $this->id = $id;
         $this->first_name = $first_name;
@@ -27,23 +67,36 @@ class Client
         $this->pseudo = $pseudo;
         $this->mail = $mail;
         $this->password = $password;
+        $this->preferences_ingredients = $preferences_ingredients;
         $this->rated_recipes = $rated_recipes;
         $this->recorded_recipes = $recorded_recipes;
-        $this->preferences_ingredients = $preferences_ingredients;
     }
 
-    public function addRecordedRecipes(Recipe $recipe):void
+    /**
+     * @param Recipe $recipe
+     * @return void
+     */
+    public function addRecordedRecipes($recipe)
     {
         array_push($this->recorded_recipes, $recipe);
     }
 
-    public function addRatedRecipes(Recipe $recipe, float $rating):void
+    /**
+     * @param object $recipe
+     * @param float $rating
+     * @return void
+     */
+    public function addRatedRecipes($recipe, $rating)
     {
         array_push($this->rated_recipes['recipes'], $recipe);
         array_push($this->rated_recipes['ratings'], $rating);
     }
 
-    public function getRatingRecipe(int $id_recipe):float
+    /**
+     * @param int $id_recipe
+     * @return float
+     */
+    public function getRatingRecipe($id_recipe):float
     {
         foreach($this->rated_recipes as $recipe)
             if($recipe->getId() == $id_recipe)
@@ -51,103 +104,163 @@ class Client
         return 0;
     }
 
+    /**
+     * @return int
+     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    public function setId(int $id):void
+    /**
+     * @param int $id
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
 
-    public function getFirstName(): string
+    /**
+     * @return string
+     */
+    public function getFirstName()
     {
         return $this->first_name;
     }
 
-    public function setFirstName(string $first_name)
+    /**
+     * @param string $first_name
+     */
+    public function setFirstName($first_name)
     {
         $this->first_name = $first_name;
     }
 
-    public function getLastName(): string
+    /**
+     * @return string
+     */
+    public function getLastName()
     {
         return $this->last_name;
     }
 
-    public function setLastName(string $last_name):void
+    /**
+     * @param string $last_name
+     */
+    public function setLastName($last_name)
     {
         $this->last_name = $last_name;
     }
 
-    public function getCivility(): string
+    /**
+     * @return string
+     */
+    public function getCivility()
     {
         return $this->civility;
     }
 
-    public function setCivility(string $civility):void
+    /**
+     * @param string $civility
+     */
+    public function setCivility($civility)
     {
         $this->civility = $civility;
     }
 
-    public function getPseudo(): string
+    /**
+     * @return string
+     */
+    public function getPseudo()
     {
         return $this->pseudo;
     }
 
-    public function setPseudo(string $pseudo):void
+    /**
+     * @param string $pseudo
+     */
+    public function setPseudo($pseudo)
     {
         $this->pseudo = $pseudo;
     }
 
-    public function getMail(): string
+    /**
+     * @return string
+     */
+    public function getMail()
     {
         return $this->mail;
     }
 
-    public function setMail(string $mail):void
+    /**
+     * @param string $mail
+     */
+    public function setMail($mail)
     {
         $this->mail = $mail;
     }
 
-    public function getPassword(): string
+    /**
+     * @return string
+     */
+    public function getPassword()
     {
         return $this->password;
     }
 
-    public function setPassword(string $password):void
+    /**
+     * @param string $password
+     */
+    public function setPassword($password)
     {
         $this->password = $password;
     }
 
-    public function getRatedRecipes(): array
-    {
-        return $this->rated_recipes;
-    }
-
-    public function setRatedRecipes(array $rated_recipes):void
-    {
-        $this->rated_recipes = $rated_recipes;
-    }
-
-    public function getRecordedRecipes(): array
-    {
-        return $this->recorded_recipes;
-    }
-
-    public function setRecordedRecipes(array $recorded_recipes):void
-    {
-        $this->recorded_recipes = $recorded_recipes;
-    }
-
-    public function getPreferencesIngredients(): array
+    /**
+     * @return array
+     */
+    public function getPreferencesIngredients()
     {
         return $this->preferences_ingredients;
     }
 
-    public function setPreferencesCategories(array $preferences_ingredients):void
+    /**
+     * @param array $preferences_ingredients
+     */
+    public function setPreferencesIngredients($preferences_ingredients)
     {
         $this->preferences_ingredients = $preferences_ingredients;
+    }
+
+    /**
+     * @return array|array[]
+     */
+    public function getRatedRecipes()
+    {
+        return $this->rated_recipes;
+    }
+
+    /**
+     * @param array|array[] $rated_recipes
+     */
+    public function setRatedRecipes($rated_recipes)
+    {
+        $this->rated_recipes = $rated_recipes;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRecordedRecipes()
+    {
+        return $this->recorded_recipes;
+    }
+
+    /**
+     * @param array $recorded_recipes
+     */
+    public function setRecordedRecipes($recorded_recipes)
+    {
+        $this->recorded_recipes = $recorded_recipes;
     }
 }

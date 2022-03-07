@@ -1,0 +1,13 @@
+#modified-password-link{
+}
+
+#modified-password-link:hover{
+    text-decoration:underline;
+}
+
+#change-password-block{
+    display:none;
+}
+#error-password-confirm{
+    display:none;
+}

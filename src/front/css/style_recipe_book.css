@@ -1,0 +1,31 @@
+
+.recipe-book-link{
+    font-size: 18px;
+}
+.recipe-book-div{
+    float:left;
+    word-wrap: break-word;
+    width:80%;
+}
+
+@media screen and (max-width:1200px) {
+    .recipe-book-div{
+        float:left;
+        word-wrap: break-word;
+        width:75%;
+    }
+    .recipe-book-link{
+        font-size: 14px;
+    }
+}
+
+@media screen and (max-width:470px) {
+    .recipe-book-div{
+        float:left;
+        word-wrap: break-word;
+        width:61%;
+    }
+    .recipe-book-link{
+        font-size: 14px;
+    }
+}

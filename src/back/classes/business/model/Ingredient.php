@@ -2,52 +2,78 @@
 
 class Ingredient
 {
-    private int $id;
-    private string $name;
-    private float $score;
+    /**
+     * @var int
+     */
+    private $id;
+    /**
+     * @var string
+     */
+    private $name;
+    /**
+     * @var string
+     */
+    private $url_pic;
 
     /**
      * Ingredient constructor.
+     * @param int $id
+     * @param string $name
+     * @param string $url_pic
      */
-    public function __construct(int $id, string $name, float $score = 0)
+    public function __construct($id, $name, $url_pic="")
     {
         $this->id = $id;
         $this->name = $name;
-        $this->score = $score;
+        $this->url_pic = $url_pic;
     }
 
-    public function incrementScore():void
-    {
-        $this->score = $this->score++;
-    }
-
-    public function getId():int
+    /**
+     * @return int
+     */
+    public function getId()
     {
         return $this->id;
     }
 
-    public function setId(int $id):void
+    /**
+     * @param int $id
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
 
-    public function getName():string
+    /**
+     * @return string
+     */
+    public function getName()
     {
         return $this->name;
     }
 
-    public function setName(string $name):void
+    /**
+     * @param string $name
+     */
+    public function setName($name)
     {
         $this->name = $name;
     }
 
-    public function getScore():float
+    /**
+     * @return string
+     */
+    public function getUrlPic()
     {
-        return $this->score;
+        return $this->url_pic;
     }
 
-    public function setScore(float $score):void
+    /**
+     * @param string $url_pic
+     */
+    public function setUrlPic($url_pic)
     {
-        $this->score = $score;
+        $this->url_pic = $url_pic;
     }
+
 }

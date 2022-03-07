@@ -92,9 +92,21 @@
                                     <li><a href="./about.php">Abous us</a></li>
 									<li><a href="#">Profile</a>
 										<ul class="dropdown">
-											<li><a href="./index.php" data-target="#nutritionIHM">My account</a></li>
-                                            <li><a href="./about.php">My recipe book</a></li>
-                                            <li><a href="#" data-toggle="modal" data-target="#loginIHM">Log in</a></li>   
+                                            <?php
+                                                if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
+                                                    echo "<li><a href='./profil.php'>My account</a></li>";
+                                                }else{
+                                                    echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Mon profil</a></li>";
+                                                }
+                                            ?>
+                                            <li><a href="./recipe-book.php">Mon carnet</a></li>
+                                            <?php
+                                                if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
+                                                    echo "<li><a href='./deconnexion.php'>Log out</a></li>";
+                                                }else{
+                                                    echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Log in</a></li>";
+                                                }
+                                            ?>
                                         </ul>
 									</li>
                                 </ul>
