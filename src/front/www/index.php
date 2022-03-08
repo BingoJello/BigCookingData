@@ -20,10 +20,9 @@
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- The above 2 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js" integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <!-- Title -->
+    <!-- Titre -->
     <title>Delicious | Home</title>
     <!-- Favicon -->
     <link rel="icon" href="../img/core-img/favicon.ico">
@@ -115,7 +114,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="section-heading">
-                        <h3 style="margin-top: 25px">Recipes you might like</h3>
+                        <h3 style="margin-top: 25px">Recettes que vous pourriez aimer</h3>
                     </div>
                 </div>
             </div>
@@ -132,7 +131,7 @@
 		<div class="row">
 			<div class="col-12">
 				<div class="section-heading">
-					<h3 style="margin-top: -150px">Suggested categories</h3>
+					<h3 style="margin-top: -150px">Catégories suggérées</h3>
                 </div>
             </div>
         </div>
@@ -176,8 +175,7 @@
                     <!-- Cta Content -->
                     <div class="cta-content text-center">
                         <h2>Meal Planner</h2>
-                        <p>Eat This Much creates personalized meal plans based on your food preferences. Reach your diet and nutritional goals with our calorie calculator.
-							Create your meal plan right here in seconds.
+                        <p>Créez des plans de repas personnalisés en fonction de vos préférences alimentaires. Atteignez votre régime alimentaire et vos objectifs nutritionnels avec notre calculateur de calories.
 						</p>
                         <a href="./mealPlanner.php" class="btn delicious-btn">Discover</a>
                     </div>
@@ -192,7 +190,7 @@
 		<div class="row">
 			<div class="col-12">
 				<div class="section-heading">
-					<h3 style="margin-top: -50px">Recipes of the day</h3>
+					<h3 style="margin-top: -50px">Recettes du jour</h3>
                 </div>
             </div>
         </div>
@@ -428,19 +426,7 @@
     <!-- ##### Small Recipe Area End ##### -->
 
     <!-- ##### Footer Area Start ##### -->
-    <footer class="footer-area">
-        <div class="container h-100">
-            <div class="row h-100">
-                <div class="col-12 h-100 d-flex flex-wrap align-items-center justify-content-between">
-
-                    <!-- Footer Logo -->
-                    <div class="footer-logo">
-                        <a href="index.php"><img src="../img/core-img/logo.png" alt=""></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <?php include('include/footer.php');?>
     <!-- ##### Footer Area End ##### -->
 
     <!-- ##### All Javascript Files ##### -->

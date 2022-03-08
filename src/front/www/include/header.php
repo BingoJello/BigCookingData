@@ -10,8 +10,8 @@
                             <div id="breakingNewsTicker" class="ticker">
                                 <ul>
                                     <li><a href="#">Hello !</a></li>
-                                    <li><a href="#">Welcome to Delicious.</a></li>
-                                    <li><a href="#">Enjoy your meal.</a></li>
+                                    <li><a href="#">Bienvenue sur Delicioso!.</a></li>
+                                    <li><a href="#">Bon appétit</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -28,7 +28,7 @@
                     <nav class="classy-navbar justify-content-between" id="deliciousNav">
 
                         <!-- Logo -->
-                        <a class="nav-brand" href="index.php"><img src="../img/core-img/logo.png" alt=""></a>
+                        <a class="nav-brand" href="index.php"><img src="../img/core-img/logo-title.png" width="180" height="180" alt=""></a>
 
                         <!-- Navbar Toggler -->
                         <div class="classy-navbar-toggler">
