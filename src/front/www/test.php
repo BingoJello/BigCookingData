@@ -1,58 +1,145 @@
+<?php
+?php
+include('database.php');
+$limit = 4;
+$sql = "SELECT COUNT(id) FROM user_data";
+$rs_result = mysqli_query($conn, $sql);
+$row = mysqli_fetch_row($rs_result);
+$total_records = $row[0];
+$total_pages = ceil($total_records / $limit);
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="description" content="">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js" integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-
-  <!-- Title -->
-    <title>Delicious - Food Blog | Meal Planner</title>
-
-    <!-- Favicon -->
-    <link rel="icon" href="img/core-img/favicon.ico">
-	
-    <!-- Core Stylesheet -->
-	<link rel="stylesheet" href="../css/etm1.css">
-	<link rel="stylesheet" href="../css/css_libs1.css">
-	<link rel="stylesheet" href="../css/style.css">
-	<link rel="stylesheet" href="../css/test.css">
-	
-
-</head>
-
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PHP Pagination AJAX</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<head>
 <body>
-	<div class="component breadcrumbs" data-tracking-zone="breadcrumbs">
-		<nav class="breadcrumbs__container" aria-label="Breadcrumb">
-			<ol class="breadcrumbs__list">
-				<li class="breadcrumbs__item">
-					<a class="breadcrumbs__link" href="https://www.allrecipes.com">
-						<span class="breadcrumbs__title">Home</span>
-					</a>
-					<span class="icon breadcrumbs__icon">
-						<i class="far fa-angle-right"></i>
-					</span>
-				</li>
-				<li class="breadcrumbs__item"><a class="breadcrumbs__link" href="https://www.allrecipes.com/recipes/"><span class="breadcrumbs__title">Recipes</span></a><span class="icon breadcrumbs__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.578 16.359l4.594-4.594-4.594-4.594 1.406-1.406 6 6-6 6z"></path></svg> </span></li> <li class="breadcrumbs__item"><a class="breadcrumbs__link" href="https://www.allrecipes.com/recipes/80/main-dish/"><span class="breadcrumbs__title">Main Dishes</span></a><span class="icon breadcrumbs__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.578 16.359l4.594-4.594-4.594-4.594 1.406-1.406 6 6-6 6z"></path></svg> </span></li> <li class="breadcrumbs__item"><a class="breadcrumbs__link" href="https://www.allrecipes.com/recipes/17245/main-dish/pasta/"><span class="breadcrumbs__title">Pasta</span></a><span class="icon breadcrumbs__icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.578 16.359l4.594-4.594-4.594-4.594 1.406-1.406 6 6-6 6z"></path></svg> </span></li> <li class="breadcrumbs__item breadcrumbs__item--last"><a class="breadcrumbs__link breadcrumbs__link--last" href="https://www.allrecipes.com/recipes/913/main-dish/pasta/shrimp/"><span class="breadcrumbs__title">Shrimp</span></a><span class="icon breadcrumbs__icon breadcrumbs__icon--last"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.578 16.359l4.594-4.594-4.594-4.594 1.406-1.406 6 6-6 6z"></path></svg> </span></li> <li class="breadcrumbs__item visually-hidden" aria-current="page">Lemon Shrimp Pasta</li></ol></nav><span class="breadcrumbs-align-shift"></span></div>
+    <div class="container">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-6">
+						<h2>Manage <b>Employees</b>Add New Employee</span></a>
+						<a href="#deleteEmployeeModal" class="btn btn-danger" data-toggle="modal"><i class="material-icons"></i> <span>Delete</span></a>
+					</div>
+                </div>
+            </div>
+			<div id="target-content">loading...</div>
+
+			<div class="clearfix">
+
+					<ul class="pagination">
+                    <?php
+
+					if(!empty($total_pages)){
+						for($i=1; $i<=$total_pages; $i++){
+								if($i == 1){
+									?>
+								<li class="pageitem active" id="<?php echo $i;?>"><a href="JavaScript:Void(0);" data-id="<?php echo $i;?>" class="page-link" ><?php echo $i;?></a></li>
+
+								<?php
+								}
+								else{
+									?>
+								<li class="pageitem" id="<?php echo $i;?>"><a href="JavaScript:Void(0);" class="page-link" data-id="<?php echo $i;?>"><?php echo $i;?></a></li>
+								<?php
+								}
+						}
+					}
+								?>
+					</ul>
+               </ul>
+            </div>
+        </div>
+    </div>
+	<script>
+	$(document).ready(function() {
+		$("#target-content").load("pagination.php?page=1");
+		$(".page-link").click(function(){
+			var id = $(this).attr("data-id");
+			var select_id = $(this).parent().attr("id");
+			$.ajax({
+				url: "pagination.php",
+				type: "GET",
+				data: {
+					page : id
+				},
+				cache: false,
+				success: function(dataResult){
+					$("#target-content").html(dataResult);
+					$(".pageitem").removeClass("active");
+					$("#"+select_id).addClass("active");
+
+				}
+			});
+		});
+    });
+</script>
 
 
 
-    <!-- ##### All Javascript Files ##### -->
-    <!-- jQuery-2.2.4 js -->
-    <script src="../js/jquery/jquery-2.2.4.min.js"></script>
-    <!-- Bootstrap js -->
-    <script src="../js/bootstrap/bootstrap.min.js"></script>
-    <!-- All Plugins js -->
-    <script src="../js/plugins/plugins.js"></script>
-    <!-- Active js -->
-    <script src="../js/tools/active/active2.js"></script>
-	<script src="../js/canvas.js"></script>
+ //var recipes = JSON.stringify(<?php echo $recipes_json; ?>);
+            var recipes="toto";
+            $("#target-content").load("pagination.php", {page:1, recipes:recipes});
+            $(".page-link").click(function(){
+                var id = $(this).attr("data-id");
+                var select_id = $(this).parent().attr("id");
+                $.ajax({
+                    url: "pagination.php",
+                    type: "POST",
+                    data: {
+                        page : id,
+                        recipes : recipes
+                    },
+                    dataType: 'json',
+                    cache: false,
+                    success: function(dataResult){
+                        $("#target-content").html(dataResult);
+                        $(".pageitem").removeClass("active");
+                        $("#"+select_id).addClass("active");
 
-	<script src="../js/categoryRecipes.js"></script>
-	
+                    }
+                });
+            });
+
+
+
+
+
+
+
+
+            $k = $limit+$start_from;
+for($i=$start_from;$i<$k;$i++){
+?>
+<div class='col-12 col-sm-6 col-lg-4'>
+    <div class='single-best-recipe-area mb-30'>
+        <img src=<?php echo $recipes[$i]->getUrlPic();?> width='210' height='210' alt=''>
+        <div class='recipe-content'>
+            <a href='recipe-post.php'>
+                <h5><?php echo $recipes[$i]->getName();?></h5>
+            </a>
+            <div class='ratings'>
+                <i class='fa fa-star' aria-hidden='true'></i>
+                <i class='fa fa-star' aria-hidden='true'></i>
+                <i class='fa fa-star'' aria-hidden='true'></i>
+                <i class='fa fa-star' aria-hidden='true''></i>
+                <i class='fa fa-star-o' aria-hidden='true'></i>
+            </div>
+        </div>
+    </div>
+</div>
+<?php }?>
 
 </body>
 </html>

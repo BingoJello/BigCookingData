@@ -6,11 +6,26 @@
     require_once('../../back/classes/database/DatabaseConnection.php');
     require_once('../../back/classes/database/persistence/RecipePersistence.php');
     include('../../back/functions/functions.php');
+    include('../../back/functions/functions_mysql.php');
 ?>
 
 <?php
-    if(isset($_SESSION['client']) and !empty($_SESSION['client']))
-    $client = unserialize($_SESSION['client']);
+    if(isset($_SESSION['client']) and !empty($_SESSION['client'])) {
+        $client = unserialize($_SESSION['client']);
+    }
+    $recipes = RecipePersistence::getRecipes();
+    $recipes_array = array();
+    $i =0;
+    foreach($recipes as $recipe){
+        $recipes_array[$i]['id_recipe'] = $recipe->getId();
+        $recipes_array[$i]['name'] = $recipe->getName();
+        $recipes_array[$i]['url_pic'] = $recipe->getUrlPic();
+        $i++;
+    }
+
+    $recipes_json = json_encode($recipes_array, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES );
+    $limit = 9;
+    $total_pages = ceil(count($recipes) / $limit);
 ?>
 
 <!DOCTYPE html>
@@ -119,8 +134,33 @@
                 </div>
             </div>
 
-            <div class="row">
-                <?php print_recipes() ?>
+            <div class="row" id="target-content">
+            </div>
+
+            <div class="container-pagination">
+                <div class="pagination p1">
+                    <ul>
+                        <p id="object-recipes" style="display:none" data-id="<?php echo $recipes ?>"></p>
+                        <?php
+                        if(!empty($total_pages)){
+                            for($i=1; $i<=$total_pages; $i++){
+                                if($i == 1){
+                                    ?>
+                                    <li style="text-decoration: none;font-size: 14px;display:inline-block" class="pageitem active" id="<?php echo $i;?>">
+                                        <a href="JavaScript:Void(0);" data-id="<?php echo $i;?>" class="page-link" ><?php echo $i;?></a>
+                                    </li>
+                                    <?php
+                                }
+                                else{
+                                    ?>
+                                    <li style="display:inline-block" class="pageitem" id="<?php echo $i;?>"><a href="JavaScript:Void(0);" class="page-link" data-id="<?php echo $i;?>"><?php echo $i;?></a></li>
+                                    <?php
+                                }
+                            }
+                        }
+                        ?>
+                    </ul>
+                </div>
             </div>
         </div>
     </section>
@@ -165,7 +205,7 @@
             </div>
         </div>
     </section>
-    <!-- ##### Top Catagory Area End ##### -->
+    <!-- ##### Top Category Area End ##### -->
 
     <!-- ##### CTA Area Start ##### -->
     <section class="cta-area bg-img bg-overlay" style="background-image: url(../img/bg-img/bg4.jpg);">
@@ -442,5 +482,60 @@
     <script src="../js/tools/active/active.js"></script>
 	
 	<?php include('./include/connexion_profil.php'); ?>
+
+    <script>
+        $(document).ready(function() {
+            let Datas = new FormData();
+            Datas.append("page", 1);
+            Datas.append("recipes", JSON.stringify(<?php echo $recipes_json; ?>));
+
+            let request = $.ajax({
+                type: "POST",
+                url: "pagination.php",
+                data:Datas,
+                cache: false,
+                contentType: false,
+                processData: false,
+            });
+
+            request.done(function (output_success) {
+                $("#target-content").html(output_success);
+            });
+            request.fail(function (http_error) {
+                //Code à jouer en cas d'éxécution en erreur du script du PHP
+                let server_msg = http_error.responseText;
+                let code = http_error.status;
+                let code_label = http_error.statusText;
+                alert("Erreur "+code+" ("+code_label+") : "  + server_msg);
+            });
+
+            $(".page-link").click(function(){
+                let Datas = new FormData();
+                Datas.append("page", $(this).attr("data-id"));
+                Datas.append("recipes", JSON.stringify(<?php echo $recipes_json; ?>));
+                let request = $.ajax({
+                    url: "pagination.php",
+                    type: "POST",
+                    data: Datas,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                });
+
+                request.done(function (output_success) {
+                    $("#target-content").html(output_success);
+                    $(".pageitem").removeClass("active");
+                    $("#"+select_id).addClass("active");
+                });
+                request.fail(function (http_error) {
+                    //Code à jouer en cas d'éxécution en erreur du script du PHP
+                    let server_msg = http_error.responseText;
+                    let code = http_error.status;
+                    let code_label = http_error.statusText;
+                    alert("Erreur "+code+" ("+code_label+") : "  + server_msg);
+                });
+            });
+        });
+    </script>
 </body>
 </html>

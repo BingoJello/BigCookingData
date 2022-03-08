@@ -226,7 +226,7 @@ class RecipePersistence
     public static function getRecipes()
     {
         $recipes = array();
-        $query="SELECT * FROM recipe";
+        $query="SELECT * FROM recipe LIMIT 40";
 
         $result = DatabaseQuery::selectQuery($query);
 
