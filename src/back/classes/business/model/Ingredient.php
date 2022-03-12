@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Class Ingredient
+ * @author arthur mimouni
+ */
 class Ingredient
 {
     /**

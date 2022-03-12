@@ -17,6 +17,8 @@
 	<link rel="stylesheet" href="../css/etm1.css">
 	<link rel="stylesheet" href="../css/css_libs1.css">
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style_recipe.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.2/css/all.css">
 </head>
 
 <body>
@@ -66,24 +68,22 @@
                 <div class="row">
                     <div class="col-12 col-md-8">
                         <div class="recipe-headline my-5">
-                            <span>April 05, 2018</span>
                             <h2>Vegetarian cheese salad</h2>
 							<p style="margin-top:-20px">This is a very lightly sauced pasta with lemon and shrimp. It's refreshing as well as filling.</p>
                             <div class="recipe-duration">
-                                <h6>Prep: 15 mins</h6>
-                                <h6>Cook: 30 mins</h6>
-                                <h6>Yields: 8 Servings</h6>
+                                <h6>Préparation: 15 min</h6>
+                                <h6>Cuisson: 30 min</h6>
+                                <h6>Repos: -</h6>
 								<div class="recipe-ratings my-4">
 									<div class="ratings">
 										<i class="fa fa-star" aria-hidden="true"></i>
 										<i class="fa fa-star" aria-hidden="true"></i>
 										<i class="fa fa-star" aria-hidden="true"></i>
 										<i class="fa fa-star" aria-hidden="true"></i>
-										<i class="fa fa-star-o" aria-hidden="true"></i>
+										<i class="fa fa-star" style="color:grey" aria-hidden="true"></i>
 										<label>3.2/5</label>
 									</div>
 								</div>
-								<label><strong>Per Serving</strong> : 585 calories; protein : 39.4g; carbohydrates : 65.5g; fat : 18.5g; cholesterol : 287.2mg; sodium : 1157.6mg. <a href="#" style="text-decoration: underline;">See Full Nutrition</a></label>
                             </div>
                         </div>
                     </div>
@@ -123,7 +123,10 @@
                         <div class="ingredients">
                             <h4>Ingredients</h4>
                             <div>
-                                <label class="ingredient-label">4 Tbsp (57 gr) butter</label>
+                                <label class="ingredient-label">
+                                    <img src="https://assets.afcdn.com/recipe/20170607/67459_w320h320c1cx350cy350.webp" height="40" width="40">
+                                    4 Tbsp (57 gr) butter
+                                </label>
                             </div>
 
                             <div>
@@ -156,58 +159,68 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="row">
-                    <div class="col-12">
-                        <div class="section-heading text-left">
-                            <h3>Leave a comment</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-12">
-                        <div class="contact-form-area">
-                            <form action="#" method="post">
-                                <div class="row">
-                                    <div class="col-12 col-lg-6">
-                                        <input type="text" class="form-control" id="name" placeholder="Name">
+                <a href="#" data-toggle='modal' data-target='#postCommentaryIHM' class="btn delicious-btn" data-animation="fadeInUp" data-delay="1000ms">Donnez votre avis</a>
+                <div class="commentary-container">
+                    <span style="margin-left: 20px">
+                        <h2 class="nbr-commentary-front">Commentaires (12)</h2>
+                    </span>
+                    <div class="list-commentary">
+                        <div class="commentary">
+                            <div class="name-rating-container">
+                                <div class="name-rating">
+                                    <div class="pseudo">
+                                        <p class="name-pseudo">Name pseudo </p>
                                     </div>
-                                    <div class="col-12 col-lg-6">
-                                        <input type="email" class="form-control" id="email" placeholder="E-mail">
-                                    </div>
-                                    <div class="col-12">
-                                        <input type="text" class="form-control" id="subject" placeholder="Subject">
-                                    </div>
-                                    <div class="col-12">
-                                        <textarea name="message" class="form-control" id="message" cols="30" rows="10" placeholder="Message"></textarea>
-                                    </div>
-                                    <div class="col-12">
-                                        <button class="btn delicious-btn mt-30" type="submit">Post Comments</button>
+                                    <div class="rating-commentary">
+                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                        <i class="fa fa-star empty" aria-hidden="true"></i>
+                                        <label>3.2/5</label>
                                     </div>
                                 </div>
-                            </form>
+                            </div>
+                            <div class="date-commentary">
+                                <p class="date-commentary-font">13/08/2018 11:36</p>
+                            </div>
+                            <div class="commentary-text">
+                                <p class="commentary-text-font">Je me suis bien régalé, en ajoutant une escalope de dinde et un oeuf c'était parfait. </p>
+                            </div>
+                        </div>
+                        <hr>
+                        <div class="commentary">
+                            <div class="name-rating-container">
+                                <div class="name-rating">
+                                    <div class="pseudo">
+                                        <p class="name-pseudo">Name pseudo </p>
+                                    </div>
+                                    <div class="rating-commentary">
+                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                        <i class="fa fa-star" aria-hidden="true"></i>
+                                        <i class="fa fa-star-o" aria-hidden="true"></i>
+                                        <label>3.2/5</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="date-commentary">
+                                <p class="date-commentary-font">13/08/2018 11:36</p>
+                            </div>
+                            <div class="commentary-text">
+                                <p class="commentary-text-font">Je me suis bien régalé, en ajoutant une escalope de dinde et un oeuf c'était parfait. </p>
+                            </div>
                         </div>
                     </div>
+                    <a href="#" data-toggle='modal' data-target='#allCommentaryIHM' class="btn delicious-btn" data-animation="fadeInUp" data-delay="1000ms">Voir plus</a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ##### Footer Area Start ##### -->
-    <footer class="footer-area">
-        <div class="container h-100">
-            <div class="row h-100">
-                <div class="col-12 h-100 d-flex flex-wrap align-items-center justify-content-between">
-
-                    <!-- Footer Logo -->
-                    <div class="footer-logo">
-                        <a href="index.php"><img src="../img/core-img/logo.png" alt=""></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <?php include('include/footer.php');?>
     <!-- ##### Footer Area End ##### -->
 
     <!-- ##### All Javascript Files ##### -->
@@ -223,4 +236,6 @@
     <script src="../js/tools/active/active.js"></script>
 	
 	<?php include('./include/connexion_profil.php'); ?>
+    <?php include('./include/post-commentary.php')?>
+    <?php include ('./include/all-commentary.php');?>
 </body>

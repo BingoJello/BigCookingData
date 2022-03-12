@@ -292,18 +292,7 @@
     </div>
 
     <!-- ##### Footer Area Start ##### -->
-    <footer class="footer-area">
-        <div class="container h-100">
-            <div class="row h-100">
-                <div class="col-12 h-100 d-flex flex-wrap align-items-center justify-content-between">
-                    <!-- Footer Logo -->
-                    <div class="footer-logo">
-                        <a href="index.php"><img src="../img/core-img/logo.png" alt=""></a>
-                    </div> 
-                </div>
-            </div>
-        </div>
-    </footer>
+    <?php include('include/footer.php');?>
     <!-- ##### Footer Area End ##### -->
 
    <!-- ##### All Javascript Files ##### -->

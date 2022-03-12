@@ -1,6 +1,5 @@
 <?php
 
-require('src/back/classes/business/model/Client.php');
 class TestSuggestion
 {
 

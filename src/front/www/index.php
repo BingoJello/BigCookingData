@@ -1,16 +1,34 @@
 <?php
     session_start();
-    require_once('../../back/classes/business/model/Ingredient.php');
+    require_once('../../back/classes/business/model/Client.php');
     require_once('../../back/classes/business/model/Recipe.php');
+    require_once('../../back/classes/business/model/Ingredient.php');
     require_once('../../back/classes/database/DatabaseQuery.php');
     require_once('../../back/classes/database/DatabaseConnection.php');
+    require_once('../../back/classes/business/process/RecommenderSystem.php');
+    require_once('../../back/classes/business/process/ContentBasedRecommenderSystem.php');
     require_once('../../back/classes/database/persistence/RecipePersistence.php');
-    include('../../back/functions/functions.php');
+    require_once('../../back/classes/database/persistence/ClientPersistence.php');
+    include('../../back/functions/functions_utils.php');
+    include('../../back/functions/functions_recipes.php');
+    include('../../back/functions/functions_client.php');
+    include('../../back/utils/constants.php');
 ?>
 
 <?php
-    if(isset($_SESSION['client']) and !empty($_SESSION['client']))
-    $client = unserialize($_SESSION['client']);
+    if(isset($_SESSION['client']) and !empty($_SESSION['client'])) {
+        $_SESSION['visualization'] = array(89, 90, 64);
+        $client = getClient();
+        $recipes = getSuggestedRecipes($client, $_SESSION);
+        $json_recipes = getJsonRecipes($recipes);
+        $limit = LIMIT_PAGINATION;
+        $total_pages = ceil(count($recipes['recipe']) / $limit);
+    }else{
+        $recipes = getRandomRecipes();
+        $json_recipes = getJsonRecipes($recipes);
+        $limit = LIMIT_PAGINATION;
+        $total_pages = ceil(count($recipes) / $limit);
+    }
 ?>
 
 <!DOCTYPE html>
@@ -20,10 +38,9 @@
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- The above 2 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js" integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <!-- Title -->
+    <!-- Titre -->
     <title>Delicious | Home</title>
     <!-- Favicon -->
     <link rel="icon" href="../img/core-img/favicon.ico">
@@ -115,13 +132,23 @@
             <div class="row">
                 <div class="col-12">
                     <div class="section-heading">
-                        <h3 style="margin-top: 25px">Recipes you might like</h3>
+                        <h3 style="margin-top: 25px">Recettes que vous pourriez aimer</h3>
                     </div>
                 </div>
             </div>
 
-            <div class="row">
-                <?php print_recipes() ?>
+            <div class="row" id="target-content">
+            </div>
+
+            <div class="container-pagination">
+                <div class="pagination p1">
+                    <ul>
+                        <p id="object-recipes" style="display:none" data-id="<?php echo $recipes['recipe'] ?>"></p>
+                        <?php
+                            printPagination($total_pages);
+                        ?>
+                    </ul>
+                </div>
             </div>
         </div>
     </section>
@@ -132,7 +159,7 @@
 		<div class="row">
 			<div class="col-12">
 				<div class="section-heading">
-					<h3 style="margin-top: -150px">Suggested categories</h3>
+					<h3 style="margin-top: -150px">Catégories suggérées</h3>
                 </div>
             </div>
         </div>
@@ -166,7 +193,7 @@
             </div>
         </div>
     </section>
-    <!-- ##### Top Catagory Area End ##### -->
+    <!-- ##### Top Category Area End ##### -->
 
     <!-- ##### CTA Area Start ##### -->
     <section class="cta-area bg-img bg-overlay" style="background-image: url(../img/bg-img/bg4.jpg);">
@@ -176,8 +203,7 @@
                     <!-- Cta Content -->
                     <div class="cta-content text-center">
                         <h2>Meal Planner</h2>
-                        <p>Eat This Much creates personalized meal plans based on your food preferences. Reach your diet and nutritional goals with our calorie calculator.
-							Create your meal plan right here in seconds.
+                        <p>Créez des plans de repas personnalisés en fonction de vos préférences alimentaires. Atteignez votre régime alimentaire et vos objectifs nutritionnels avec notre calculateur de calories.
 						</p>
                         <a href="./mealPlanner.php" class="btn delicious-btn">Discover</a>
                     </div>
@@ -192,7 +218,7 @@
 		<div class="row">
 			<div class="col-12">
 				<div class="section-heading">
-					<h3 style="margin-top: -50px">Recipes of the day</h3>
+					<h3 style="margin-top: -50px">Recettes du jour</h3>
                 </div>
             </div>
         </div>
@@ -428,19 +454,7 @@
     <!-- ##### Small Recipe Area End ##### -->
 
     <!-- ##### Footer Area Start ##### -->
-    <footer class="footer-area">
-        <div class="container h-100">
-            <div class="row h-100">
-                <div class="col-12 h-100 d-flex flex-wrap align-items-center justify-content-between">
-
-                    <!-- Footer Logo -->
-                    <div class="footer-logo">
-                        <a href="index.php"><img src="../img/core-img/logo.png" alt=""></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <?php include('include/footer.php');?>
     <!-- ##### Footer Area End ##### -->
 
     <!-- ##### All Javascript Files ##### -->
@@ -456,5 +470,60 @@
     <script src="../js/tools/active/active.js"></script>
 	
 	<?php include('./include/connexion_profil.php'); ?>
+
+    <script>
+        $(document).ready(function() {
+            let Datas = new FormData();
+            Datas.append("page", 1);
+            Datas.append("recipes", JSON.stringify(<?php echo $json_recipes; ?>));
+
+            let request = $.ajax({
+                type: "POST",
+                url: "pagination.php",
+                data:Datas,
+                cache: false,
+                contentType: false,
+                processData: false,
+            });
+
+            request.done(function (output_success) {
+                $("#target-content").html(output_success);
+            });
+            request.fail(function (http_error) {
+                //Code à jouer en cas d'éxécution en erreur du script du PHP
+                let server_msg = http_error.responseText;
+                let code = http_error.status;
+                let code_label = http_error.statusText;
+                alert("Erreur "+code+" ("+code_label+") : "  + server_msg);
+            });
+
+            $(".page-link").click(function(){
+                let Datas = new FormData();
+                Datas.append("page", $(this).attr("data-id"));
+                Datas.append("recipes", JSON.stringify(<?php echo $json_recipes; ?>));
+                let request = $.ajax({
+                    url: "pagination.php",
+                    type: "POST",
+                    data: Datas,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                });
+
+                request.done(function (output_success) {
+                    $("#target-content").html(output_success);
+                    $(".pageitem").removeClass("active");
+                    $("#"+select_id).addClass("active");
+                });
+                request.fail(function (http_error) {
+                    //Code à jouer en cas d'éxécution en erreur du script du PHP
+                    let server_msg = http_error.responseText;
+                    let code = http_error.status;
+                    let code_label = http_error.statusText;
+                    alert("Erreur "+code+" ("+code_label+") : "  + server_msg);
+                });
+            });
+        });
+    </script>
 </body>
 </html>

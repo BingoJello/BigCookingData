@@ -70,18 +70,18 @@ function registerInscriptionClient($pseudo,$civility,$mail,$password,$password_c
  * @param $password
  * @throws Exception
  */
-    function connexionToProfil($email,$password)
-    {
-        $client = ClientPersistence::getClient($email, $password);
+function connexionToProfil($email,$password)
+{
+    $client = ClientPersistence::getClient($email, $password);
 
-        if (null == $client) {
-            header('location:./connexion.php?error=Erreur dauthentification. Vérifier votre mail ou mot de passe.');
-        }
-        else {
-            $_SESSION['client'] = serialize($client);
-            header('location:./profil.php');
-        }
+    if (null == $client) {
+        header('location:./connexion.php?error=Erreur dauthentification. Vérifier votre mail ou mot de passe.');
     }
+    else {
+        $_SESSION['client'] = serialize($client);
+        header('location:./profil.php');
+    }
+}
 ?>
 <?php
 /**

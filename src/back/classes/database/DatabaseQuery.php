@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Class DatabaseQuery
+ * @author arthur mimouni
+ */
 class DatabaseQuery
 {
     /**

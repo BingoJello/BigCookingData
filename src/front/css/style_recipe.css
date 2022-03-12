@@ -1,0 +1,73 @@
+.opinion-content{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+}
+
+.opinion-content .text{
+    font-size:25px;
+    color:#666;
+    font-weight:500;
+}
+
+.opinion-content .star-widget .input-star{
+    display:none;
+}
+
+.star-widget label{
+    font-size:40px;
+    color:#444;
+    padding:10px;
+    float:right;
+    transition:all 0.2s ease;
+}
+
+.input-star:not(:checked) ~ label:hover,
+.input-star:not(:checked) ~ label:hover ~ label{
+    color: #fd4;
+}
+
+.input-star:checked ~ label{
+    color: #fd4;
+}
+
+.input-star#rate-5:checked ~ label{
+    color: #fe7;
+    text-shadow: 0 0 20px #952;
+}
+
+.input-star#rate-1:checked ~ .header-star:before{
+    content: "Je deteste";
+}
+.input-star#rate-2:checked ~ .header-star:before{
+    content: "Je n'aime pas";
+}
+.input-star#rate-3:checked ~ .header-star:before{
+    content: "J'aime";
+}
+.input-star#rate-4:checked ~ .header-star:before{
+    content: "J'aime beaucoup";
+}
+.input-star#rate-5:checked ~ .header-star:before{
+    content: "J'adore";
+}
+
+.input-star:checked ~ .btn{
+    display:block;
+}
+
+.opinion-content .btn{
+    display:none;
+}
+
+
+.header-star{
+    width:100%;
+    font-size:25px;
+    color:#fe7;
+    font-weight:500;
+    margin: 5px 0 20px 0;
+    text-align:center;
+    transition: all 0.2s ease;
+}
