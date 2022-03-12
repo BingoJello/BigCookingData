@@ -1,10 +1,17 @@
 <?php
 
+/**
+ * Class ClientPersistence
+ * @author arthur mimouni
+ */
 class ClientPersistence
 {
-    //Select method
+    /*******************
+     * SELECT Methods
+     ******************/
 
     /**
+     * @brief Récupère un client
      * @param string $mail
      * @param string $password
      * @return Client|null
@@ -26,6 +33,7 @@ class ClientPersistence
     }
 
     /**
+     * @brief Récupère les préférences ingrédients du client
      * @param int $id_client
      * @return array
      */
@@ -47,6 +55,7 @@ class ClientPersistence
     }
 
     /**
+     * @brief Récupère le dernier ID des clients
      * @return int
      */
     public static function getLastIdClient()
@@ -61,6 +70,7 @@ class ClientPersistence
     }
 
     /**
+     * @brief Vérifie si un client existe
      * @param $email
      * @param $password
      * @param $pseudo
@@ -87,9 +97,12 @@ class ClientPersistence
         }
     }
 
-    //insert methods
+    /*******************
+     * INSERT Methods
+     ******************/
 
     /**
+     * @brief Insére un client
      * @param int $id_client
      * @param string $firstname
      * @param string $lastname
@@ -108,6 +121,7 @@ class ClientPersistence
     }
 
     /**
+     * @brief Insert les préférences ingrédients d'un client
      * @param int $id_client
      * @param array $ingredients
      */
@@ -120,9 +134,12 @@ class ClientPersistence
         }
     }
 
-    //delete methods
+    /*******************
+     * DELETE Methods
+     ******************/
 
     /**
+     * @brief Supprime des ingrédients préférences d'un client
      * @param int $id_client
      * @param array $ingredients
      */
@@ -136,9 +153,12 @@ class ClientPersistence
         DatabaseQuery::insertQuery($query, $params);
     }
 
-    //update methods
+    /*******************
+     * UPDATE Methods
+     ******************/
 
     /**
+     * @brief Met à jour les préférences ingrédients d'un client
      * @param int $id_client
      * @param array $ingredients
      */
@@ -179,6 +199,7 @@ class ClientPersistence
     }
 
     /**
+     * @brief Met à jour le mot de passe d'un client
      * @param int $id_client
      * @param string $password
      */

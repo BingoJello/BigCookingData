@@ -6,7 +6,7 @@
     require_once('../../back/classes/database/DatabaseConnection.php');
     require_once('../../back/classes/database/persistence/ClientPersistence.php');
     require_once('../../back/classes/database/persistence/RecipePersistence.php');
-    include('../../back/functions/functions_mysql.php');
+    include('../../back/functions/functions_recipes.php');
 ?>
 
 <?php

@@ -70,18 +70,18 @@ function registerInscriptionClient($pseudo,$civility,$mail,$password,$password_c
  * @param $password
  * @throws Exception
  */
-    function connexionToProfil($email,$password)
-    {
-        $client = ClientPersistence::getClient($email, $password);
+function connexionToProfil($email,$password)
+{
+    $client = ClientPersistence::getClient($email, $password);
 
-        if (null == $client) {
-            header('location:./connexion.php?error=Erreur dauthentification. Vérifier votre mail ou mot de passe.');
-        }
-        else {
-            $_SESSION['client'] = serialize($client);
-            header('location:./profil.php');
-        }
+    if (null == $client) {
+        header('location:./connexion.php?error=Erreur dauthentification. Vérifier votre mail ou mot de passe.');
     }
+    else {
+        $_SESSION['client'] = serialize($client);
+        header('location:./profil.php');
+    }
+}
 ?>
 <?php
 /**
@@ -100,33 +100,5 @@ function updatePreferencesIngredients($id_client, $ingredients){
  */
 function updatePasswordClient($id_client, $password){
     ClientPersistence::updatePasswordClient($id_client, $password);
-}
-?>
-
-<?php
-function print_recipes(){
-    $recipes = RecipePersistence::getRecipes();
-    $html='';
-    foreach($recipes as $recipe){
-        $url = $recipe->getUrlPic();
-        $html.= "<div class='col-12 col-sm-6 col-lg-4'>
-                    <div class='single-best-recipe-area mb-30'>
-                        <img src='$url' width='210' height='210' alt=''>
-                        <div class='recipe-content'>
-                            <a href='recipe-post.php'>
-                                <h5>".$recipe->getName()."</h5>
-                            </a>
-                            <div class='ratings'>
-                                <i class='fa fa-star' aria-hidden='true'></i>
-                                <i class='fa fa-star' aria-hidden='true'></i>
-                                <i class='fa fa-star'' aria-hidden='true'></i>
-                                <i class='fa fa-star' aria-hidden='true''></i>
-                                <i class='fa fa-star-o' aria-hidden='true'></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>";
-    }
-    echo $html;
 }
 ?>

@@ -1,7 +1,12 @@
 <?php
 
 
-class SuggestionByIngredientsBuilder implements RecipesBuilder
+/**
+ * Class SearchRecommenderSystem
+ * @brief Effectue le processus de création des recommandations de recettes basé sur la recherche du client
+ * @author arthur mimouni
+ */
+class SearchRecommenderSystem implements RecommenderSystem
 {
     /**
      * @var array
@@ -17,7 +22,7 @@ class SuggestionByIngredientsBuilder implements RecipesBuilder
     private $recipes = array();
 
     /**
-     * SuggestionByIngredientsBuilder constructor.
+     * SearchRecommenderSystem constructor.
      * @param array $ingredients_include
      * @param array $ingredients_exclude
      */

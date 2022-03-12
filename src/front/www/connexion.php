@@ -5,7 +5,7 @@
     require_once('../../back/classes/database/DatabaseQuery.php');
     require_once('../../back/classes/database/DatabaseConnection.php');
     require_once('../../back/classes/database/persistence/ClientPersistence.php');
-    include('../../back/functions/functions_mysql.php');
+    include('../../back/functions/functions_client.php');
 ?>
 
 <?php

@@ -1,3 +1,9 @@
+<?php
+    session_start();
+    require_once('../../back/classes/business/model/Client.php');
+    include('../../back/functions/functions_utils.php');
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

@@ -1,31 +1,34 @@
 <?php
     session_start();
-    require_once('../../back/classes/business/model/Ingredient.php');
+    require_once('../../back/classes/business/model/Client.php');
     require_once('../../back/classes/business/model/Recipe.php');
+    require_once('../../back/classes/business/model/Ingredient.php');
     require_once('../../back/classes/database/DatabaseQuery.php');
     require_once('../../back/classes/database/DatabaseConnection.php');
+    require_once('../../back/classes/business/process/RecommenderSystem.php');
+    require_once('../../back/classes/business/process/ContentBasedRecommenderSystem.php');
     require_once('../../back/classes/database/persistence/RecipePersistence.php');
-    include('../../back/functions/functions.php');
-    include('../../back/functions/functions_mysql.php');
+    require_once('../../back/classes/database/persistence/ClientPersistence.php');
+    include('../../back/functions/functions_utils.php');
+    include('../../back/functions/functions_recipes.php');
+    include('../../back/functions/functions_client.php');
+    include('../../back/utils/constants.php');
 ?>
 
 <?php
     if(isset($_SESSION['client']) and !empty($_SESSION['client'])) {
-        $client = unserialize($_SESSION['client']);
+        $_SESSION['visualization'] = array(89, 90, 64);
+        $client = getClient();
+        $recipes = getSuggestedRecipes($client, $_SESSION);
+        $json_recipes = getJsonRecipes($recipes);
+        $limit = LIMIT_PAGINATION;
+        $total_pages = ceil(count($recipes['recipe']) / $limit);
+    }else{
+        $recipes = getRandomRecipes();
+        $json_recipes = getJsonRecipes($recipes);
+        $limit = LIMIT_PAGINATION;
+        $total_pages = ceil(count($recipes) / $limit);
     }
-    $recipes = RecipePersistence::getRecipes();
-    $recipes_array = array();
-    $i =0;
-    foreach($recipes as $recipe){
-        $recipes_array[$i]['id_recipe'] = $recipe->getId();
-        $recipes_array[$i]['name'] = $recipe->getName();
-        $recipes_array[$i]['url_pic'] = $recipe->getUrlPic();
-        $i++;
-    }
-
-    $recipes_json = json_encode($recipes_array, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES );
-    $limit = 9;
-    $total_pages = ceil(count($recipes) / $limit);
 ?>
 
 <!DOCTYPE html>
@@ -140,24 +143,9 @@
             <div class="container-pagination">
                 <div class="pagination p1">
                     <ul>
-                        <p id="object-recipes" style="display:none" data-id="<?php echo $recipes ?>"></p>
+                        <p id="object-recipes" style="display:none" data-id="<?php echo $recipes['recipe'] ?>"></p>
                         <?php
-                        if(!empty($total_pages)){
-                            for($i=1; $i<=$total_pages; $i++){
-                                if($i == 1){
-                                    ?>
-                                    <li style="text-decoration: none;font-size: 14px;display:inline-block" class="pageitem active" id="<?php echo $i;?>">
-                                        <a href="JavaScript:Void(0);" data-id="<?php echo $i;?>" class="page-link" ><?php echo $i;?></a>
-                                    </li>
-                                    <?php
-                                }
-                                else{
-                                    ?>
-                                    <li style="display:inline-block" class="pageitem" id="<?php echo $i;?>"><a href="JavaScript:Void(0);" class="page-link" data-id="<?php echo $i;?>"><?php echo $i;?></a></li>
-                                    <?php
-                                }
-                            }
-                        }
+                            printPagination($total_pages);
                         ?>
                     </ul>
                 </div>
@@ -487,7 +475,7 @@
         $(document).ready(function() {
             let Datas = new FormData();
             Datas.append("page", 1);
-            Datas.append("recipes", JSON.stringify(<?php echo $recipes_json; ?>));
+            Datas.append("recipes", JSON.stringify(<?php echo $json_recipes; ?>));
 
             let request = $.ajax({
                 type: "POST",
@@ -512,7 +500,7 @@
             $(".page-link").click(function(){
                 let Datas = new FormData();
                 Datas.append("page", $(this).attr("data-id"));
-                Datas.append("recipes", JSON.stringify(<?php echo $recipes_json; ?>));
+                Datas.append("recipes", JSON.stringify(<?php echo $json_recipes; ?>));
                 let request = $.ajax({
                     url: "pagination.php",
                     type: "POST",

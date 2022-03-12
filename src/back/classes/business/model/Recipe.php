@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Class Recipe
+ * @author arthur mimouni
+ */
 class Recipe
 {
     /**
@@ -77,8 +81,8 @@ class Recipe
      * @param int $cluster
      */
     public function __construct($id, $name = '', $categories = '', $url_pic = '', $directions = '', $prep_time = 0,
-                                $cook_time = 0, $break_time = 0, $difficulty = '', $budget = '', $serving = 0, $coord='',
-                                $ingredients = array(), $cluster = -1)
+                                $cook_time = 0, $break_time = 0, $difficulty = '', $budget = '', $serving = 0, $cluster = -1,
+                                $coord='', $ingredients = array())
     {
         $this->id = $id;
         $this->name = $name;
@@ -102,8 +106,7 @@ class Recipe
      */
     public function hasIngredient($id_ingredient):bool
     {
-        foreach ($this->ingredients as $ingredient)
-        {
+        foreach ($this->ingredients as $ingredient) {
             if($ingredient->getId() == $id_ingredient)
                 return true;
         }
