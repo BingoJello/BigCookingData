@@ -21,3 +21,19 @@ function getRandomRecipes(){
     return RecipePersistence::getRandomRecipes(NBR_RANDOM_RECIPES);
 }
 ?>
+
+<?php
+function getRecipe($id_recipe){
+    return RecipePersistence::getRecipe($id_recipe);
+}
+?>
+
+<?php
+/**
+ * @param $id_recipe
+ * @return array
+ */
+function getAssessRecipe($id_recipe){
+    return RecipePersistence::getAllAssessedRecipe($id_recipe);
+}
+?>

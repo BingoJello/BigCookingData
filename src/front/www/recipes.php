@@ -14,7 +14,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title -->
-    <title>Delicious - Food Blog Template | Recipes</title>
+    <title>Delicioso! | Recettes</title>
 
     <!-- Favicon -->
     <link rel="icon" href="../img/core-img/favicon.ico">
@@ -42,7 +42,7 @@
             <div class="row">
                 <div class="col-12">
                     <form action="#" method="post">
-                        <input type="search" name="search" placeholder="Type any keywords...">
+                        <input type="search" name="search" placeholder="Tapez un mot-clé...">
                         <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                     </form>
                 </div>
@@ -58,7 +58,7 @@
             <div class="row h-100 align-items-center">
                 <div class="col-12">
                     <div class="breadcumb-text text-center">
-                        <h2>Recipes</h2>
+                        <h2>Recettes</h2>
                     </div>
                 </div>
             </div>
@@ -73,17 +73,17 @@
                 <form action="#" method="post">
 					<div class="row">
 						<div class="col 12, col-lg-3">
-							<input class="input-lg" type="text" value="" data-role="tagsinput" placeholder="Include ingredients"></input>
+							<input class="input-lg" type="text" value="" data-role="tagsinput" placeholder="ingredients inclus"></input>
 						</div>
 						<div class="col 12, col-lg-3">
-							<input class="input-lg text-success" type="text" value="" data-role="tagsinput" placeholder="Exclude ingredients"></input>
+							<input class="input-lg text-success" type="text" value="" data-role="tagsinput" placeholder="ingredients exclus"></input>
 						</div>
 
                         <div class="col-12 col-lg-3">
-                            <input class="input-search" type="search" name="search" placeholder="Search Recipes">
+                            <input class="input-search" type="search" name="search" placeholder="Recherchez des recettes">
                         </div>
                         <div class="col-12 col-lg-3 text-right">
-                            <button type="submit" class="btn delicious-btn">Search</button>
+                            <button type="submit" class="btn delicious-btn">Recherche</button>
                         </div>
                     </div>
                 </form>

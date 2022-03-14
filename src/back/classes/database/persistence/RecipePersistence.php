@@ -207,12 +207,10 @@ class RecipePersistence
                 INNER JOIN contain_recipe_ingredient AS cri ON cri.id_ingredient = ingredient.id_ingredient
                 INNER JOIN recipe ON recipe.id_recipe = cri.id_recipe
                 WHERE recipe.id_recipe IN(".$id_recipes.")";
-
         $result = DatabaseQuery::selectQuery($query);
 
         foreach($result as $row)
             array_push($ingredients, new Ingredient($row['id_ingredient'], $row['name'], $row['url_pic']));
-
         return $ingredients;
     }
 
@@ -264,6 +262,29 @@ class RecipePersistence
     }
 
     /**
+     * @brief Récupère l'ensemble des évaluations de la recette
+     * @param $id_recipe
+     * @return array
+     */
+    public static function getAllAssessedRecipe($id_recipe)
+    {
+        $assessed_recipe = array();
+
+        $query="SELECT client.pseudo, assess.rating, assess.commentary, assess.date_assess FROM assess 
+                INNER JOIN recipe ON recipe.id_recipe = assess.id_recipe
+                INNER JOIN client ON client.id_client = assess.id_client
+                WHERE recipe.id_recipe = ?";
+        $params=[$id_recipe];
+
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row)
+            array_push($assessed_recipe, new Assess($row['pseudo'], $row['rating'], $row['commentary'], $row['date_assess']));
+
+        return $assessed_recipe;
+    }
+
+    /**
      * @brief Récupère des recettes aléatoires
      * @param int $limit
      * @return array
@@ -282,6 +303,26 @@ class RecipePersistence
         }
 
         return $recipes;
+    }
+
+    /**
+     * @brief Récupère la recette
+     * @param $id_recipe
+     * @return Recipe
+     */
+    public static function getRecipe($id_recipe){
+        $query="SELECT * FROM recipe WHERE recipe.id_recipe = ?";
+        $params = [$id_recipe];
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            $recipe = new Recipe($row['id_recipe'], $row['name'], $row['categories'], $row['url_pic'],
+                $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                $row['serving'], $row['clusterNumber'], $row['coordonnees']);
+        }
+        $recipe->setIngredients(self::getIngredientsByRecipes([$id_recipe]));
+
+        return $recipe;
     }
 
     /**

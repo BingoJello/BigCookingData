@@ -7,6 +7,7 @@
     require_once('../../back/classes/database/persistence/ClientPersistence.php');
     require_once('../../back/classes/database/persistence/RecipePersistence.php');
     include('../../back/functions/functions_recipes.php');
+    include('../../back/functions/functions_client.php');
     include('../../back/functions/functions_utils.php');
 ?>
 
@@ -21,7 +22,7 @@
         $ingredients = $_POST['ingredients'];
         $ingredients = explode(";", $ingredients);
         array_pop($ingredients);
-        $client->setPreferencesCategories($ingredients);
+        $client->setPreferencesIngredients($ingredients);
         $_SESSION['client'] = serialize($client);
         updatePreferencesIngredients($client->getId(), $client->getPreferencesIngredients());
     }
@@ -45,7 +46,7 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js" integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <!-- Title -->
-    <title>Delicious - Food Blog | Profil</title>
+    <title>Delicioso! | Profil</title>
     <!-- Favicon -->
     <link rel="icon" href="../img/core-img/favicon.ico">
     <!-- Core Stylesheet -->
@@ -70,7 +71,7 @@
             <div class="row">
                 <div class="col-12">
                     <form action="./recipes.php" method="post">
-                        <input type="search" name="search" placeholder="Type any keywords...">
+                        <input type="search" name="search" placeholder="Tapez un mot-clé...">
                         <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                     </form>
                 </div>

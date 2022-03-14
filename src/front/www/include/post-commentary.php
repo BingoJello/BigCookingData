@@ -1,4 +1,4 @@
-<div class="modal fade" id="postCommentaryIHM" tabindex="-1" role="dialog" aria-labelledby="printCommentary" aria-hidden="true">
+<div class="modal fade" id="postCommentaryIHM" tabindex="-1" role="dialog" aria-labelledby="postCommentaryIHM" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -13,9 +13,11 @@
                         </div>
                     </div>
                 </div>
-                <form action='#' method='POST'>
+                <form action='./recipe-post.php' method='POST'>
                     <div class=" row opinion-content">
                         <div class="star-widget">
+                            <input type="hidden" name="date" value=<?php echo date("d/m/Y");?>>
+                            <input type="hidden" name="recipe" value=<?php echo $recipe->getId();?>>
                             <input class="input-star" type="radio" name="rate" id="rate-5" value="5">
                             <label for="rate-5" class="fas fa-star"></label>
                             <input class="input-star" type="radio" name="rate" id="rate-4" value="4">
@@ -41,10 +43,7 @@
                             <div class="contact-form-area">
                                 <div class="row">
                                     <div class="col-12">
-                                        <input type="text" class="form-control" id="subject" placeholder="Subject">
-                                    </div>
-                                    <div class="col-12">
-                                        <textarea name="message" class="form-control" id="message" cols="30" rows="10" placeholder="Message"></textarea>
+                                        <textarea name="commentary" class="form-control" id="message" cols="30" rows="10" placeholder="Message"></textarea>
                                     </div>
                                     <div class="col-12">
                                         <button class="btn delicious-btn mt-30" type="submit">Post Comments</button>

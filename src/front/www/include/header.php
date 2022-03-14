@@ -50,7 +50,7 @@
                                     <li><a href="#">Menu</a>
                                         <div class="megamenu">
                                             <ul class="single-mega cn-col-4">
-                                                <li class="title">Recipes by category</li>
+                                                <li class="title">Recettes par catégorie</li>
                                                 <li><a href="./recipes.php?category=appetizers">Appetizers and Snacks</a></li>
                                                 <li><a href="./recipes.php?category=grilling">BBQ and Grilling</a></li>
                                                 <li><a href="./recipes.php?category=bread">Bread Recipes</a></li>
@@ -87,14 +87,14 @@
                                             </div>
                                         </div>
                                     </li>
-                                    <li><a href="./recipes.php">Recipes</a></li>
+                                    <li><a href="./recipes.php">Recettes</a></li>
                                     <li><a href="./mealPlanner.php">Meal Planner</a></li>
-                                    <li><a href="./about.php">Abous us</a></li>
-									<li><a href="#">Profile</a>
+                                    <li><a href="./about.php">Qui sommes-nous</a></li>
+									<li><a href="#">Profil</a>
 										<ul class="dropdown">
                                             <?php
                                                 if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
-                                                    echo "<li><a href='./profil.php'>My account</a></li>";
+                                                    echo "<li><a href='./profil.php'>Mon compte</a></li>";
                                                 }else{
                                                     echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Mon profil</a></li>";
                                                 }
@@ -102,9 +102,9 @@
                                             <li><a href="./recipe-book.php">Mon carnet</a></li>
                                             <?php
                                                 if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
-                                                    echo "<li><a href='./deconnexion.php'>Log out</a></li>";
+                                                    echo "<li><a href='./deconnexion.php'>Déconnexion</a></li>";
                                                 }else{
-                                                    echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Log in</a></li>";
+                                                    echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Connexion</a></li>";
                                                 }
                                             ?>
                                         </ul>

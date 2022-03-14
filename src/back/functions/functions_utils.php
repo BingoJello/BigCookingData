@@ -68,3 +68,75 @@ function printPagination($total_pages){
     }
 }
 ?>
+
+<?php
+function printIngredients($recipe){
+    foreach($recipe->getIngredients() as $ingredient){?>
+        <div>
+            <label class="ingredient-label">
+                <img src=<?php echo $ingredient->getUrlPic();?> height="40" width="40">
+                <?php echo $ingredient->getName();?>
+            </label>
+        </div>
+    <?php }
+}
+?>
+
+<?php
+function printAssessRecipe($assessed_recipe){
+    $html = "";
+    $cpt_assessed = 0;
+
+    $html.="<div class='commentary-container'>
+                <span style='margin-left: 20px'>
+                    <h2 class='nbr-commentary-front'>Commentaires (".count($assessed_recipe).")</h2>
+                </span>";
+
+    foreach($assessed_recipe as $assess){
+        if($cpt_assessed > 3){
+            break;
+        }
+
+        $html.="<div class='list-commentary'>
+                    <div class='commentary'>
+                        <div class='name-rating-container'>
+                         <div class='name-rating'>
+                            <div class='pseudo'>
+                                <p class='name-pseudo'>".$assess->getPseudo()."</p>
+                            </div>
+                         <div class='rating-commentary'>";
+        $rating = $assess->getRating();
+
+        for($i=0; $i<5; $i++){
+            if($rating > 0){
+                $html.="<i class='fa fa-star' style='color:yellowgreen' aria-hidden='true'></i>";
+                $rating--;
+            }else{
+                $html.="<i class='fa fa-star' style='color:grey' aria-hidden='true'></i>";
+            }
+        }
+        $html.="<label> ".$assess->getRating()."/5</label>
+             </div>
+            </div>
+           </div>
+         <div class='date-commentary'>
+            <p class='date-commentary-font'>".$assess->getDate()."</p>
+         </div>
+         <div class='commentary-text'>
+            <p class='commentary-text-font'>".$assess->getCommentary()."</p>
+         </div>
+        </div>
+        <hr>";
+
+        $cpt_assessed++;
+    }
+
+    if($cpt_assessed > 3){
+        $html.="<a href='#' data-toggle='modal' data-target='#allCommentaryIHM' class='btn delicious-btn' data-animation='fadeInUp' data-delay='1000ms'>Voir plus</a>";
+    }
+
+    $html.="</div>";
+
+    echo $html;
+}
+?>

@@ -134,6 +134,20 @@ class ClientPersistence
         }
     }
 
+    /**
+     * @brief Insert la note et le commentaire d'une recette
+     * @param $id_recipe
+     * @param $id_client
+     * @param $rating
+     * @param string $commentary
+     */
+    public static function insertCommentaryAndRating($id_recipe, $id_client, $rating, $commentary='', $date)
+    {
+        $query = "INSERT INTO assess(id_recipe, id_client, rating, commentary, date_assess) VALUES (?,?,?,?,?)";
+        $params=[$id_recipe, $id_client, $rating, $commentary, $date];
+        DatabaseQuery::insertQuery($query, $params);
+    }
+
     /*******************
      * DELETE Methods
      ******************/

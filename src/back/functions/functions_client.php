@@ -102,3 +102,15 @@ function updatePasswordClient($id_client, $password){
     ClientPersistence::updatePasswordClient($id_client, $password);
 }
 ?>
+
+<?php
+/**
+ * @param $id_recipe
+ * @param $id_client
+ * @param $rating
+ * @param string $commentary
+ */
+function insertRatingAndCommentary($id_recipe, $id_client, $rating, $commentary = '', $date){
+    ClientPersistence::insertCommentaryAndRating($id_recipe, $id_client, $rating, $commentary, $date);
+}
+?>
