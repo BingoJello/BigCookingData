@@ -55,7 +55,23 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
      */
     private function buildContentBasedRecommender($historic_cluster, $rated_cluster, $visualization_cluster, $session)
     {
-        $recipes = RecipePersistence::getRecipesByCluster([$historic_cluster, $rated_cluster, $visualization_cluster]);
+        $clusters = array();
+        if(false == is_null($historic_cluster)){
+            array_push($clusters, $historic_cluster);
+        }
+        if(false == is_null($rated_cluster)){
+            array_push($clusters, $rated_cluster);
+        }
+        if(false == is_null($visualization_cluster)){
+            array_push($clusters, $visualization_cluster);
+        }
+
+        $recipes = RecipePersistence::getRecipesByCluster($clusters);
+
+        if(true == empty($recipes)){
+            return array();
+        }
+
         $ingredients_user = RecipePersistence::getIngredientsOfClient($this->client->getId());
         $ingredients = array();
 
@@ -78,6 +94,10 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
 
     }
 
+    /**
+     * @param array $ingredients_user
+     * @return array
+     */
     private function buildPercentageIngredient($ingredients_user){
         $percentage_ingredients_user = array();
 
@@ -91,6 +111,10 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
         return $percentage_ingredients_user;
     }
 
+    /**
+     * @param array $ingredients_user
+     * @return array
+     */
     private function buildVectorUser($ingredients_user)
     {
         $row_user = array();

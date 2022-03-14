@@ -25,11 +25,10 @@ include('../../back/functions/functions_utils.php');
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- The above 2 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js" integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <!-- Title -->
-    <title>Delicious - Food Blog | Recipe Book</title>
+    <title>Delicioso! | Carnet de recettes</title>
     <!-- Favicon -->
     <link rel="icon" href="../img/core-img/favicon.ico">
     <!-- Core Stylesheet -->
@@ -55,7 +54,7 @@ include('../../back/functions/functions_utils.php');
         <div class="row">
             <div class="col-12">
                 <form action="./recipes.php" method="post">
-                    <input type="search" name="search" placeholder="Type any keywords...">
+                    <input type="search" name="search" placeholder="Tapez un mot-clé...">
                     <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </form>
             </div>

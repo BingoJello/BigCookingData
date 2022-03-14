@@ -18,6 +18,10 @@ class Ingredient
      * @var string
      */
     private $url_pic;
+    /**
+     * @var string
+     */
+    private $quantity;
 
     /**
      * Ingredient constructor.

@@ -7,6 +7,7 @@
     require_once('../../back/classes/database/persistence/ClientPersistence.php');
     require_once('../../back/classes/database/persistence/RecipePersistence.php');
     include('../../back/functions/functions_recipes.php');
+    include('../../back/functions/functions_client.php');
     include('../../back/functions/functions_utils.php');
 ?>
 
@@ -16,22 +17,16 @@
     }else{
         header('location:./connexion.php?error=Veuillez vous connecter pour voir votre profil');
     }
-
     if(isset($_POST['ingredients'])) {
-        $ingredients = $_POST['ingredients'];
-        $ingredients = explode(";", $ingredients);
-        array_pop($ingredients);
-        $client->setPreferencesCategories($ingredients);
-        $_SESSION['client'] = serialize($client);
-        updatePreferencesIngredients($client->getId(), $client->getPreferencesIngredients());
+        $client = updatePreferencesIngredients($client, $_POST['ingredients']);
     }
-
     if((isset($_POST['password']) AND (!empty($_POST['password']))) AND (isset($_POST['password_confirm']) AND (!empty($_POST['password_confirm'])))){
         $client->setPassword($_POST['password']);
         $_SESSION['client'] = serialize($client);
         updatePasswordClient($client->getId(), $client->getPassword());
     }
 
+    $list_ingredients = json_encode(getAllIngredients());
 ?>
 
 <!DOCTYPE html>
@@ -41,11 +36,10 @@
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- The above 2 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js" integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <!-- Title -->
-    <title>Delicious - Food Blog | Profil</title>
+    <title>Delicioso! | Profil</title>
     <!-- Favicon -->
     <link rel="icon" href="../img/core-img/favicon.ico">
     <!-- Core Stylesheet -->
@@ -70,7 +64,7 @@
             <div class="row">
                 <div class="col-12">
                     <form action="./recipes.php" method="post">
-                        <input type="search" name="search" placeholder="Type any keywords...">
+                        <input type="search" name="search" placeholder="Tapez un mot-clé...">
                         <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                     </form>
                 </div>
@@ -81,7 +75,7 @@
    <?php include("./include/header.php");?>
 	
 	<section class="best-recipe-area section-padding-80 container" style="margin-top:-3em">
-        <div class="container">			
+        <div class="container">
 			<div class="row">
 				<div class="generator_header col-12 col-md-10 offset-md-1 col-lg-8 offset-lg-2">
 					<div class="row">
@@ -123,7 +117,6 @@
 							    </select>
 						    </div>
 					    </div>
-
                         <div class="row form-group">
                             <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="firstname">Prénom</label>
                             <div class="col-12 col-sm-9 col-md-6 col-lg-6 col-xl-5">
@@ -200,11 +193,25 @@
      <script src="../js/tools/active/active2.js"></script>
      <!-- Canvas js -->
      <script src="../js/canvas.js"></script>
-     <!-- List Ingredient multiple select js -->
-     <script src="../js/tools/list_ingredients_select.js"></script>
      <!-- Change profil js -->
      <script src="../js/changeProfil.js"></script>
+     <!-- List Ingredient multiple select js -->
+     <script>
+         var listIngredientsJson = <?php echo $list_ingredients; ?>;
+         var listIngredients = [];
 
+         for(var i = 0; i < listIngredientsJson.length; i++){
+             listIngredients.push(listIngredientsJson[i]);
+         }
+
+         $("#list_ingredients").mSelectDBox({
+             "list": listIngredients,
+             "builtInInput": 0,
+             "multiple": true,
+             "autoComplete": true,
+             "name": "b"
+         });
+     </script>
 	<?php include('./include/connexion_profil.php'); ?>
 </body>
 </html>

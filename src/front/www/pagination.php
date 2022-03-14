@@ -27,7 +27,7 @@
             <div class='single-best-recipe-area mb-30'>
                 <img src=<?php echo $recipes[$i]->url_pic;?> width='210' height='210' alt=''>
                 <div class='recipe-content'>
-                    <a href='recipe-post.php'>
+                    <a href='recipe-post.php?recipe=<?php echo $recipes[$i]->id_recipe;?>'
                         <h5><?php echo $recipes[$i]->name;?></h5>
                     </a>
                     <div class='ratings'>
