@@ -1,13 +1,13 @@
 <?php
 /**
- * @param $pseudo
- * @param $civility
- * @param $mail
- * @param $password
- * @param $password_confirm
- * @param $lastname
- * @param $firstname
- * @param $ingredients
+ * @param string $pseudo
+ * @param string $civility
+ * @param string $mail
+ * @param string $password
+ * @param string $password_confirm
+ * @param string $lastname
+ * @param string $firstname
+ * @param array $ingredients
  * @throws Exception
  */
 function registerInscriptionClient($pseudo,$civility,$mail,$password,$password_confirm,$lastname,$firstname,$ingredients)
@@ -31,14 +31,18 @@ function registerInscriptionClient($pseudo,$civility,$mail,$password,$password_c
                     }
 
                     $id_client = ClientPersistence::getLastIdClient() + 1;
-                    $result = ClientPersistence::insertClient($id_client, $firstname, $lastname, $civility, $pseudo, $mail, $password);
+
+                    $result = ClientPersistence::insertClient(addslashes($id_client), addslashes($firstname), addslashes($lastname)
+                        , $civility, addslashes($pseudo), addslashes($mail), addslashes($password));
 
                     if($result) {
                         $ingredients = explode(";", $ingredients);
                         array_pop($ingredients);
                         $id_ingredients = RecipePersistence::getIdIngredientByName($ingredients);
                         ClientPersistence::insertIngredientsPreferences($id_client, $id_ingredients);
-                        $_SESSION['client'] = serialize(ClientPersistence::getClient($mail, $password));
+                        $client = ClientPersistence::getClient($mail, $password);
+                        $client->setPreferencesIngredients(ClientPersistence::getPreferencesIngredientsClient($client->getId()));
+                        $_SESSION['client'] = serialize($client);
 
                         header('location:./profil.php');
                     }else{
@@ -66,8 +70,8 @@ function registerInscriptionClient($pseudo,$civility,$mail,$password,$password_c
 
 <?php
 /**
- * @param $email
- * @param $password
+ * @param string $email
+ * @param string $password
  * @throws Exception
  */
 function connexionToProfil($email,$password)
@@ -85,18 +89,24 @@ function connexionToProfil($email,$password)
 ?>
 <?php
 /**
- * @param $id_client
- * @param $ingredients
+ * @param int $id_client
+ * @param array $ingredients
  */
-function updatePreferencesIngredients($id_client, $ingredients){
-    ClientPersistence::updateIngredientsPreferencesClient($id_client, $ingredients);
+function updatePreferencesIngredients($client, $ingredients){
+    $ingredients = explode(";", $ingredients);
+    array_pop($ingredients);
+    ClientPersistence::updateIngredientsPreferencesClient($client->getId(), $ingredients);
+    $client->setPreferencesIngredients(ClientPersistence::getPreferencesIngredientsClient($client->getId()));
+    $_SESSION['client'] = serialize($client);
+
+    return $client;
 }
 ?>
 
 <?php
 /**
- * @param $id_client
- * @param $password
+ * @param int $id_client
+ * @param string $password
  */
 function updatePasswordClient($id_client, $password){
     ClientPersistence::updatePasswordClient($id_client, $password);
@@ -105,12 +115,23 @@ function updatePasswordClient($id_client, $password){
 
 <?php
 /**
- * @param $id_recipe
- * @param $id_client
- * @param $rating
+ * @param int $id_recipe
+ * @param int $id_client
+ * @param float $rating
  * @param string $commentary
  */
 function insertRatingAndCommentary($id_recipe, $id_client, $rating, $commentary = '', $date){
     ClientPersistence::insertCommentaryAndRating($id_recipe, $id_client, $rating, $commentary, $date);
+}
+?>
+
+<?php
+/**
+ * @param int $id_client
+ * @param int $id_recipe
+ * @return bool
+ */
+function hasAlreadyRatingRecipe($id_client, $id_recipe){
+    return ClientPersistence::hasAlreadyRatingRecipe($id_client, $id_recipe);
 }
 ?>

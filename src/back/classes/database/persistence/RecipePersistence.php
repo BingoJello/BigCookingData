@@ -248,6 +248,9 @@ class RecipePersistence
     public static function getIdIngredientByName($ingredients_name)
     {
         $id_ingredients = array();
+        for($i=0; $i<count($ingredients_name);$i++){
+            $ingredients_name[$i] = addslashes($ingredients_name[$i]);
+        }
         $ingredients_name_join = "'".join("','",$ingredients_name)."'";
 
         $query="SELECT ingredient.id_ingredient FROM ingredient
@@ -263,7 +266,7 @@ class RecipePersistence
 
     /**
      * @brief Récupère l'ensemble des évaluations de la recette
-     * @param $id_recipe
+     * @param int $id_recipe
      * @return array
      */
     public static function getAllAssessedRecipe($id_recipe)
@@ -306,8 +309,40 @@ class RecipePersistence
     }
 
     /**
+     * @brief Récupère la note globale d'une recette
+     * @param int $id_recipe
+     * @return array|null
+     */
+    public static function getGlobalRatingRecipe($id_recipe){
+        $query = "SELECT AVG(rating) AS score,COUNT(rating) AS nbr_reviews FROM assess WHERE id_recipe = ?";
+        $params = [$id_recipe];
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            return array('score' => $row['score'], 'nbr_reviews' => $row['nbr_reviews']);
+        }
+        return null;
+    }
+
+    /**
+     * @brief Récupère l'ensemble des ingrédients distincts
+     * @return array
+     */
+    public static function getAllIngredients(){
+        $ingredients = array();
+        $query = "SELECT DISTINCT ingredient.name FROM ingredient";
+
+        $result = DatabaseQuery::selectQuery($query);
+
+        foreach($result as $row) {
+            array_push($ingredients, $row['name']);
+        }
+
+        return $ingredients;
+    }
+    /**
      * @brief Récupère la recette
-     * @param $id_recipe
+     * @param int $id_recipe
      * @return Recipe
      */
     public static function getRecipe($id_recipe){

@@ -10,6 +10,7 @@ function printPreferencesIngredients($client){
         $preferences_ingredients_string.=$ingredient->getName();
         $preferences_ingredients_string.=";";
     }
+
     echo $preferences_ingredients_string;
 }
 ?>
@@ -25,7 +26,7 @@ function getClient(){
 
 <?php
 /**
- * @param $recipes
+ * @param array $recipes
  * @return false|string
  */
 function getJsonRecipes($recipes){
@@ -45,7 +46,7 @@ function getJsonRecipes($recipes){
 
 <?php
 /**
- * @param $total_pages
+ * @param int $total_pages
  */
 function printPagination($total_pages){
     if(!empty($total_pages)){
@@ -70,6 +71,9 @@ function printPagination($total_pages){
 ?>
 
 <?php
+/**
+ * @param Recipe $recipe
+ */
 function printIngredients($recipe){
     foreach($recipe->getIngredients() as $ingredient){?>
         <div>
@@ -83,6 +87,9 @@ function printIngredients($recipe){
 ?>
 
 <?php
+/**
+ * @param array $assessed_recipe
+ */
 function printAssessRecipe($assessed_recipe){
     $html = "";
     $cpt_assessed = 0;
@@ -136,6 +143,48 @@ function printAssessRecipe($assessed_recipe){
     }
 
     $html.="</div>";
+
+    echo $html;
+}
+?>
+
+<?php
+/**
+ * @param float $score
+ * @param int $nbr_reviews
+ */
+function printGlobalRating($score, $nbr_reviews){
+    $html = "<div class='recipe-ratings my-4'>
+                <div class='ratings'>";
+
+    $score = round($score,1);
+    $score = sprintf("%.1f",$score);
+    $score_tab=explode(".",$score);
+    $score_before_comma=$score_tab[0];
+    $tmp=0;
+    $score_after_comma=$score_tab[1];
+
+    while($score_before_comma>0){
+        $html.= "<i class='fa fa-star' style='color:yellowgreen' aria-hidden='true'></i>";
+        $score_before_comma--;
+        $tmp++;
+    }
+    if($score_after_comma>=5){
+        $html.= "<i class='fa fa-star-half' style='color:yellowgreen' aria-hidden='true'></i>";
+        $tmp++;
+    }
+    while($tmp<5){
+        $html.="<i class='fa fa-star' style='color:grey' aria-hidden='true'></i>";
+        $tmp++;
+    }
+    $html.="<label>".$score."/5</label>";
+
+    if($nbr_reviews==1){
+        $html.="<label style='padding-left:2em'>".$nbr_reviews." évaluation</label>";
+    }else{
+        $html.="<label style='padding-left:2em'>".$nbr_reviews." évaluations</label>";
+    }
+    $html.="</div></div>";
 
     echo $html;
 }

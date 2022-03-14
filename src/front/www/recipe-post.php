@@ -20,7 +20,6 @@ include('../../back/utils/constants.php');
     if(isset($_SESSION['client']) and !empty($_SESSION['client'])) {
         $client = getClient();
     }
-
     if(isset($_GET['recipe']) and !empty($_GET['recipe'])) {
         $recipe = getRecipe($_GET['recipe']);
     } elseif (isset($_POST['recipe']) and !empty($_POST['recipe'])){
@@ -44,6 +43,7 @@ include('../../back/utils/constants.php');
     }
 
     $assessed_recipe = getAssessRecipe($recipe->getId());
+    $global_rating = getGlobalRating($recipe->getId());
 ?>
 
 
@@ -123,16 +123,11 @@ include('../../back/utils/constants.php');
                                 <h6>Préparation: <?php echo $recipe->getPrepTime();?></h6>
                                 <h6>Cuisson: <?php echo $recipe->getCookTime();?></h6>
                                 <h6>Repos: <?php echo $recipe->getBreakTime();?></h6>
-								<div class="recipe-ratings my-4">
-									<div class="ratings">
-										<i class="fa fa-star" aria-hidden="true"></i>
-										<i class="fa fa-star" aria-hidden="true"></i>
-										<i class="fa fa-star" aria-hidden="true"></i>
-										<i class="fa fa-star" aria-hidden="true"></i>
-										<i class="fa fa-star" style="color:grey" aria-hidden="true"></i>
-										<label>3.2/5</label>
-									</div>
-								</div>
+                                <?php
+                                    if(false == is_null($global_rating)){
+                                        printGlobalRating($global_rating['score'], $global_rating['nbr_reviews']);
+                                    }
+                                ?>
                             </div>
                         </div>
                     </div>
@@ -207,3 +202,4 @@ include('../../back/utils/constants.php');
     <?php include('./include/post-commentary.php')?>
     <?php include ('./include/all-commentary.php');?>
 </body>
+</html>

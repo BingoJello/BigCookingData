@@ -6,6 +6,15 @@
                 <h4 class="modal-title">Evaluation</h4>
             </div>
             <div class="modal-body">
+                <?php if(true == hasAlreadyRatingRecipe($client->getId(), $recipe->getId())) { ?>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="section-heading text-left">
+                            <h3>Vous avez déjà évalué cette recette</h3>
+                        </div>
+                    </div>
+                </div>
+                <?php }else{ ?>
                 <div class="row">
                     <div class="col-12">
                         <div class="section-heading text-left">
@@ -54,6 +63,7 @@
                     </div>
                 </form>
             </div>
+            <?php } ?>
         </div>
     </div>
 </div>

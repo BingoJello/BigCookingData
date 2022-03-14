@@ -71,9 +71,9 @@ class ClientPersistence
 
     /**
      * @brief Vérifie si un client existe
-     * @param $email
-     * @param $password
-     * @param $pseudo
+     * @param string $email
+     * @param string $password
+     * @param string $pseudo
      * @return bool
      */
     public static function findClientExist($email = false, $password = false, $pseudo = false)
@@ -95,6 +95,23 @@ class ClientPersistence
                 return true;
             return false;
         }
+    }
+
+    /**
+     * @brief Vérifie si un client à déjà noté la recette
+     * @param int $id_client
+     * @param int $id_recipe
+     * @return bool
+     */
+    public static function hasAlreadyRatingRecipe($id_client, $id_recipe){
+        $query = "SELECT id_client FROM assess WHERE id_client = ? AND id_recipe = ?";
+        $params = [$id_client, $id_recipe];
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row)
+            return true;
+
+        return false;
     }
 
     /*******************
@@ -128,7 +145,7 @@ class ClientPersistence
     public static function insertIngredientsPreferences($id_client, $ingredients)
     {
         foreach($ingredients as $ingredient) {
-            $query = "INSERT INTO have_preferences_ingredient(id_client,ingredient) VALUES (?,?)";
+            $query = "INSERT INTO have_preferences_ingredient(id_client,id_ingredient) VALUES (?,?)";
             $params=[$id_client, $ingredient];
             DatabaseQuery::insertQuery($query, $params);
         }
@@ -136,9 +153,9 @@ class ClientPersistence
 
     /**
      * @brief Insert la note et le commentaire d'une recette
-     * @param $id_recipe
-     * @param $id_client
-     * @param $rating
+     * @param int $id_recipe
+     * @param int $id_client
+     * @param float $rating
      * @param string $commentary
      */
     public static function insertCommentaryAndRating($id_recipe, $id_client, $rating, $commentary='', $date)
