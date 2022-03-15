@@ -959,7 +959,7 @@ textarea:focus {
   z-index: 20; }
   .recipe-post-search form .input-search {
     width: 100%;
-    height: 60px;
+    height: 38px;
     background-color: #f3f5f8;
     font-size: 14px;
     padding: 0 20px;

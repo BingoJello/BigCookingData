@@ -60,3 +60,6 @@ function getAllIngredients(){
     return RecipePersistence::getAllIngredients();
 }
 ?>
+
+<?php
+?>

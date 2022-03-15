@@ -167,7 +167,7 @@
                         <div class="row form-group">
                             <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="password-confirm">Ingredients préférés</label>
                             <div class="col-12 col-sm-9 col-md-6 col-lg-6 col-xl-5">
-                                <input type="text" id="list_ingredients" class="form-control" name="ingredients"></input>
+                                <input type="text" id="list_ingredients" class="form-control" name="ingredients"/>
                             </div>
                         </div>
 					    <div class="row form-group small_top_spacer">
@@ -184,6 +184,8 @@
     <!-- ##### Footer Area Start ##### -->
      <?php include('include/footer.php');?>
      <!-- ##### Footer Area End ##### -->
+
+     <?php include('./include/connexion_profil.php'); ?>
 
     <!-- ##### All Javascript Files ##### -->
     <!-- jQuery-2.2.4 js -->
@@ -216,6 +218,5 @@
             "name": "b"
         });
      </script>
-     <?php include('./include/connexion_profil.php'); ?>
 </body>
 </html>

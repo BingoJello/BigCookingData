@@ -27,7 +27,7 @@
         $recipes = getRandomRecipes();
         $json_recipes = getJsonRecipes($recipes);
         $limit = LIMIT_PAGINATION;
-        $total_pages = ceil(count($recipes) / $limit);
+        $total_pages = ceil(count($recipes['recipe']) / $limit);
     }
 ?>
 
@@ -457,6 +457,8 @@
     <?php include('include/footer.php');?>
     <!-- ##### Footer Area End ##### -->
 
+    <?php include('./include/connexion_profil.php'); ?>
+
     <!-- ##### All Javascript Files ##### -->
     <!-- jQuery-2.2.4 js -->
     <script src="../js/jquery/jquery-2.2.4.min.js"></script>
@@ -468,8 +470,6 @@
     <script src="../js/plugins/plugins.js"></script>
     <!-- Active js -->
     <script src="../js/tools/active/active.js"></script>
-	
-	<?php include('./include/connexion_profil.php'); ?>
 
     <script>
         $(document).ready(function() {

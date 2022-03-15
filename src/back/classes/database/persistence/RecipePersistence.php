@@ -133,6 +133,66 @@ class RecipePersistence
     }
 
     /**
+     * @brief Récupère les recettes par rapport aux ingrédients (inclus et exclus) et à l'ID du cluster
+     * @param int $id_cluster
+     * @param array $ingredients_include
+     * @param array $ingredients_exclude
+     * @return array
+     */
+    public static function getRecipesByIngredientsAndCluster($id_cluster, $ingredients_include, $ingredients_exclude)
+    {
+        $ingredients = array();
+        $ingredients_include = "'".join("','",$ingredients_include)."'";
+        $ingredients_exclude = "'".join("','",$ingredients_exclude)."'";
+        $query="SELECT * FROM recipe
+                INNER JOIN contain_recipe_ingredient ON contain_recipe_ingredient.id_ingredient = ingredient.id_ingredient
+                INNER JOIN recipe ON recipe.id_recipe = contain_recipe_ingredient.id_recipe
+                WHERE recipe.clusterNumber = ? AND name.ingredient IN(".$ingredients_include.") AND name.ingredient NOT IN(".$ingredients_exclude.")";
+        $params = [$id_cluster];
+
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row)
+            array_push($recipes, new Recipe($row['id'], $row['name']));
+
+        return $ingredients;
+    }
+
+    /**
+     * @param string $keyword
+     * @return array
+     */
+    public static function getRecipesBySearching($keyword){
+        $recipes = array();
+        $query="SELECT recipe.id_recipe, recipe.name, recipe.url_pic FROM recipe WHERE recipe.name LIKE '%".$keyword."%'";
+        $result = DatabaseQuery::selectQuery($query);
+
+        foreach($result as $row) {
+            array($recipes, new Recipe($row['id_recipe'], $row['name'], $row['url_pic']));
+        }
+        return $recipes;
+    }
+
+    /**
+     * @brief Récupère les recettes
+     * @return array
+     */
+    public static function getRecipes()
+    {
+        $recipes = array();
+        $query="SELECT * FROM recipe";
+
+        $result = DatabaseQuery::selectQuery($query);
+
+        foreach($result as $row) {
+            array_push($recipes, new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
+                $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                $row['serving'], $row['clusterNumber'], $row['coordonnees']));
+        }
+        return $recipes;
+    }
+
+    /**
      * @brief Récupère l'ensemble des ingrédients d'un (ou plusieurs) cluster(s)
      * @param array $id_clusters
      * @return array
@@ -215,32 +275,6 @@ class RecipePersistence
     }
 
     /**
-     * @brief Récupère les recettes par rapport aux ingrédients (inclus et exclus) et à l'ID du cluster
-     * @param int $id_cluster
-     * @param array $ingredients_include
-     * @param array $ingredients_exclude
-     * @return array
-     */
-    public static function getRecipesByIngredientsAndCluster($id_cluster, $ingredients_include, $ingredients_exclude)
-    {
-        $ingredients = array();
-        $ingredients_include = "'".join("','",$ingredients_include)."'";
-        $ingredients_exclude = "'".join("','",$ingredients_exclude)."'";
-        $query="SELECT * FROM recipe
-                INNER JOIN contain_recipe_ingredient ON contain_recipe_ingredient.id_ingredient = ingredient.id_ingredient
-                INNER JOIN recipe ON recipe.id_recipe = contain_recipe_ingredient.id_recipe
-                WHERE recipe.clusterNumber = ? AND name.ingredient IN(".$ingredients_include.") AND name.ingredient NOT IN(".$ingredients_exclude.")";
-        $params = [$id_cluster];
-
-        $result = DatabaseQuery::selectQuery($query, $params);
-
-        foreach($result as $row)
-            array_push($recipes, new Recipe($row['id'], $row['name']));
-
-        return $ingredients;
-    }
-
-    /**
      * @brief Récupère l'ID de(s) l'ingrédient(s)
      * @param array $ingredients_name
      * @return array
@@ -300,7 +334,7 @@ class RecipePersistence
         $result = DatabaseQuery::selectQuery($query);
 
         foreach($result as $row) {
-            array_push($recipes['recipe'], new Recipe($row['id_recipe'], $row['name'], $row['categories'], $row['url_pic'],
+            array_push($recipes['recipe'], new Recipe($row['id_recipe'], $row['name'], $row['url_pic'],$row['categories'],
                 $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
                 $row['serving'], $row['clusterNumber'], $row['coordonnees']));
         }
@@ -351,31 +385,12 @@ class RecipePersistence
         $result = DatabaseQuery::selectQuery($query, $params);
 
         foreach($result as $row) {
-            $recipe = new Recipe($row['id_recipe'], $row['name'], $row['categories'], $row['url_pic'],
+            $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'],$row['categories'],
                 $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
                 $row['serving'], $row['clusterNumber'], $row['coordonnees']);
         }
         $recipe->setIngredients(self::getIngredientsByRecipes([$id_recipe]));
 
         return $recipe;
-    }
-
-    /**
-     * @brief Récupère les recettes
-     * @return array
-     */
-    public static function getRecipes()
-    {
-        $recipes = array();
-        $query="SELECT * FROM recipe";
-
-        $result = DatabaseQuery::selectQuery($query);
-
-        foreach($result as $row) {
-            array_push($recipes, new Recipe($row['id_recipe'], $row['name'], $row['categories'], $row['url_pic'],
-                    $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
-                    $row['serving'], $row['clusterNumber'], $row['coordonnees']));
-        }
-        return $recipes;
     }
 }
