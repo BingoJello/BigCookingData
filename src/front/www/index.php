@@ -19,7 +19,11 @@
     if(isset($_SESSION['client']) and !empty($_SESSION['client'])) {
         $_SESSION['visualization'] = array(89, 90, 64);
         $client = getClient();
-        $recipes = getSuggestedRecipes($client, $_SESSION);
+        try {
+            $recipes = getSuggestedRecipes($client, $_SESSION);
+        } catch (Exception $e) {
+
+        }
         $json_recipes = getJsonRecipes($recipes);
         $limit = LIMIT_PAGINATION;
         $total_pages = ceil(count($recipes['recipe']) / $limit);

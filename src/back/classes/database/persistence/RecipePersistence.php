@@ -109,7 +109,7 @@ class RecipePersistence
         $result = DatabaseQuery::selectQuery($query, $params);
 
         foreach($result as $row) {
-            array_push($recipes_cluster, new Recipe($row['id_recipe'], $row['name'], $row['categories'], $row['url_pic'],
+            array_push($recipes_cluster, new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
                 $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
                 $row['serving'], $row['clusterNumber'], $row['coordonnees']));
         }
@@ -162,14 +162,25 @@ class RecipePersistence
      * @param string $keyword
      * @return array
      */
-    public static function getRecipesBySearching($keyword){
+    public static function getRecipesBySearching($keywords){
         $recipes = array();
-        $query="SELECT recipe.id_recipe, recipe.name, recipe.url_pic FROM recipe WHERE recipe.name LIKE '%".$keyword."%'";
+        $query="SELECT recipe.id_recipe, recipe.name, recipe.url_pic FROM recipe WHERE recipe.name LIKE '%".$keywords[0]."%'";
+        array_shift($keywords);
+
+        if(true == is_array($keywords)){
+            if(0 != count($keywords)) {
+                foreach ($keywords as $keyword) {
+                    $query .= " AND recipe.name LIKE '%" . $keyword . "%'";
+                }
+            }
+        }
+
         $result = DatabaseQuery::selectQuery($query);
 
         foreach($result as $row) {
-            array($recipes, new Recipe($row['id_recipe'], $row['name'], $row['url_pic']));
+            array_push($recipes, new Recipe($row['id_recipe'], $row['name'], $row['url_pic']));
         }
+
         return $recipes;
     }
 

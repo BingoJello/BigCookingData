@@ -3,10 +3,12 @@ session_start();
 require_once('../../back/classes/business/model/Client.php');
 require_once('../../back/classes/business/model/Recipe.php');
 require_once('../../back/classes/business/model/Ingredient.php');
-require_once('../../back/classes/database/DatabaseQuery.php');
-require_once('../../back/classes/database/DatabaseConnection.php');
 require_once('../../back/classes/business/process/RecommenderSystem.php');
 require_once('../../back/classes/business/process/ContentBasedRecommenderSystem.php');
+require_once('../../back/classes/business/process/Searching.php');
+require_once('../../back/classes/business/tools/StopWords.php');
+require_once('../../back/classes/database/DatabaseQuery.php');
+require_once('../../back/classes/database/DatabaseConnection.php');
 require_once('../../back/classes/database/persistence/RecipePersistence.php');
 require_once('../../back/classes/database/persistence/ClientPersistence.php');
 include('../../back/functions/functions_utils.php');
@@ -17,6 +19,11 @@ include('../../back/utils/constants.php');
 
 <?php
     if (isset($_POST['search']) and !empty($_POST['search'])) {
+        $searching = new Searching($_POST['search']);
+        $recipes = getRecipesSearching($searching->getKeyword());
+        $json_recipes = getJsonRecipes($recipes, true);
+        $limit = LIMIT_PAGINATION;
+        $total_pages = ceil(count($recipes) / $limit);
 
     } else {
         $recipes = getRandomRecipes();

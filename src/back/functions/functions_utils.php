@@ -29,15 +29,24 @@ function getClient(){
  * @param array $recipes
  * @return false|string
  */
-function getJsonRecipes($recipes){
+function getJsonRecipes($recipes, $by_searching = false){
     $recipes_array = array();
     $i =0;
 
-    foreach($recipes['recipe'] as $recipe){
-        $recipes_array[$i]['id_recipe'] = $recipe->getId();
-        $recipes_array[$i]['name'] = $recipe->getName();
-        $recipes_array[$i]['url_pic'] = $recipe->getUrlPic();
-        $i++;
+    if(true == $by_searching){
+        foreach($recipes as $recipe){
+            $recipes_array[$i]['id_recipe'] = $recipe->getId();
+            $recipes_array[$i]['name'] = $recipe->getName();
+            $recipes_array[$i]['url_pic'] = $recipe->getUrlPic();
+            $i++;
+        }
+    }else{
+        foreach($recipes['recipe'] as $recipe) {
+            $recipes_array[$i]['id_recipe'] = $recipe->getId();
+            $recipes_array[$i]['name'] = $recipe->getName();
+            $recipes_array[$i]['url_pic'] = $recipe->getUrlPic();
+            $i++;
+        }
     }
 
     return json_encode($recipes_array, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES );

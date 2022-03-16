@@ -62,4 +62,7 @@ function getAllIngredients(){
 ?>
 
 <?php
+function getRecipesSearching($keyword){
+    return RecipePersistence::getRecipesBySearching($keyword);
+}
 ?>
