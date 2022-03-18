@@ -6,8 +6,6 @@ require_once('../../back/classes/business/model/Assess.php');
 require_once('../../back/classes/business/model/Ingredient.php');
 require_once('../../back/classes/database/DatabaseQuery.php');
 require_once('../../back/classes/database/DatabaseConnection.php');
-require_once('../../back/classes/business/process/RecommenderSystem.php');
-require_once('../../back/classes/business/process/ContentBasedRecommenderSystem.php');
 require_once('../../back/classes/database/persistence/RecipePersistence.php');
 require_once('../../back/classes/database/persistence/ClientPersistence.php');
 include('../../back/functions/functions_utils.php');

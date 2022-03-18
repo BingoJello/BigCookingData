@@ -80,7 +80,7 @@ class Recipe
      * @param array $ingredients
      * @param int $cluster
      */
-    public function __construct($id, $name = '', $categories = '', $url_pic = '', $directions = '', $prep_time = 0,
+    public function __construct($id, $name = '', $url_pic = '', $categories = '', $directions = '', $prep_time = 0,
                                 $cook_time = 0, $break_time = 0, $difficulty = '', $budget = '', $serving = 0, $cluster = -1,
                                 $coord='', $ingredients = array())
     {

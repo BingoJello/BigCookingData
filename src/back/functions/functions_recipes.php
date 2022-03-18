@@ -60,3 +60,9 @@ function getAllIngredients(){
     return RecipePersistence::getAllIngredients();
 }
 ?>
+
+<?php
+function getRecipesSearching($keyword){
+    return RecipePersistence::getRecipesBySearching($keyword);
+}
+?>

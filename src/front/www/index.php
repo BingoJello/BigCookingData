@@ -5,8 +5,8 @@
     require_once('../../back/classes/business/model/Ingredient.php');
     require_once('../../back/classes/database/DatabaseQuery.php');
     require_once('../../back/classes/database/DatabaseConnection.php');
-    require_once('../../back/classes/business/process/RecommenderSystem.php');
-    require_once('../../back/classes/business/process/ContentBasedRecommenderSystem.php');
+    require_once('../../back/classes/business/process/recommenderSystem/RecommenderSystem.php');
+    require_once('../../back/classes/business/process/recommenderSystem/ContentBasedRecommenderSystem.php');
     require_once('../../back/classes/database/persistence/RecipePersistence.php');
     require_once('../../back/classes/database/persistence/ClientPersistence.php');
     include('../../back/functions/functions_utils.php');
@@ -19,7 +19,11 @@
     if(isset($_SESSION['client']) and !empty($_SESSION['client'])) {
         $_SESSION['visualization'] = array(89, 90, 64);
         $client = getClient();
-        $recipes = getSuggestedRecipes($client, $_SESSION);
+        try {
+            $recipes = getSuggestedRecipes($client, $_SESSION);
+        } catch (Exception $e) {
+
+        }
         $json_recipes = getJsonRecipes($recipes);
         $limit = LIMIT_PAGINATION;
         $total_pages = ceil(count($recipes['recipe']) / $limit);
@@ -27,7 +31,7 @@
         $recipes = getRandomRecipes();
         $json_recipes = getJsonRecipes($recipes);
         $limit = LIMIT_PAGINATION;
-        $total_pages = ceil(count($recipes) / $limit);
+        $total_pages = ceil(count($recipes['recipe']) / $limit);
     }
 ?>
 
@@ -457,6 +461,8 @@
     <?php include('include/footer.php');?>
     <!-- ##### Footer Area End ##### -->
 
+    <?php include('./include/connexion_profil.php'); ?>
+
     <!-- ##### All Javascript Files ##### -->
     <!-- jQuery-2.2.4 js -->
     <script src="../js/jquery/jquery-2.2.4.min.js"></script>
@@ -468,8 +474,6 @@
     <script src="../js/plugins/plugins.js"></script>
     <!-- Active js -->
     <script src="../js/tools/active/active.js"></script>
-	
-	<?php include('./include/connexion_profil.php'); ?>
 
     <script>
         $(document).ready(function() {

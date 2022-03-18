@@ -6,7 +6,7 @@
  * @brief Effectue le processus de création des recommandations de recettes basé sur la recherche du client
  * @author arthur mimouni
  */
-class SearchRecommenderSystem implements RecommenderSystem
+class DecisionTreeRecommenderSystem implements RecommenderSystem
 {
     /**
      * @var array
