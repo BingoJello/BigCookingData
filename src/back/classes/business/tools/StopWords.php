@@ -715,7 +715,7 @@ class stopWords
             'y',
             '-y',
             'Z',
-            'zéro'
+            'zéro',
         ];
         return $data;
     }

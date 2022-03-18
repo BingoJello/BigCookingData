@@ -3,14 +3,19 @@ session_start();
 require_once('../../back/classes/business/model/Client.php');
 require_once('../../back/classes/business/model/Recipe.php');
 require_once('../../back/classes/business/model/Ingredient.php');
-require_once('../../back/classes/business/process/RecommenderSystem.php');
-require_once('../../back/classes/business/process/ContentBasedRecommenderSystem.php');
-require_once('../../back/classes/business/process/Searching.php');
+require_once('../../back/classes/business/process/recommenderSystem/RecommenderSystem.php');
+require_once('../../back/classes/business/process/recommenderSystem/ContentBasedRecommenderSystem.php');
+require_once('../../back/classes/business/process/informationRetrieval/Stemmer.php');
+require_once('../../back/classes/business/process/informationRetrieval/Stem.php');
+require_once('../../back/classes/business/process/informationRetrieval/Searching.php');
+require_once('../../back/classes/business/process/informationRetrieval/StemmerFactory.php');
+require_once('../../back/classes/business/process/informationRetrieval/FrenchStemmer.php');
 require_once('../../back/classes/business/tools/StopWords.php');
 require_once('../../back/classes/database/DatabaseQuery.php');
 require_once('../../back/classes/database/DatabaseConnection.php');
 require_once('../../back/classes/database/persistence/RecipePersistence.php');
 require_once('../../back/classes/database/persistence/ClientPersistence.php');
+require_once('../../back/classes/business/service/DecisionTreeCluster.php');
 include('../../back/functions/functions_utils.php');
 include('../../back/functions/functions_recipes.php');
 include('../../back/functions/functions_client.php');
@@ -25,6 +30,17 @@ include('../../back/utils/constants.php');
         $limit = LIMIT_PAGINATION;
         $total_pages = ceil(count($recipes) / $limit);
 
+    } elseif (isset($_POST['include_ingredients']) and !empty($_POST['include_ingredients'])){
+        $exclude_ingredients = '';
+        if(isset($_POST['include_ingredients']) and !empty($_POST['include_ingredients'])){
+            $exclude_ingredients = $_POST['exclude_ingredients'];
+        }
+
+        $id_cluster = DecisionTreeCluster::getCluster($_POST['include_ingredients']);
+        $recipes = RecipePersistence::getRecipesByIngredientsAndCluster($id_cluster, $_POST['include_ingredients'], $exclude_ingredients);
+        $json_recipes = getJsonRecipes($recipes, true);
+        $limit = LIMIT_PAGINATION;
+        $total_pages = ceil(count($recipes) / $limit);
     } else {
         $recipes = getRandomRecipes();
         $json_recipes = getJsonRecipes($recipes);
@@ -103,12 +119,12 @@ include('../../back/utils/constants.php');
                 <form action="./recipes" method="post">
 					<div class="row">
 						<div class="col 12 col-lg-3">
-                            <input type="text" id="list_ingredients_include" class="form-control" name="include_ingredient"
-                                   placeholder="Inclure des ingredients"/>
+                            <input type="text" id="list_ingredients_include" class="form-control" name="include_ingredients"
+                                   autocomplete="off" placeholder="Inclure des ingredients"/>
 						</div>
 						<div class="col 12 col-lg-3">
-                            <input type="text" id="list_ingredients_exclude" class="form-control" name="exclude_ingredient"
-                                   placeholder="Exclure des ingredients"/>
+                            <input type="text" id="list_ingredients_exclude" class="form-control" name="exclude_ingredients"
+                                   autocomplete="off" placeholder="Exclure des ingredients"/>
 						</div>
                         <div class="col-12 col-lg-3">
                             <input type="search" class="input-search" name="search" placeholder="Recherchez des recettes">
@@ -196,7 +212,7 @@ include('../../back/utils/constants.php');
             let Datas = new FormData();
             Datas.append("page", 1);
             Datas.append("recipes", JSON.stringify(<?php echo $json_recipes; ?>));
-
+            console.log(Datas);
             let request = $.ajax({
                 type: "POST",
                 url: "pagination.php",

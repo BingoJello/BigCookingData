@@ -19,7 +19,11 @@
     $k = $limit+$start_from;
 
     for($i=$start_from;$i<$k;$i++){
-        if(!isset($recipes[$i])){
+        if(!isset($recipes[$i])){?>
+            <div class="row" style="margin:0 auto">
+                <h4 style="margin-top: 25px";text-align:center"">Nous n’avons pas trouvé de résultats pour votre recherche</h4>
+            </div>
+            <?php
             break;
         }
         ?>

@@ -134,28 +134,51 @@ class RecipePersistence
 
     /**
      * @brief Récupère les recettes par rapport aux ingrédients (inclus et exclus) et à l'ID du cluster
-     * @param int $id_cluster
-     * @param array $ingredients_include
-     * @param array $ingredients_exclude
+     * @param $id_cluster
+     * @param $ingredients_include
+     * @param string $ingredients_exclude
      * @return array
      */
-    public static function getRecipesByIngredientsAndCluster($id_cluster, $ingredients_include, $ingredients_exclude)
+    public static function getRecipesByIngredientsAndCluster($id_cluster, $ingredients_include, $ingredients_exclude='')
     {
-        $ingredients = array();
+        $recipes = array();
+        $ingredients_include = explode(";", $ingredients_include);
+        array_pop($ingredients_include);
         $ingredients_include = "'".join("','",$ingredients_include)."'";
-        $ingredients_exclude = "'".join("','",$ingredients_exclude)."'";
-        $query="SELECT * FROM recipe
-                INNER JOIN contain_recipe_ingredient ON contain_recipe_ingredient.id_ingredient = ingredient.id_ingredient
-                INNER JOIN recipe ON recipe.id_recipe = contain_recipe_ingredient.id_recipe
-                WHERE recipe.clusterNumber = ? AND name.ingredient IN(".$ingredients_include.") AND name.ingredient NOT IN(".$ingredients_exclude.")";
+
+        if(true === empty($ingredients_exclude)){
+            $query = "SELECT DISTINCT recipe.* FROM recipe 
+                      INNER JOIN contain_recipe_ingredient AS cri ON cri.id_recipe = recipe.id_recipe 
+                      INNER JOIN ingredient ON ingredient.id_ingredient = cri.id_ingredient
+                      WHERE recipe.clusterNumber = ? AND ingredient.name IN(".$ingredients_include.")";
+        }else{
+            $ingredients_exclude = explode(";", $ingredients_exclude);
+            array_pop($ingredients_exclude);
+            $ingredients_exclude = "'".join("','",$ingredients_exclude)."'";
+
+            $query = "SELECT DISTINCT recipe.* FROM recipe 
+                      INNER JOIN contain_recipe_ingredient AS cri ON cri.id_recipe = recipe.id_recipe 
+                      INNER JOIN ingredient ON ingredient.id_ingredient = cri.id_ingredient
+                      WHERE recipe.clusterNumber = ? AND ingredient.name IN(".$ingredients_include.") 
+                      AND recipe.id_recipe NOT IN(
+                        SELECT recipe.id_recipe from ingredient 
+                        INNER JOIN contain_recipe_ingredient as cri ON cri.id_ingredient = ingredient.id_ingredient
+                        INNER JOIN recipe ON recipe.id_recipe = cri.id_recipe
+                        WHERE ingredient.name IN(" . $ingredients_exclude . ")
+                      )";
+        }
+        echo $query;
+
         $params = [$id_cluster];
 
         $result = DatabaseQuery::selectQuery($query, $params);
 
         foreach($result as $row)
-            array_push($recipes, new Recipe($row['id'], $row['name']));
+            array_push($recipes, new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
+                $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                $row['serving'], $row['clusterNumber'], $row['coordonnees']));
 
-        return $ingredients;
+        return $recipes;
     }
 
     /**
