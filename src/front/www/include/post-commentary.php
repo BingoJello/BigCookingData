@@ -22,7 +22,7 @@
                         </div>
                     </div>
                 </div>
-                <form action='./recipe-post.php' method='POST'>
+                <form action='recette' method='POST'>
                     <div class=" row opinion-content">
                         <div class="star-widget">
                             <input type="hidden" name="date" value=<?php echo date("d/m/Y");?>>

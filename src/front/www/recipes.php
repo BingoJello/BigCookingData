@@ -24,8 +24,7 @@ include('../../back/utils/constants.php');
 
 <?php
     if (isset($_POST['search']) and !empty($_POST['search'])) {
-        $searching = new Searching($_POST['search']);
-        $recipes = getRecipesSearching($searching->getKeyword());
+        $recipes = getRecipesSearching($_POST['search']);
         $json_recipes = getJsonRecipes($recipes, true);
         $limit = LIMIT_PAGINATION;
         $total_pages = ceil(count($recipes) / $limit);
@@ -35,9 +34,7 @@ include('../../back/utils/constants.php');
         if(isset($_POST['include_ingredients']) and !empty($_POST['include_ingredients'])){
             $exclude_ingredients = $_POST['exclude_ingredients'];
         }
-
-        $id_cluster = DecisionTreeCluster::getCluster($_POST['include_ingredients']);
-        $recipes = RecipePersistence::getRecipesByIngredientsAndCluster($id_cluster, $_POST['include_ingredients'], $exclude_ingredients);
+        $recipes = getRecipesIncludeExclude($_POST['include_ingredients']);
         $json_recipes = getJsonRecipes($recipes, true);
         $limit = LIMIT_PAGINATION;
         $total_pages = ceil(count($recipes) / $limit);
@@ -87,8 +84,8 @@ include('../../back/utils/constants.php');
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <form action="#" method="post">
-                        <input type="search" name="search" placeholder="Tapez un mot-clé...">
+                    <form action="./recipes.php" method="post">
+                        <input type="search" name="search" placeholder="Tapez des mot-clés...">
                         <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                     </form>
                 </div>

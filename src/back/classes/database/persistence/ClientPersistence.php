@@ -158,8 +158,11 @@ class ClientPersistence
      * @param float $rating
      * @param string $commentary
      */
-    public static function insertCommentaryAndRating($id_recipe, $id_client, $rating, $commentary='', $date)
+    public static function insertCommentaryAndRating($id_recipe, $id_client, $rating, $date, $commentary)
     {
+        if('' === $commentary){
+            $commentary = null;
+        }
         $query = "INSERT INTO assess(id_recipe, id_client, rating, commentary, date_assess) VALUES (?,?,?,?,?)";
         $params=[$id_recipe, $id_client, $rating, $commentary, $date];
         DatabaseQuery::insertQuery($query, $params);

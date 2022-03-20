@@ -33,17 +33,36 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
      */
     public function buildRecipes($session)
     {
+        $recipes_to_suggest = array('recipe' => array());
+
         $best_cluster_historic_user = RecipePersistence::getBestHistoricClusterUser($this->client->getId());
         $best_cluster_rated_user = RecipePersistence::getBestRatedClusterUser($this->client->getId());
-        $best_cluster_visualization_user = RecipePersistence::getBestVisualizationClusterUser($session);
 
-        if(is_null($best_cluster_historic_user) and is_null($best_cluster_rated_user) and is_null($best_cluster_visualization_user)){
+        if(is_null($best_cluster_historic_user) and is_null($best_cluster_rated_user)){
+            $best_cluster_visualization_user = RecipePersistence::getBestVisualizationClusterUser($session);
             $preferences_ingredients = ClientPersistence::getPreferencesIngredientsClient($this->client->getId());
-            $best_cluster_preferences = DecisionTreeCluster::getCluster($preferences_ingredients);
+            $best_cluster_preferences = DecisionTreeCluster::getCluster($preferences_ingredients, true);
+        }else{
+            $best_cluster_visualization_user = null;
+            $best_cluster_preferences = null;
         }
 
-        $this->recipes = $this->buildContentBasedRecommender($best_cluster_historic_user, $best_cluster_rated_user,
-            $best_cluster_visualization_user, $session);
+        $recipes_builds = $this->buildContentBasedRecommender($best_cluster_historic_user, $best_cluster_rated_user,
+            $best_cluster_visualization_user, $best_cluster_preferences, $session);
+
+        $id_recipes_client = RecipePersistence::getIdRecipesByClient($this->client->getId());
+        foreach($session['visualization'] as $visualized_recipe){
+            if(false === in_array($visualized_recipe, $id_recipes_client)){
+                array_push($id_recipes_client, $visualized_recipe);
+            }
+        }
+
+        foreach($recipes_builds as $recipe){
+            if(false === in_array($recipe['recipe']->getId(), $id_recipes_client)){
+                array_push($recipes_to_suggest['recipe'], $recipe['recipe']);
+            }
+        }
+        $this->recipes = $recipes_to_suggest;
     }
 
     /**
@@ -53,30 +72,43 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
      * @param array $session
      * @return array
      */
-    private function buildContentBasedRecommender($historic_cluster, $rated_cluster, $visualization_cluster, $session)
+    private function buildContentBasedRecommender($historic_cluster, $rated_cluster, $visualization_cluster,
+                                                  $preferences_cluster, $session)
     {
         $clusters = array();
-        if(false == is_null($historic_cluster)){
-            array_push($clusters, $historic_cluster);
+        if(false === is_null($preferences_cluster)){
+            if(false == is_null($visualization_cluster)){
+                array_push($clusters, $visualization_cluster);
+            }
+            array_push($clusters, $preferences_cluster);
+        }else {
+            if (false === is_null($historic_cluster)) {
+                array_push($clusters, $historic_cluster);
+            }
+            if (false === is_null($rated_cluster)) {
+                array_push($clusters, $rated_cluster);
+            }
+            if (false === is_null($visualization_cluster)) {
+                array_push($clusters, $visualization_cluster);
+            }
         }
-        if(false == is_null($rated_cluster)){
-            array_push($clusters, $rated_cluster);
-        }
-        if(false == is_null($visualization_cluster)){
-            array_push($clusters, $visualization_cluster);
-        }
-
         $recipes = RecipePersistence::getRecipesByCluster($clusters);
 
-        if(true == empty($recipes)){
+        if(true === empty($recipes)){
             return array();
         }
 
-        $ingredients_user = RecipePersistence::getIngredientsOfClient($this->client->getId());
-        $ingredients = array();
+        if(false === is_null($preferences_cluster)){
+            $ingredients_user = ClientPersistence::getPreferencesIngredientsClient($this->client->getId());
+        }else{
+            $ingredients_user = RecipePersistence::getIngredientsOfClient($this->client->getId());
+        }
 
-        foreach(RecipePersistence::getIngredientsByRecipes($session['visualization']) as $ingredient){
-            array_push($ingredients_user, $ingredient);
+        $ingredients = array();
+        if(false == is_null($visualization_cluster)) {
+            foreach (RecipePersistence::getIngredientsByRecipes($session['visualization']) as $ingredient) {
+                array_push($ingredients_user, $ingredient);
+            }
         }
 
         foreach($ingredients_user as $ingredient_user){
@@ -91,7 +123,6 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
         $similarity_recipes = $this->cosinusSimilarityRecipes($matrix, $row_user);
 
         return $this->getBestSimilarity($similarity_recipes);
-
     }
 
     /**
@@ -194,35 +225,12 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
             $cross_product_vector = $user_vector * $recipe_vector;
 
             if($cross_product_vector != 0 and $product_vector !=0) {
+                $object_recipe->setScore($product_vector / ($cross_product_vector));
                 $similarity_recipes[$index_similarity]['recipe'] = $object_recipe;
-                $similarity_recipes[$index_similarity]['score'] = $product_vector / ($cross_product_vector);
             }
             $index_similarity++;
         }
         return $similarity_recipes;
-    }
-
-    /**
-     * @param array $recipes
-     * @return array
-     */
-    private function sortRecipes($recipes)
-    {
-        $sort_recipes = array();
-
-        foreach($recipes as $recipe){
-            foreach($recipe as $key=>$value){
-                if(!isset($sort_recipes[$key])){
-                    $sort_recipes[$key] = array();
-                }
-                $sort_recipes[$key][] = $value;
-            }
-        }
-        $orderby = "score";
-
-        array_multisort($sort_recipes[$orderby],SORT_DESC,$recipes);
-
-        return $sort_recipes;
     }
 
     /**
@@ -235,15 +243,29 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
 
         $mean_similarity = 0;
         foreach($recipes as $k=>$v){
-            $mean_similarity += $v['score'];
+            $mean_similarity += $v['recipe']->getScore();
         }
         $mean_similarity /= count($recipes);
 
         foreach($recipes as $k=>$v) {
-            if($v['score'] >= $mean_similarity)
+            if($v['recipe']->getScore() >= $mean_similarity)
                 array_push($best_similarity, $recipes[$k]);
         }
         return $this->sortRecipes($best_similarity);
+    }
+
+    /**
+     * @param array $recipes
+     * @return array
+     */
+    private function sortRecipes($recipes)
+    {
+        usort($recipes, function ($a, $b){
+            if ($a['recipe']->getScore() == $b['recipe']->getScore()) return 0;
+            return ($a['recipe']->getScore() < $b['recipe']->getScore())?1:-1;
+        });
+
+        return $recipes;
     }
 
     /**

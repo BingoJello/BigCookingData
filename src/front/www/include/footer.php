@@ -5,7 +5,7 @@
 
                 <!-- Footer Logo -->
                 <div class="footer-logo">
-                    <a href="index.php"><img src="../img/core-img/logo-title.png" width="180" height="180" alt=""></a>
+                    <a href="index"><img src="../img/core-img/logo-title.png" width="180" height="180" alt=""></a>
                 </div>
             </div>
         </div>

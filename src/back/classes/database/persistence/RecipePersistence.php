@@ -93,6 +93,43 @@ class RecipePersistence
     }
 
     /**
+     * @brief Récupère les recettees enregistrés / évalués par le client
+     * @param int $id_client
+     * @return array
+     */
+    public static function getIdRecipesByClient($id_client){
+        $id_recipes = array();
+
+        $query="SELECT recipe.id_recipe FROM recipe
+                INNER JOIN assess ON assess.id_recipe = recipe.id_recipe
+                INNER JOIN client ON client.id_client = assess.id_client
+                WHERE client.id_client = ?";
+        $params = [$id_client];
+
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            array_push($id_recipes, $row['id_recipe']);
+        }
+
+        $query="SELECT recipe.* FROM recipe
+                INNER JOIN record ON record.id_recipe = recipe.id_recipe
+                INNER JOIN client ON client.id_client = record.id_client
+                WHERE client.id_client = ?";
+        $params = [$id_client];
+
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            if(false === in_array($id_recipes, $row['id_recipe'])){
+                array_push($id_recipes, $row['id_recipe']);
+            }
+        }
+
+        return $id_recipes;
+    }
+
+    /**
      * @brief Récupère les recettes d'un (ou plusieurs) cluster(s)
      * @param array $id_cluster
      * @return array
@@ -134,23 +171,51 @@ class RecipePersistence
 
     /**
      * @brief Récupère les recettes par rapport aux ingrédients (inclus et exclus) et à l'ID du cluster
-     * @param $id_cluster
-     * @param $ingredients_include
+     * @param int $id_cluster
+     * @param string $ingredients_include
      * @param string $ingredients_exclude
      * @return array
      */
-    public static function getRecipesByIngredientsAndCluster($id_cluster, $ingredients_include, $ingredients_exclude='')
+    public static function getRecipesByIngredientsAndCluster($id_cluster, $ingredients_include, $ingredients_exclude)
     {
         $recipes = array();
+        $searching = new Searching();
         $ingredients_include = explode(";", $ingredients_include);
         array_pop($ingredients_include);
-        $ingredients_include = "'".join("','",$ingredients_include)."'";
+
+        $nbr_ingredients_include = count($ingredients_include);
+
+        for($i=0; $i < count($ingredients_include); $i++){
+            $ingredients_include[$i] = str_replace("'", "''" , $ingredients_include[$i]);
+            $searching->build($ingredients_include[$i]);
+            $ingredients_include[$i] = $searching->getKeyword();
+        }
 
         if(true === empty($ingredients_exclude)){
             $query = "SELECT DISTINCT recipe.* FROM recipe 
                       INNER JOIN contain_recipe_ingredient AS cri ON cri.id_recipe = recipe.id_recipe 
-                      INNER JOIN ingredient ON ingredient.id_ingredient = cri.id_ingredient
-                      WHERE recipe.clusterNumber = ? AND ingredient.name IN(".$ingredients_include.")";
+                      INNER JOIN ingredient ON ingredient.id_ingredient = cri.id_ingredient 
+                      WHERE recipe.clusterNumber = ? AND ";
+            $cpt = 0;
+
+            foreach($ingredients_include as $ingredients){
+                if(0 == $cpt){
+                    $query.="ingredient.name LIKE('";
+                    foreach($ingredients as $ingredient){
+                        $query.="%".$ingredient;
+
+                    }
+                }else {
+                    $query .= " OR ingredient.name LIKE('";
+                    foreach ($ingredients as $ingredient) {
+                        $query .= "%" . $ingredient;
+                    }
+                }
+                $query.="%')";
+                $cpt++;
+            }
+            $query.=" GROUP BY recipe.id_recipe 
+                      HAVING COUNT(recipe.id_recipe) >= ".$nbr_ingredients_include;
         }else{
             $ingredients_exclude = explode(";", $ingredients_exclude);
             array_pop($ingredients_exclude);
@@ -167,8 +232,6 @@ class RecipePersistence
                         WHERE ingredient.name IN(" . $ingredients_exclude . ")
                       )";
         }
-        echo $query;
-
         $params = [$id_cluster];
 
         $result = DatabaseQuery::selectQuery($query, $params);

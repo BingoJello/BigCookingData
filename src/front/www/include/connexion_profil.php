@@ -8,7 +8,7 @@
 				</div>
 				<div class="modal-body">
 					<div class="calculator_form">
-						<form class="form-horizontal condensed_form" id="calculator_form" action="./connexion.php" method="POST">
+						<form class="form-horizontal condensed_form" id="calculator_form" action="connexion" method="POST">
 							<fieldset>	
 								<div class="form-group row">
 									<label for="email-login" class="col-12 col-sm-4 col-form-label label-email-login">Email</label>

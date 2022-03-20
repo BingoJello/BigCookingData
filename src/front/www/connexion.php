@@ -10,7 +10,7 @@
 
 <?php
     if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
-        header('location:./profil.php');
+        header('location:profil');
     }
 
     if((isset($_POST['password']) AND (!empty($_POST['password']))) AND (isset($_POST['email']) AND (!empty($_POST['email'])))){
@@ -52,7 +52,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <form action="./recipes.php" method="post">
+                    <form action="recettes" method="post">
                         <input type="search" name="search" placeholder="Tapez un mot-clé...">
                         <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                     </form>
@@ -83,7 +83,7 @@
                         }
                     ?>
 
-                    <form id="profil-form" action="./connexion.php" method="POST" style="margin-top:20px" >
+                    <form id="profil-form" action="connexion" method="POST" style="margin-top:20px" >
                         <div class="row form-group">
                             <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="email">Email*</label>
                             <div class="col-12 col-sm-9 col-md-6 col-lg-6 col-xl-5">

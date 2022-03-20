@@ -9,6 +9,7 @@
     require_once('../../back/classes/business/process/recommenderSystem/ContentBasedRecommenderSystem.php');
     require_once('../../back/classes/database/persistence/RecipePersistence.php');
     require_once('../../back/classes/database/persistence/ClientPersistence.php');
+    require_once('../../back/classes/business/service/DecisionTreeCluster.php');
     include('../../back/functions/functions_utils.php');
     include('../../back/functions/functions_recipes.php');
     include('../../back/functions/functions_client.php');
@@ -16,8 +17,11 @@
 ?>
 
 <?php
+    if(false === isset($_SESSION['visualization'])){
+        $_SESSION['visualization'] = array();
+    }
+
     if(isset($_SESSION['client']) and !empty($_SESSION['client'])) {
-        $_SESSION['visualization'] = array(89, 90, 64);
         $client = getClient();
         try {
             $recipes = getSuggestedRecipes($client, $_SESSION);
@@ -68,7 +72,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <form action="./recipes.php" method="post">
+                    <form action="recettes" method="post">
                         <input type="search" name="search" placeholder="Tapez un mot-clé...">
                         <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                     </form>
@@ -190,7 +194,7 @@
                         <div class="top-cta-content">
                             <h3>Chinesse Noodles</h3>
                             <h6>Simple &amp; Delicios</h6>
-                            <a href="recipe-post.php" class="btn delicious-btn">See Full Recipe</a>
+                            <a href="recette" class="btn delicious-btn">See Full Recipe</a>
                         </div>
                     </div>
                 </div>

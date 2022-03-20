@@ -8,17 +8,20 @@ class Searching
 {
     private $keyword;
 
-    public function __construct($words){
-        $this->keyword = $this->removeStopWords($this->tokenize($words));
+    public function __construct(){
+
+    }
+    public function build($words, $token = ' '){
+        $this->keyword = $this->removeStopWords($this->tokenize($words, $token));
         $this->keyword = $this->stemmer($this->keyword);
     }
 
-    private function tokenize($words){
+    private function tokenize($words, $token = ' '){
         $tokenized_words= array();
-        $tok_str = strtok($words, ' ');
+        $tok_str = strtok($words, $token);
         while ($tok_str !== false) {
             $tokenized_words[] = $tok_str;
-            $tok_str = strtok(' ');
+            $tok_str = strtok($token);
         }
         return $tokenized_words;
     }

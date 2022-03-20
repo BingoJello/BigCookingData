@@ -120,8 +120,8 @@ function updatePasswordClient($id_client, $password){
  * @param float $rating
  * @param string $commentary
  */
-function insertRatingAndCommentary($id_recipe, $id_client, $rating, $commentary = '', $date){
-    ClientPersistence::insertCommentaryAndRating($id_recipe, $id_client, $rating, $commentary, $date);
+function insertRatingAndCommentary($id_recipe, $id_client, $rating, $date, $commentary = ''){
+    ClientPersistence::insertCommentaryAndRating($id_recipe, $id_client, $rating, $date, $commentary);
 }
 ?>
 

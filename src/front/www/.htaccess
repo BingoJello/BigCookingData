@@ -1,0 +1,26 @@
+#----------------------------
+#config
+#----------------------------
+
+# Le serveur doit suivre les liens symboliques :
+Options +FollowSymlinks
+
+# Activation du module de réécriture d'url
+RewriteEngine On
+
+#----------------------------
+# Règles de réécriture d'url
+#----------------------------
+
+RewriteRule ^accueil$ ./index.php
+RewriteRule ^recettes$ ./recipes.php
+RewriteRule ^qui-sommes-nous$ ./about.php
+RewriteRule ^inscription$ ./registration.php
+RewriteRule ^connexion$ ./connexion.php
+RewriteRule ^profil$ ./profil.php
+RewriteRule ^carnet-de-recettes$ ./recipe-book.php
+RewriteRule ^recette-([0-9]*)$ ./recipe-post.php?recipe=$1
+RewriteRule ^recette$ ./recipe-post.php
+
+ErrorDocument 404 http://localhost/BigCookingData/src/front/www/error.php
+ErrorDocument 403 http://localhost/BigCookingData/src/front/www/error.php

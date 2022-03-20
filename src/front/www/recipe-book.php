@@ -53,7 +53,7 @@ include('../../back/functions/functions_utils.php');
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <form action="./recipes.php" method="post">
+                <form action="recettes" method="post">
                     <input type="search" name="search" placeholder="Tapez un mot-clé...">
                     <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                 </form>
@@ -74,7 +74,7 @@ include('../../back/functions/functions_utils.php');
                 <div class="row">
                     <h1 style="margin:0 auto;font-size:24px" for="num_meals_selector">Mon carnet de recettes</h1>
                 </div>
-                <form id="profil-form" action="./profil.php" method="POST">
+                <form id="profil-form" action="profil" method="POST">
                     <div class="generator_header col-12 col-md-9 col-lg-9" style="margin:0 auto;margin-top:20px">
                         <div class="row">
                             <div style="float:left">

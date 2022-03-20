@@ -20,23 +20,31 @@ include('../../back/utils/constants.php');
     }
     if(isset($_GET['recipe']) and !empty($_GET['recipe'])) {
         $recipe = getRecipe($_GET['recipe']);
+        if(isset($_SESSION['visualization'])){
+            if(false === in_array($recipe->getId(), $_SESSION['visualization'])){
+                array_push($_SESSION['visualization'], $recipe->getId());
+            }
+        }else{
+            $_SESSION['visualization'] = array();
+            array_push($_SESSION['recipe'], $recipe->getId());
+        }
     } elseif (isset($_POST['recipe']) and !empty($_POST['recipe'])){
         $recipe = getRecipe($_POST['recipe']);
     } else{
-        header('location:./recipes.php');
+        header('location:recettes');
     }
 
     if(isset($_POST['rate']) and !empty($_POST['rate']) AND (isset($_POST['date']) and !empty($_POST['date']))) {
         if(!isset($client)){
-            header('location:./recipe-post.php');
+            header('location:recette');
         }
         $rating = $_POST['rate'];
         $date = $_POST['date'];
         if(isset($_POST['commentary']) and !empty($_POST['commentary'])) {
             $commentary = $_POST['commentary'];
-            insertRatingAndCommentary($recipe->getId(), $client->getId(), $rating, $commentary, $date);
+            insertRatingAndCommentary($recipe->getId(), $client->getId(), $rating, $date, $commentary);
         }else{
-            insertRatingAndCommentary($recipe->getId(), $client->getId(), $rating);
+            insertRatingAndCommentary($recipe->getId(), $client->getId(), $rating, $date);
         }
     }
 
@@ -175,6 +183,7 @@ include('../../back/utils/constants.php');
                     }
                 ?>
                 <a href="#" data-toggle='modal' data-target=<?php echo $data_target;?> class="btn delicious-btn" data-animation="fadeInUp" data-delay="1000ms">Donnez votre avis</a>
+                <a href="#"  class="btn delicious-btn">Enregistrez la recette</a>
                 <?php printAssessRecipe($assessed_recipe);?>
             </div>
         </div>
