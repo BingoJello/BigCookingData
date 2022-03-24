@@ -1,7 +1,16 @@
 <?php
     session_start();
     require_once('../../back/classes/business/model/Client.php');
+    require_once('../../back/classes/database/DatabaseQuery.php');
+    require_once('../../back/classes/database/DatabaseConnection.php');
+    require_once('../../back/classes/database/persistence/RecipePersistence.php');
+    require_once('../../back/classes/database/persistence/ClientPersistence.php');
     include('../../back/functions/functions_utils.php');
+    include('../../back/functions/functions_recipes.php');
+    include('../../back/functions/functions_client.php');
+?>
+<?php
+    $nbr_recipes = getNbrRecipes();
 ?>
 
 <!DOCTYPE html>
@@ -90,7 +99,7 @@
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="single-cool-fact">
                         <img src="../img/core-img/hamburger.png" alt="">
-                        <h3><span class="counter">1287</span></h3>
+                        <h3><span class="counter"><?php echo $nbr_recipes; ?></span></h3>
                         <h6>Recettes</h6>
                     </div>
                 </div>

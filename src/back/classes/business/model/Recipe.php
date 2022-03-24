@@ -63,9 +63,13 @@ class Recipe
      */
     private $cluster;
     /**
-     * @var
+     * @var float
      */
     private $score;
+    /**
+     * @var string
+     */
+    private $close_to;
 
     /**
      * Recipe constructor.
@@ -84,10 +88,11 @@ class Recipe
      * @param array $ingredients
      * @param int $cluster
      * @param float $score
+     * @param string $close_to
      */
     public function __construct($id, $name = '', $url_pic = '', $categories = '', $directions = '', $prep_time = 0,
                                 $cook_time = 0, $break_time = 0, $difficulty = '', $budget = '', $serving = 0, $cluster = -1,
-                                $coord='', $ingredients = array(), $score = 0)
+                                $coord='', $ingredients = array(), $score = 0, $close_to ='')
     {
         $this->id = $id;
         $this->name = $name;
@@ -104,6 +109,7 @@ class Recipe
         $this->ingredients = $ingredients;
         $this->cluster = $cluster;
         $this->score = $score;
+        $this->close_to = $close_to;
     }
 
     /**
@@ -357,5 +363,21 @@ class Recipe
     public function setScore($score)
     {
         $this->score = $score;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCloseTo()
+    {
+        return $this->close_to;
+    }
+
+    /**
+     * @param string $close_to
+     */
+    public function setCloseTo(string $close_to)
+    {
+        $this->close_to = $close_to;
     }
 }

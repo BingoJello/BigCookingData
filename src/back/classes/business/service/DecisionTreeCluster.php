@@ -8,18 +8,23 @@ class DecisionTreeCluster
 {
     public static function getCluster($ingredients, $is_array = false)
     {
+        $process_text_ingredient = new ProcessTextIngredient($ingredients, ';');
+        $process_text_ingredient->build();
+
+        $ingredients = RecipePersistence::getIngredientNameByWord($process_text_ingredient->getWords());
+
         if(true === $is_array){
-            $ingredients_string = "";
-            $count = count($ingredients);
-            $i = 0;
-            foreach ($ingredients as $ingredient){
-                if($i == $count - 1){
-                    $ingredients_string.=$ingredient->getName();
+            $ingredient_string = "";
+            $index = 0;
+            foreach($ingredients as $ingredient){
+                if($index == count($ingredients) - 1){
+                    $ingredient_string.=$ingredient;
                 }else{
-                    $ingredients_string.=$ingredient->getName().";";
+                    $ingredient_string.=$ingredient.";";
                 }
+                $index++;
             }
-            $ingredients = $ingredients_string;
+            $ingredients = $ingredient_string;
         }
         try{
             /*Connection to the soap service */

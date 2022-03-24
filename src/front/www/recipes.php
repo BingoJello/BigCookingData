@@ -7,10 +7,11 @@ require_once('../../back/classes/business/process/recommenderSystem/RecommenderS
 require_once('../../back/classes/business/process/recommenderSystem/ContentBasedRecommenderSystem.php');
 require_once('../../back/classes/business/process/informationRetrieval/Stemmer.php');
 require_once('../../back/classes/business/process/informationRetrieval/Stem.php');
-require_once('../../back/classes/business/process/informationRetrieval/Searching.php');
+require_once('../../back/classes/business/process/informationRetrieval/ProcessText.php');
+require_once('../../back/classes/business/process/informationRetrieval/ProcessTextSearch.php');
 require_once('../../back/classes/business/process/informationRetrieval/StemmerFactory.php');
 require_once('../../back/classes/business/process/informationRetrieval/FrenchStemmer.php');
-require_once('../../back/classes/business/tools/StopWords.php');
+require_once('../../back/classes/business/process/informationRetrieval/StopWords.php');
 require_once('../../back/classes/database/DatabaseQuery.php');
 require_once('../../back/classes/database/DatabaseConnection.php');
 require_once('../../back/classes/database/persistence/RecipePersistence.php');
@@ -34,7 +35,7 @@ include('../../back/utils/constants.php');
         if(isset($_POST['include_ingredients']) and !empty($_POST['include_ingredients'])){
             $exclude_ingredients = $_POST['exclude_ingredients'];
         }
-        $recipes = getRecipesIncludeExclude($_POST['include_ingredients']);
+        $recipes = getRecipesIncludeExclude($_POST['include_ingredients'], $_POST['exclude_ingredients']);
         $json_recipes = getJsonRecipes($recipes, true);
         $limit = LIMIT_PAGINATION;
         $total_pages = ceil(count($recipes) / $limit);
@@ -116,12 +117,10 @@ include('../../back/utils/constants.php');
                 <form action="./recipes" method="post">
 					<div class="row">
 						<div class="col 12 col-lg-3">
-                            <input type="text" id="list_ingredients_include" class="form-control" name="include_ingredients"
-                                   autocomplete="off" placeholder="Inclure des ingredients"/>
+                            <input type="text" class="form-control" name="include_ingredients" placeholder="Inclure des ingredients"/>
 						</div>
 						<div class="col 12 col-lg-3">
-                            <input type="text" id="list_ingredients_exclude" class="form-control" name="exclude_ingredients"
-                                   autocomplete="off" placeholder="Exclure des ingredients"/>
+                            <input type="text" class="form-control" name="exclude_ingredients" placeholder="Exclure des ingredients"/>
 						</div>
                         <div class="col-12 col-lg-3">
                             <input type="search" class="input-search" name="search" placeholder="Recherchez des recettes">

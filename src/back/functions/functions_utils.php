@@ -193,6 +193,7 @@ function printGlobalRating($score, $nbr_reviews){
     }else{
         $html.="<label style='padding-left:2em'>".$nbr_reviews." évaluations</label>";
     }
+
     $html.="</div></div>";
 
     echo $html;

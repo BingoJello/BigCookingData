@@ -34,6 +34,10 @@ include('../../back/utils/constants.php');
         header('location:recettes');
     }
 
+    if(isset($_GET['record']) and !empty($_GET['record'])){
+        insertRecord($client->getId(), $recipe->getId());
+    }
+
     if(isset($_POST['rate']) and !empty($_POST['rate']) AND (isset($_POST['date']) and !empty($_POST['date']))) {
         if(!isset($client)){
             header('location:recette');
@@ -91,7 +95,7 @@ include('../../back/utils/constants.php');
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <form action="#" method="post">
+                    <form action="recettes" method="post">
                         <input type="search" name="search" placeholder="Tapez un mot-clé...">
                         <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                     </form>
@@ -183,7 +187,7 @@ include('../../back/utils/constants.php');
                     }
                 ?>
                 <a href="#" data-toggle='modal' data-target=<?php echo $data_target;?> class="btn delicious-btn" data-animation="fadeInUp" data-delay="1000ms">Donnez votre avis</a>
-                <a href="#"  class="btn delicious-btn">Enregistrez la recette</a>
+                <a href="recipe-post.php?recipe=<?php echo $recipe->getId();?>&amp;record=true"  class="btn delicious-btn">Enregistrez la recette</a>
                 <?php printAssessRecipe($assessed_recipe);?>
             </div>
         </div>

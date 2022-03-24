@@ -12,11 +12,7 @@ function getSuggestedRecipes($client, $session){
     return $contentBasedRecommenderSystem->getRecipes();
 }
 ?>
-<?php
-function getSuggestedRecipesByVisualization($session){
 
-}
-?>
 
 <?php
 /**
@@ -67,16 +63,34 @@ function getAllIngredients(){
 ?>
 
 <?php
+/**
+ * @param $words
+ * @return array
+ */
 function getRecipesSearching($words){
-    $searching = new Searching();
-    $searching->build($words);
-    return RecipePersistence::getRecipesBySearching($searching->getKeyword());
+    $process_text_search = new ProcessTextSearch($words);
+    $process_text_search->build();
+    return RecipePersistence::getRecipesBySearching($process_text_search->getWords());
 }
 ?>
 
 <?php
+/**
+ * @param $include_ingredients
+ * @param string $exclude_ingredients
+ * @return array
+ */
 function getRecipesIncludeExclude($include_ingredients, $exclude_ingredients = ''){
     $id_cluster = DecisionTreeCluster::getCluster($include_ingredients);
     return RecipePersistence::getRecipesByIngredientsAndCluster($id_cluster, $include_ingredients, $exclude_ingredients);
+}
+?>
+
+<?php
+/**
+ * @return int|mixed
+ */
+function getNbrRecipes(){
+    return RecipePersistence::getNbrRecipes();
 }
 ?>

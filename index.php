@@ -8,22 +8,20 @@ require_once('./src/back/classes/business/process/recommenderSystem/RecommenderS
 require_once('./src/back/classes/business/process/recommenderSystem/ContentBasedRecommenderSystem.php');
 require_once('./src/back/classes/business/process/informationRetrieval/Stemmer.php');
 require_once('./src/back/classes/business/process/informationRetrieval/Stem.php');
-require_once('./src/back/classes/business/process/informationRetrieval/Searching.php');
 require_once('./src/back/classes/business/process/informationRetrieval/StemmerFactory.php');
 require_once('./src/back/classes/business/process/informationRetrieval/FrenchStemmer.php');
+require_once('./src/back/classes/business/process/informationRetrieval/ProcessText.php');
+require_once('./src/back/classes/business/process/informationRetrieval/ProcessTextIngredient.php');
 require_once('./src/back/classes/business/tools/StopWords.php');
 require_once('./src/back/classes/database/DatabaseQuery.php');
 require_once('./src/back/classes/database/DatabaseConnection.php');
 require_once('./src/back/classes/database/persistence/RecipePersistence.php');
 require_once('./src/back/classes/database/persistence/ClientPersistence.php');
 require_once('./src/back/classes/business/service/DecisionTreeCluster.php');
-require_once('./src/back/classes/test/TestCategories.php');
+require_once('./src/back/classes/business/process/proximityrecipes/UpdateProximityRecipes.php');
 include('./src/back/functions/functions_utils.php');
 include('./src/back/functions/functions_recipes.php');
 include('./src/back/functions/functions_client.php');
 include('./src/back/utils/constants.php');
-
-
-//$test = new TestCategories();
 
 ?>

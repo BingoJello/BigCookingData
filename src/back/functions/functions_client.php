@@ -126,6 +126,12 @@ function insertRatingAndCommentary($id_recipe, $id_client, $rating, $date, $comm
 ?>
 
 <?php
+function insertRecord($id_client, $id_recipe){
+    ClientPersistence::insertRecording($id_recipe, $id_client);
+}
+?>
+
+<?php
 /**
  * @param int $id_client
  * @param int $id_recipe

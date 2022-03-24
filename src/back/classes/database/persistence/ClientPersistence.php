@@ -168,6 +168,18 @@ class ClientPersistence
         DatabaseQuery::insertQuery($query, $params);
     }
 
+    /**
+     * @brief Insert l'enregistrement de la recette
+     * @param int $id_recipe
+     * @param int $id_client
+     */
+    public static function insertRecording($id_recipe, $id_client){
+        $query = "INSERT INTO record(id_recipe, id_client) VALUES (?,?)";
+        $params=[$id_recipe, $id_client];
+
+        DatabaseQuery::insertQuery($query, $params);
+    }
+
     /*******************
      * DELETE Methods
      ******************/
