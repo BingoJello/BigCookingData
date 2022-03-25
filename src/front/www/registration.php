@@ -6,7 +6,8 @@
     require_once('../../back/classes/database/DatabaseConnection.php');
     require_once('../../back/classes/database/persistence/ClientPersistence.php');
     require_once('../../back/classes/database/persistence/RecipePersistence.php');
-    include('../../back/functions/functions_mysql.php');
+    include('../../back/functions/functions_recipes.php');
+    include('../../back/functions/functions_client.php');
 ?>
 
 <?php
@@ -25,14 +26,18 @@
             $last_name = $_POST['lastname'];
             $first_name = $_POST['firstname'];
             $ingredients = $_POST['ingredients'];
-
-            registerInscriptionClient($pseudo,$civility,$email,$password,$password_confirm,$last_name,$first_name,$ingredients);
+            try {
+                registerInscriptionClient($pseudo, $civility, $email, $password, $password_confirm, $last_name, $first_name, $ingredients);
+            } catch (Exception $e) {
+            }
         }
     }
 
     if (isset($_SESSION['client']) and !empty($_SESSION['client'])){
         $client = unserialize($_SESSION['client']);
     }
+
+    $list_ingredients = json_encode(getAllIngredients());
 ?>
 
 <!DOCTYPE html>
@@ -42,11 +47,10 @@
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- The above 2 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js" integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <!-- Title -->
-    <title>Delicious - Food Blog | Log in</title>
+    <title>Delicioso! | Inscription</title>
     <!-- Favicon -->
     <link rel="icon" href="../img/core-img/favicon.ico">
     <!-- Core Stylesheet -->
@@ -71,7 +75,7 @@
             <div class="row">
                 <div class="col-12">
                     <form action="./recipes.php" method="post">
-                        <input type="search" name="search" placeholder="Type any keywords...">
+                        <input type="search" name="search" placeholder="Tapez un mot-clé...">
                         <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                     </form>
                 </div>
@@ -163,7 +167,7 @@
                         <div class="row form-group">
                             <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="password-confirm">Ingredients préférés</label>
                             <div class="col-12 col-sm-9 col-md-6 col-lg-6 col-xl-5">
-                                <input type="text" id="list_ingredients" class="form-control" name="ingredients"></input>
+                                <input type="text" id="list_ingredients" class="form-control" name="ingredients"/>
                             </div>
                         </div>
 					    <div class="row form-group small_top_spacer">
@@ -178,19 +182,10 @@
 	</section>
 
     <!-- ##### Footer Area Start ##### -->
-    <footer class="footer-area">
-        <div class="container h-100">
-            <div class="row h-100">
-                <div class="col-12 h-100 d-flex flex-wrap align-items-center justify-content-between">
-                    <!-- Footer Logo -->
-                    <div class="footer-logo">
-                        <a href="index.php"><img src="../img/core-img/logo.png" alt=""></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+     <?php include('include/footer.php');?>
      <!-- ##### Footer Area End ##### -->
+
+     <?php include('./include/connexion_profil.php'); ?>
 
     <!-- ##### All Javascript Files ##### -->
     <!-- jQuery-2.2.4 js -->
@@ -207,8 +202,21 @@
      <!-- Registration security js -->
      <script src="../js/registration.js"></script>
      <!-- List Ingredient multiple select js -->
-     <script src="../js/tools/list_ingredients_select.js"></script>
+     <script>
+        var listIngredientsJson = <?php echo $list_ingredients; ?>;
+        var listIngredients = [];
 
-     <?php include('./include/connexion_profil.php'); ?>
+        for(var i = 0; i < listIngredientsJson.length; i++){
+            listIngredients.push(listIngredientsJson[i]);
+        }
+
+        $("#list_ingredients").mSelectDBox({
+            "list": listIngredients,
+            "builtInInput": 0,
+            "multiple": true,
+            "autoComplete": true,
+            "name": "b"
+        });
+     </script>
 </body>
 </html>

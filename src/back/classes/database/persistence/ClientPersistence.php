@@ -1,10 +1,17 @@
 <?php
 
+/**
+ * Class ClientPersistence
+ * @author arthur mimouni
+ */
 class ClientPersistence
 {
-    //Select method
+    /*******************
+     * SELECT Methods
+     ******************/
 
     /**
+     * @brief Récupère un client
      * @param string $mail
      * @param string $password
      * @return Client|null
@@ -26,6 +33,7 @@ class ClientPersistence
     }
 
     /**
+     * @brief Récupère les préférences ingrédients du client
      * @param int $id_client
      * @return array
      */
@@ -47,6 +55,7 @@ class ClientPersistence
     }
 
     /**
+     * @brief Récupère le dernier ID des clients
      * @return int
      */
     public static function getLastIdClient()
@@ -61,9 +70,10 @@ class ClientPersistence
     }
 
     /**
-     * @param $email
-     * @param $password
-     * @param $pseudo
+     * @brief Vérifie si un client existe
+     * @param string $email
+     * @param string $password
+     * @param string $pseudo
      * @return bool
      */
     public static function findClientExist($email = false, $password = false, $pseudo = false)
@@ -87,9 +97,29 @@ class ClientPersistence
         }
     }
 
-    //insert methods
+    /**
+     * @brief Vérifie si un client à déjà noté la recette
+     * @param int $id_client
+     * @param int $id_recipe
+     * @return bool
+     */
+    public static function hasAlreadyRatingRecipe($id_client, $id_recipe){
+        $query = "SELECT id_client FROM assess WHERE id_client = ? AND id_recipe = ?";
+        $params = [$id_client, $id_recipe];
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row)
+            return true;
+
+        return false;
+    }
+
+    /*******************
+     * INSERT Methods
+     ******************/
 
     /**
+     * @brief Insére un client
      * @param int $id_client
      * @param string $firstname
      * @param string $lastname
@@ -108,21 +138,54 @@ class ClientPersistence
     }
 
     /**
+     * @brief Insert les préférences ingrédients d'un client
      * @param int $id_client
      * @param array $ingredients
      */
     public static function insertIngredientsPreferences($id_client, $ingredients)
     {
         foreach($ingredients as $ingredient) {
-            $query = "INSERT INTO have_preferences_ingredient(id_client,ingredient) VALUES (?,?)";
+            $query = "INSERT INTO have_preferences_ingredient(id_client,id_ingredient) VALUES (?,?)";
             $params=[$id_client, $ingredient];
             DatabaseQuery::insertQuery($query, $params);
         }
     }
 
-    //delete methods
+    /**
+     * @brief Insert la note et le commentaire d'une recette
+     * @param int $id_recipe
+     * @param int $id_client
+     * @param float $rating
+     * @param string $commentary
+     */
+    public static function insertCommentaryAndRating($id_recipe, $id_client, $rating, $date, $commentary)
+    {
+        if('' === $commentary){
+            $commentary = null;
+        }
+        $query = "INSERT INTO assess(id_recipe, id_client, rating, commentary, date_assess) VALUES (?,?,?,?,?)";
+        $params=[$id_recipe, $id_client, $rating, $commentary, $date];
+        DatabaseQuery::insertQuery($query, $params);
+    }
 
     /**
+     * @brief Insert l'enregistrement de la recette
+     * @param int $id_recipe
+     * @param int $id_client
+     */
+    public static function insertRecording($id_recipe, $id_client){
+        $query = "INSERT INTO record(id_recipe, id_client) VALUES (?,?)";
+        $params=[$id_recipe, $id_client];
+
+        DatabaseQuery::insertQuery($query, $params);
+    }
+
+    /*******************
+     * DELETE Methods
+     ******************/
+
+    /**
+     * @brief Supprime des ingrédients préférences d'un client
      * @param int $id_client
      * @param array $ingredients
      */
@@ -136,9 +199,12 @@ class ClientPersistence
         DatabaseQuery::insertQuery($query, $params);
     }
 
-    //update methods
+    /*******************
+     * UPDATE Methods
+     ******************/
 
     /**
+     * @brief Met à jour les préférences ingrédients d'un client
      * @param int $id_client
      * @param array $ingredients
      */
@@ -179,6 +245,7 @@ class ClientPersistence
     }
 
     /**
+     * @brief Met à jour le mot de passe d'un client
      * @param int $id_client
      * @param string $password
      */

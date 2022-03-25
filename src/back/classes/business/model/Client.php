@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Class Client
+ * @author arthur mimouni
+ */
 class Client
 {
     /**

@@ -1,3 +1,53 @@
+<?php
+session_start();
+require_once('../../back/classes/business/model/Client.php');
+require_once('../../back/classes/business/model/Recipe.php');
+require_once('../../back/classes/business/model/Ingredient.php');
+require_once('../../back/classes/business/process/recommenderSystem/RecommenderSystem.php');
+require_once('../../back/classes/business/process/recommenderSystem/ContentBasedRecommenderSystem.php');
+require_once('../../back/classes/business/process/informationRetrieval/Stemmer.php');
+require_once('../../back/classes/business/process/informationRetrieval/Stem.php');
+require_once('../../back/classes/business/process/informationRetrieval/ProcessText.php');
+require_once('../../back/classes/business/process/informationRetrieval/ProcessTextSearch.php');
+require_once('../../back/classes/business/process/informationRetrieval/StemmerFactory.php');
+require_once('../../back/classes/business/process/informationRetrieval/FrenchStemmer.php');
+require_once('../../back/classes/business/process/informationRetrieval/StopWords.php');
+require_once('../../back/classes/database/DatabaseQuery.php');
+require_once('../../back/classes/database/DatabaseConnection.php');
+require_once('../../back/classes/database/persistence/RecipePersistence.php');
+require_once('../../back/classes/database/persistence/ClientPersistence.php');
+require_once('../../back/classes/business/service/DecisionTreeCluster.php');
+include('../../back/functions/functions_utils.php');
+include('../../back/functions/functions_recipes.php');
+include('../../back/functions/functions_client.php');
+include('../../back/utils/constants.php');
+?>
+
+<?php
+    if (isset($_POST['search']) and !empty($_POST['search'])) {
+        $recipes = getRecipesSearching($_POST['search']);
+        $json_recipes = getJsonRecipes($recipes, true);
+        $limit = LIMIT_PAGINATION;
+        $total_pages = ceil(count($recipes) / $limit);
+
+    } elseif (isset($_POST['include_ingredients']) and !empty($_POST['include_ingredients'])){
+        $exclude_ingredients = '';
+        if(isset($_POST['include_ingredients']) and !empty($_POST['include_ingredients'])){
+            $exclude_ingredients = $_POST['exclude_ingredients'];
+        }
+        $recipes = getRecipesIncludeExclude($_POST['include_ingredients'], $_POST['exclude_ingredients']);
+        $json_recipes = getJsonRecipes($recipes, true);
+        $limit = LIMIT_PAGINATION;
+        $total_pages = ceil(count($recipes) / $limit);
+    } else {
+        $recipes = getRandomRecipes();
+        $json_recipes = getJsonRecipes($recipes);
+        $limit = LIMIT_PAGINATION;
+        $total_pages = ceil(count($recipes['recipe']) / $limit);
+    }
+    $list_ingredients = json_encode(getAllIngredients());
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,19 +56,13 @@
     <meta name="description" content="">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-	
 	<link rel="stylesheet" href="http://bootstrap-tagsinput.github.io/bootstrap-tagsinput/dist/bootstrap-tagsinput.css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js" integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-	
-    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-
     <!-- Title -->
-    <title>Delicious - Food Blog Template | Recipes</title>
-
+    <title>Delicioso! | Recettes</title>
     <!-- Favicon -->
     <link rel="icon" href="../img/core-img/favicon.ico">
-
     <!-- Core Stylesheet -->
 	<link rel="stylesheet" href="../css/etm1.css">
 	<link rel="stylesheet" href="../css/css_libs1.css">
@@ -41,8 +85,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <form action="#" method="post">
-                        <input type="search" name="search" placeholder="Type any keywords...">
+                    <form action="./recipes.php" method="post">
+                        <input type="search" name="search" placeholder="Tapez des mot-clés...">
                         <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                     </form>
                 </div>
@@ -58,7 +102,7 @@
             <div class="row h-100 align-items-center">
                 <div class="col-12">
                     <div class="breadcumb-text text-center">
-                        <h2>Recipes</h2>
+                        <h2>Recettes</h2>
                     </div>
                 </div>
             </div>
@@ -70,257 +114,148 @@
         <!-- Recipe Post Search -->
         <div class="recipe-post-search mb-80">
             <div class="container">
-                <form action="#" method="post">
+                <form action="./recipes" method="post">
 					<div class="row">
-						<div class="col 12, col-lg-3">
-							<input class="input-lg" type="text" value="" data-role="tagsinput" placeholder="Include ingredients"></input>
+						<div class="col 12 col-lg-3">
+                            <input type="text" class="form-control" name="include_ingredients" placeholder="Inclure des ingredients"/>
 						</div>
-						<div class="col 12, col-lg-3">
-							<input class="input-lg text-success" type="text" value="" data-role="tagsinput" placeholder="Exclude ingredients"></input>
+						<div class="col 12 col-lg-3">
+                            <input type="text" class="form-control" name="exclude_ingredients" placeholder="Exclure des ingredients"/>
 						</div>
-
                         <div class="col-12 col-lg-3">
-                            <input class="input-search" type="search" name="search" placeholder="Search Recipes">
+                            <input type="search" class="input-search" name="search" placeholder="Recherchez des recettes">
                         </div>
                         <div class="col-12 col-lg-3 text-right">
-                            <button type="submit" class="btn delicious-btn">Search</button>
+                            <button type="submit" class="btn delicious-btn">Recherche</button>
                         </div>
                     </div>
                 </form>
             </div>
         </div>
 		
-		 <!-- Recipe Catgeories Search -->
+		 <!-- Recipe Categories Search -->
         <div class="recipe-post-category mb-80">
 			<div class="container">
 				<?php include("./include/category-recipes.php");?>
 			</div>
         </div>
 
-        <!-- Receipe Content Area -->
-        <div class="recipe-content-area">
+        <section class="best-recipe-area">
             <div class="container">
-				<div class="row">
-					<!-- Recipes -->
-					<div class="col-12 col-sm-6 col-lg-4">
-						<div class="single-best-recipe-area mb-30">
-							<img src="../img/bg-img/r1.jpg" width="320" height="285" alt="">
-							<div class="recipe-content">
-								<a href="recipe-post.php">
-									<h5>Sushi Easy Receipy</h5>
-								</a>
-								<div class="ratings">
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star-o" aria-hidden="true"></i>
-								</div>
-							</div>
-						</div>
-					</div>
+                <div class="row" id="target-content">
+                </div>
 
-					<!-- Recipes -->
-					<div class="col-12 col-sm-6 col-lg-4">
-						<div class="single-best-recipe-area mb-30">
-							<img src="../img/bg-img/r2.jpg" width="320" height="285" alt="">
-							<div class="recipe-content">
-								<a href="recipe-post.php">
-									<h5>Homemade Burger</h5>
-								</a>
-								<div class="ratings">
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star-o" aria-hidden="true"></i>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Recipes -->
-					<div class="col-12 col-sm-6 col-lg-4">
-						<div class="single-best-recipe-area mb-30">
-							<img src="../img/bg-img/r3.jpg" width="320" height="285" alt="">
-							<div class="recipe-content">
-								<a href="recipe-post.php">
-									<h5>Vegan Smoothie</h5>
-								</a>
-								<div class="ratings">
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star-o" aria-hidden="true"></i>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Recipes -->
-					<div class="col-12 col-sm-6 col-lg-4">
-						<div class="single-best-recipe-area mb-30">
-							<img src="../img/bg-img/r4.jpg" width="320" height="285" alt="">
-							<div class="recipe-content">
-								<a href="recipe-post.php">
-									<h5>Calabasa soup</h5>
-								</a>
-								<div class="ratings">
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star-o" aria-hidden="true"></i>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Recipes -->
-					<div class="col-12 col-sm-6 col-lg-4">
-						<div class="single-best-recipe-area mb-30">
-							<img src="../img/bg-img/r5.jpg" width="320" height="285" alt="">
-							<div class="recipe-content">
-								<a href="recipe-post.php">
-									<h5>Homemade Breakfast</h5>
-								</a>
-								<div class="ratings">
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star-o" aria-hidden="true"></i>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Recipes -->
-					<div class="col-12 col-sm-6 col-lg-4">
-						<div class="single-best-recipe-area mb-30">
-							<img src="../img/bg-img/r6.jpg" width="320" height="285" alt="">
-							<div class="recipe-content">
-								<a href="recipe-post.php">
-									<h5>Healthy Fruit Desert</h5>
-								</a>
-								<div class="ratings">
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star-o" aria-hidden="true"></i>
-								</div>
-							</div>
-						</div>
-					</div>
-					
-					<!-- Recipes -->
-					<div class="col-12 col-sm-6 col-lg-4">
-						<div class="single-best-recipe-area mb-30">
-							<img src="../img/bg-img/r4.jpg" width="320" height="285" alt="">
-							<div class="recipe-content">
-								<a href="recipe-post.php">
-									<h5>Calabasa soup</h5>
-								</a>
-								<div class="ratings">
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star-o" aria-hidden="true"></i>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Recipes -->
-					<div class="col-12 col-sm-6 col-lg-4">
-						<div class="single-best-recipe-area mb-30">
-							<img src="../img/bg-img/r5.jpg" width="320" height="285" alt="">
-							<div class="recipe-content">
-								<a href="recipe-post.php">
-									<h5>Homemade Breakfast</h5>
-								</a>
-								<div class="ratings">
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star-o" aria-hidden="true"></i>
-								</div>
-							</div>
-						</div>
-					</div>
-
-					<!-- Recipes -->
-					<div class="col-12 col-sm-6 col-lg-4">
-						<div class="single-best-recipe-area mb-30">
-							<img src="../img/bg-img/r6.jpg" width="320" height="285" alt="">
-							<div class="recipe-content">
-								<a href="recipe-post.php">
-									<h5>Healthy Fruit Desert</h5>
-								</a>
-								<div class="ratings">
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star" aria-hidden="true"></i>
-									<i class="fa fa-star-o" aria-hidden="true"></i>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div> 
-			</div>
-        </div>
-	
-		<div class="container-pagination">
-			<div class="pagination p1">
-				<ul>
-					<a style="text-decoration: none;font-size: 14px" href="#"><li style="font-size: 14px"><</li></a>
-					<a style="text-decoration: none;font-size: 14px" class="" href="#"><li style="font-size: 14px">1</li></a>
-					<a style="text-decoration: none;font-size: 14px" href="#"><li style="font-size: 14px">2</li></a>
-					<a style="text-decoration: none;font-size: 14px" href="#"><li style="font-size: 14px">3</li></a>
-					<a style="text-decoration: none;font-size: 14px" href="#"><li style="font-size: 14px">4</li></a>
-					<a style="text-decoration: none;font-size: 14px" href="#"><li style="font-size: 14px">5</li></a>
-					<a style="text-decoration: none;font-size: 14px" href="#"><li style="font-size: 14px">6</li></a>
-					<a style="text-decoration: none;font-size: 14px" href="#"><li style="font-size: 14px">></li></a>
-				</ul>
-			</div>
-		</div>
+                <div class="container-pagination">
+                    <div class="pagination p1">
+                        <ul>
+                            <p id="object-recipes" style="display:none" data-id="<?php echo $recipes['recipe'] ?>"></p>
+                            <?php
+                            printPagination($total_pages);
+                            ?>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
 
     <!-- ##### Footer Area Start ##### -->
-    <footer class="footer-area">
-        <div class="container h-100">
-            <div class="row h-100">
-                <div class="col-12 h-100 d-flex flex-wrap align-items-center justify-content-between">
-                    <!-- Footer Logo -->
-                    <div class="footer-logo">
-                        <a href="index.php"><img src="../img/core-img/logo.png" alt=""></a>
-                    </div> 
-                </div>
-            </div>
-        </div>
-    </footer>
+    <?php include('include/footer.php');?>
     <!-- ##### Footer Area End ##### -->
 
-   <!-- ##### All Javascript Files ##### -->
+    <?php include('./include/connexion_profil.php'); ?>
+
+    <!-- ##### All Javascript Files ##### -->
     <!-- jQuery-2.2.4 js -->
     <script src="../js/jquery/jquery-2.2.4.min.js"></script>
+    <script src="../js/tools/md_select_box/dist/m-select-d-box.js"></script>
     <!-- Popper js -->
     <script src="../js/bootstrap/popper.min.js"></script>
     <!-- Bootstrap js -->
     <script src="../js/bootstrap/bootstrap.min.js"></script>
-    <script src="http://bootstrap-tagsinput.github.io/bootstrap-tagsinput/dist/bootstrap-tagsinput.min.js"></script>
     <!-- All Plugins js -->
     <script src="../js/plugins/plugins.js"></script>
     <!-- Active js -->
     <script src="../js/tools/active/active.js"></script>
-	<!-- Recipes Category js -->
+    <!-- Category js -->
 	<script src="../js/categoryRecipes.js"></script>
+    <!-- List Ingredient multiple select js -->
+    <script>
+        var listIngredientsJson = <?php echo $list_ingredients; ?>;
+        var listIngredients = [];
 
-	<?php include('./include/connexion_profil.php'); ?>
+        for(var i = 0; i < listIngredientsJson.length; i++){
+            listIngredients.push(listIngredientsJson[i]);
+        }
+        $("#list_ingredients_include").mSelectDBox({
+            "list": listIngredients,
+            "builtInInput": 0,
+            "multiple": true,
+            "autoComplete": true,
+            "name": "b"
+        });
+        $("#list_ingredients_exclude").mSelectDBox({
+            "list": listIngredients,
+            "builtInInput": 0,
+            "multiple": true,
+            "autoComplete": true,
+            "name": "b"
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            let Datas = new FormData();
+            Datas.append("page", 1);
+            Datas.append("recipes", JSON.stringify(<?php echo $json_recipes; ?>));
+            console.log(Datas);
+            let request = $.ajax({
+                type: "POST",
+                url: "pagination.php",
+                data:Datas,
+                cache: false,
+                contentType: false,
+                processData: false,
+            });
+
+            request.done(function (output_success) {
+                $("#target-content").html(output_success);
+            });
+            request.fail(function (http_error) {
+                //Code à jouer en cas d'éxécution en erreur du script du PHP
+                let server_msg = http_error.responseText;
+                let code = http_error.status;
+                let code_label = http_error.statusText;
+                alert("Erreur "+code+" ("+code_label+") : "  + server_msg);
+            });
+
+            $(".page-link").click(function(){
+                let Datas = new FormData();
+                Datas.append("page", $(this).attr("data-id"));
+                Datas.append("recipes", JSON.stringify(<?php echo $json_recipes; ?>));
+                let request = $.ajax({
+                    url: "pagination.php",
+                    type: "POST",
+                    data: Datas,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                });
+
+                request.done(function (output_success) {
+                    $("#target-content").html(output_success);
+                    $(".pageitem").removeClass("active");
+                    $("#"+select_id).addClass("active");
+                });
+                request.fail(function (http_error) {
+                    //Code à jouer en cas d'éxécution en erreur du script du PHP
+                    let server_msg = http_error.responseText;
+                    let code = http_error.status;
+                    let code_label = http_error.statusText;
+                    alert("Erreur "+code+" ("+code_label+") : "  + server_msg);
+                });
+            });
+        });
+    </script>
 </body>
 </html>

@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Class DatabaseQuery
+ * @author arthur mimouni
+ */
 class DatabaseQuery
 {
     /**
@@ -21,7 +25,7 @@ class DatabaseQuery
 
     /**
      * @brief Generic insert query in database
-     * @param $query
+     * @param string $query
      * @param array $params
      * @return false|PDOStatement
      */
@@ -38,7 +42,7 @@ class DatabaseQuery
 
     /**
      * @brief Generic insert query in database
-     * @param $query
+     * @param string $query
      * @param array $params
      * @return false|PDOStatement
      */

@@ -1,4 +1,4 @@
-<div class="modal fade" id="loginIHM" tabindex="-1" role="dialog" aria-labelledby="printNutritionIHM" aria-hidden="true">
+<div class="modal fade" id="loginIHM" tabindex="-1" role="dialog" aria-labelledby="loginIHM" aria-hidden="true">
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
 				 <div class="modal-header">
@@ -8,7 +8,7 @@
 				</div>
 				<div class="modal-body">
 					<div class="calculator_form">
-						<form class="form-horizontal condensed_form" id="calculator_form" action="./connexion.php" method="POST">
+						<form class="form-horizontal condensed_form" id="calculator_form" action="connexion" method="POST">
 							<fieldset>	
 								<div class="form-group row">
 									<label for="email-login" class="col-12 col-sm-4 col-form-label label-email-login">Email</label>
@@ -43,4 +43,4 @@
 				</div>	
 			</div>
 		</div>
-	</div>	
+	</div>

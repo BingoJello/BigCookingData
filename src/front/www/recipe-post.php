@@ -1,3 +1,62 @@
+<?php
+session_start();
+require_once('../../back/classes/business/model/Client.php');
+require_once('../../back/classes/business/model/Recipe.php');
+require_once('../../back/classes/business/model/Assess.php');
+require_once('../../back/classes/business/model/Ingredient.php');
+require_once('../../back/classes/database/DatabaseQuery.php');
+require_once('../../back/classes/database/DatabaseConnection.php');
+require_once('../../back/classes/database/persistence/RecipePersistence.php');
+require_once('../../back/classes/database/persistence/ClientPersistence.php');
+include('../../back/functions/functions_utils.php');
+include('../../back/functions/functions_recipes.php');
+include('../../back/functions/functions_client.php');
+include('../../back/utils/constants.php');
+?>
+
+<?php
+    if(isset($_SESSION['client']) and !empty($_SESSION['client'])) {
+        $client = getClient();
+    }
+    if(isset($_GET['recipe']) and !empty($_GET['recipe'])) {
+        $recipe = getRecipe($_GET['recipe']);
+        if(isset($_SESSION['visualization'])){
+            if(false === in_array($recipe->getId(), $_SESSION['visualization'])){
+                array_push($_SESSION['visualization'], $recipe->getId());
+            }
+        }else{
+            $_SESSION['visualization'] = array();
+            array_push($_SESSION['recipe'], $recipe->getId());
+        }
+    } elseif (isset($_POST['recipe']) and !empty($_POST['recipe'])){
+        $recipe = getRecipe($_POST['recipe']);
+    } else{
+        header('location:recettes');
+    }
+
+    if(isset($_GET['record']) and !empty($_GET['record'])){
+        insertRecord($client->getId(), $recipe->getId());
+    }
+
+    if(isset($_POST['rate']) and !empty($_POST['rate']) AND (isset($_POST['date']) and !empty($_POST['date']))) {
+        if(!isset($client)){
+            header('location:recette');
+        }
+        $rating = $_POST['rate'];
+        $date = $_POST['date'];
+        if(isset($_POST['commentary']) and !empty($_POST['commentary'])) {
+            $commentary = $_POST['commentary'];
+            insertRatingAndCommentary($recipe->getId(), $client->getId(), $rating, $date, $commentary);
+        }else{
+            insertRatingAndCommentary($recipe->getId(), $client->getId(), $rating, $date);
+        }
+    }
+
+    $assessed_recipe = getAssessRecipe($recipe->getId());
+    $global_rating = getGlobalRating($recipe->getId());
+?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,13 +69,15 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.6.0/chart.min.js" integrity="sha512-GMGzUEevhWh8Tc/njS0bDpwgxdCJLQBWG3Z2Ct+JGOpVnEmjvNx6ts4v6A2XJf1HOrtOsfhv3hBKpK9kE5z8AQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <!-- Title -->
-    <title>Delicious - Food Blog Template | Recipe Post</title>
+    <title>Delicioso! | Recette</title>
     <!-- Favicon -->
     <link rel="icon" href="../img/core-img/favicon.ico">
     <!-- Core Stylesheet -->
 	<link rel="stylesheet" href="../css/etm1.css">
 	<link rel="stylesheet" href="../css/css_libs1.css">
     <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style_recipe.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.10.2/css/all.css">
 </head>
 
 <body>
@@ -34,8 +95,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-12">
-                    <form action="#" method="post">
-                        <input type="search" name="search" placeholder="Type any keywords...">
+                    <form action="recettes" method="post">
+                        <input type="search" name="search" placeholder="Tapez un mot-clé...">
                         <button type="submit"><i class="fa fa-search" aria-hidden="true"></i></button>
                     </form>
                 </div>
@@ -51,7 +112,7 @@
             <div class="row h-100 align-items-center">
                 <div class="col-12">
                     <div class="breadcumb-text text-center">
-                        <h2>Recipe</h2>
+                        <h2>Recette</h2>
                     </div>
                 </div>
             </div>
@@ -66,30 +127,22 @@
                 <div class="row">
                     <div class="col-12 col-md-8">
                         <div class="recipe-headline my-5">
-                            <span>April 05, 2018</span>
-                            <h2>Vegetarian cheese salad</h2>
-							<p style="margin-top:-20px">This is a very lightly sauced pasta with lemon and shrimp. It's refreshing as well as filling.</p>
+                            <h2><?php echo $recipe->getName();?></h2>
+							<p style="margin-top:-20px"><?php echo $recipe->getCategories();?></p>
                             <div class="recipe-duration">
-                                <h6>Prep: 15 mins</h6>
-                                <h6>Cook: 30 mins</h6>
-                                <h6>Yields: 8 Servings</h6>
-								<div class="recipe-ratings my-4">
-									<div class="ratings">
-										<i class="fa fa-star" aria-hidden="true"></i>
-										<i class="fa fa-star" aria-hidden="true"></i>
-										<i class="fa fa-star" aria-hidden="true"></i>
-										<i class="fa fa-star" aria-hidden="true"></i>
-										<i class="fa fa-star-o" aria-hidden="true"></i>
-										<label>3.2/5</label>
-									</div>
-								</div>
-								<label><strong>Per Serving</strong> : 585 calories; protein : 39.4g; carbohydrates : 65.5g; fat : 18.5g; cholesterol : 287.2mg; sodium : 1157.6mg. <a href="#" style="text-decoration: underline;">See Full Nutrition</a></label>
+                                <h6>Préparation: <?php echo $recipe->getPrepTime();?></h6>
+                                <h6>Cuisson: <?php echo $recipe->getCookTime();?></h6>
+                                <h6>Repos: <?php echo $recipe->getBreakTime();?></h6>
+                                <?php
+                                    if(false == is_null($global_rating)){
+                                        printGlobalRating($global_rating['score'], $global_rating['nbr_reviews']);
+                                    }
+                                ?>
                             </div>
                         </div>
                     </div>
-
                     <div class="col-12 col-md-4">
-                        <img src="../img/test.webp" width="300" height="185" height alt="">
+                        <img src=<?php echo $recipe->getUrlPic();?> width='300' height='185' alt=''>
 						<p class="space-p"></p>
                     </div>
                 </div>
@@ -122,92 +175,26 @@
                     <div class="col-12 col-lg-4">
                         <div class="ingredients">
                             <h4>Ingredients</h4>
-                            <div>
-                                <label class="ingredient-label">4 Tbsp (57 gr) butter</label>
-                            </div>
-
-                            <div>
-                                <label class="ingredient-label">2 large eggs</label>
-                            </div>
-
-                            <div>
-                                <label class="ingredient-label">2 yogurt containers granulated sugar</label>
-                            </div>
-
-                            <div>
-                                <label class="ingredient-label">1 vanilla or plain yogurt, 170g container</label>
-                            </div>
-
-                            <div>
-                                <label class="ingredient-label">2 yogurt containers unbleached white flour</label>
-                            </div>
-
-                            <div>
-                                <label class="ingredient-label">1.5 yogurt containers milk</label>
-                            </div>
-
-                            <div>
-                                <label class="ingredient-label">1/4 tsp cinnamon</label>
-                            </div>
-
-                            <div class="custom-control custom-checkbox">
-                                <label class="ingredient-label">1 cup fresh blueberries </label>
-                            </div>
+                            <?php printIngredients($recipe);?>
                         </div>
                     </div>
                 </div>
-
-                <div class="row">
-                    <div class="col-12">
-                        <div class="section-heading text-left">
-                            <h3>Leave a comment</h3>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-12">
-                        <div class="contact-form-area">
-                            <form action="#" method="post">
-                                <div class="row">
-                                    <div class="col-12 col-lg-6">
-                                        <input type="text" class="form-control" id="name" placeholder="Name">
-                                    </div>
-                                    <div class="col-12 col-lg-6">
-                                        <input type="email" class="form-control" id="email" placeholder="E-mail">
-                                    </div>
-                                    <div class="col-12">
-                                        <input type="text" class="form-control" id="subject" placeholder="Subject">
-                                    </div>
-                                    <div class="col-12">
-                                        <textarea name="message" class="form-control" id="message" cols="30" rows="10" placeholder="Message"></textarea>
-                                    </div>
-                                    <div class="col-12">
-                                        <button class="btn delicious-btn mt-30" type="submit">Post Comments</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
+                <?php
+                    if(isset($_SESSION['client']) and !empty($_SESSION['client'])) {
+                        $data_target = "#postCommentaryIHM";
+                    }else{
+                        $data_target = "#loginIHM";
+                    }
+                ?>
+                <a href="#" data-toggle='modal' data-target=<?php echo $data_target;?> class="btn delicious-btn" data-animation="fadeInUp" data-delay="1000ms">Donnez votre avis</a>
+                <a href="recipe-post.php?recipe=<?php echo $recipe->getId();?>&amp;record=true"  class="btn delicious-btn">Enregistrez la recette</a>
+                <?php printAssessRecipe($assessed_recipe);?>
             </div>
         </div>
     </div>
 
     <!-- ##### Footer Area Start ##### -->
-    <footer class="footer-area">
-        <div class="container h-100">
-            <div class="row h-100">
-                <div class="col-12 h-100 d-flex flex-wrap align-items-center justify-content-between">
-
-                    <!-- Footer Logo -->
-                    <div class="footer-logo">
-                        <a href="index.php"><img src="../img/core-img/logo.png" alt=""></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
+    <?php include('include/footer.php');?>
     <!-- ##### Footer Area End ##### -->
 
     <!-- ##### All Javascript Files ##### -->
@@ -223,4 +210,7 @@
     <script src="../js/tools/active/active.js"></script>
 	
 	<?php include('./include/connexion_profil.php'); ?>
+    <?php include('./include/post-commentary.php')?>
+    <?php include ('./include/all-commentary.php');?>
 </body>
+</html>

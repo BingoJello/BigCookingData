@@ -10,8 +10,8 @@
                             <div id="breakingNewsTicker" class="ticker">
                                 <ul>
                                     <li><a href="#">Hello !</a></li>
-                                    <li><a href="#">Welcome to Delicious.</a></li>
-                                    <li><a href="#">Enjoy your meal.</a></li>
+                                    <li><a href="#">Bienvenue sur Delicioso!.</a></li>
+                                    <li><a href="#">Bon appétit</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -28,7 +28,7 @@
                     <nav class="classy-navbar justify-content-between" id="deliciousNav">
 
                         <!-- Logo -->
-                        <a class="nav-brand" href="index.php"><img src="../img/core-img/logo.png" alt=""></a>
+                        <a class="nav-brand" href="index"><img src="../img/core-img/logo-title.png" width="180" height="180" alt=""></a>
 
                         <!-- Navbar Toggler -->
                         <div class="classy-navbar-toggler">
@@ -46,11 +46,11 @@
                             <!-- Nav Start -->
                             <div class="classynav">
                                 <ul>
-                                    <li class="active"><a href="./index.php">Home</a></li>
+                                    <li class="active"><a href="index">Home</a></li>
                                     <li><a href="#">Menu</a>
                                         <div class="megamenu">
                                             <ul class="single-mega cn-col-4">
-                                                <li class="title">Recipes by category</li>
+                                                <li class="title">Recettes par catégorie</li>
                                                 <li><a href="./recipes.php?category=appetizers">Appetizers and Snacks</a></li>
                                                 <li><a href="./recipes.php?category=grilling">BBQ and Grilling</a></li>
                                                 <li><a href="./recipes.php?category=bread">Bread Recipes</a></li>
@@ -87,24 +87,26 @@
                                             </div>
                                         </div>
                                     </li>
-                                    <li><a href="./recipes.php">Recipes</a></li>
+                                    <li><a href="recettes">Recettes</a></li>
                                     <li><a href="./mealPlanner.php">Meal Planner</a></li>
-                                    <li><a href="./about.php">Abous us</a></li>
-									<li><a href="#">Profile</a>
+                                    <li><a href="qui-sommes-nous">Qui sommes-nous</a></li>
+									<li><a href="#">Profil</a>
 										<ul class="dropdown">
                                             <?php
                                                 if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
-                                                    echo "<li><a href='./profil.php'>My account</a></li>";
+                                                    echo "<li><a href='profil'>Mon compte</a></li>";
                                                 }else{
                                                     echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Mon profil</a></li>";
                                                 }
-                                            ?>
-                                            <li><a href="./recipe-book.php">Mon carnet</a></li>
-                                            <?php
                                                 if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
-                                                    echo "<li><a href='./deconnexion.php'>Log out</a></li>";
+                                                    echo "<li><a href='carnet-de-recettes'>Mon carnet</a></li>";
                                                 }else{
-                                                    echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Log in</a></li>";
+                                                    echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Mon carnet</a></li>";
+                                                }
+                                                if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
+                                                    echo "<li><a href='./deconnexion.php'>Déconnexion</a></li>";
+                                                }else{
+                                                    echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Connexion</a></li>";
                                                 }
                                             ?>
                                         </ul>

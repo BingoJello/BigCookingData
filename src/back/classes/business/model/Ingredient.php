@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Class Ingredient
+ * @author arthur mimouni
+ */
 class Ingredient
 {
     /**
@@ -14,6 +18,10 @@ class Ingredient
      * @var string
      */
     private $url_pic;
+    /**
+     * @var string
+     */
+    private $quantity;
 
     /**
      * Ingredient constructor.

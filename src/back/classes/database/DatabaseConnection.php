@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Class DatabaseConnection
+ * @author arthur mimouni
+ */
 class DatabaseConnection
 {
     /**

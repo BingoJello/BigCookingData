@@ -1,3 +1,4 @@
 <?php
-
-const DEFAULT_MAIN_CLIENT = "none";
+    const LIMIT_PAGINATION = 12;
+    const NBR_RANDOM_RECIPES = 48;
+?>
