@@ -1,7 +1,7 @@
 <?php
 /**
  * Class ContentBasedRecommenderSystem
- * @brief Effectue le processus global de création des recommandations de recettes
+ * @brief Effectue le processus de création des recommandations de recettes
  * @author arthur mimouni
  */
 class ContentBasedRecommenderSystem implements RecommenderSystem
@@ -34,99 +34,82 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
     public function buildRecipes($session)
     {
         $recipes_to_suggest = array('recipe' => array());
+        $ingredients_user = array();
 
-        $rated_recipes_user = RecipePersistence::getBestRatedRecipeUser();
+        $rated_recipes_user = RecipePersistence::getBestRatedRecipesUser();
 
         if(true === is_null($rated_recipes_user)){
+            $ingredients_user = ClientPersistence::getPreferencesIngredientsClient($this->client->getId());
             $best_cluster_preferences = DecisionTreeCluster::getCluster($this->client->getPreferencesIngredients, true);
-
-            /*TODO il faut créer une nouvelle function qui récupere les recettes selon un cluster et
-                des ingrédients sous forme d'array
-            */
-
             $preferences_recipes_user = RecipePersistence::getRecipesByIngredientsAndCluster($best_cluster_preferences,
-                $this->client->getPreferencesIngredients());
-
-            /*TODO Si les recettes de préférences sont vident alors on prend les recettes visualisés de la session et du
-                cluster ou il y a le plus de visualisation du client
-            */
-            if(true === is_null($preferences_recipes_user)){
+                $this->client->getPreferencesIngredients(), false, false);
+            if(true === is_null($preferences_recipes_user) or count($preferences_recipes_user) < 5){
                 $best_cluster_visualization_user = RecipePersistence::getBestVisualizationClusterUser($session);
+                $visualized_recipes_user = RecipePersistence::getRecipesVisualizatedByCluster($best_cluster_visualization_user, $session);
+                foreach($visualized_recipes_user as $recipe){
+                    foreach($recipe->getIngredients() as $ingredient)
+                        array_push($ingredients_user, $ingredient);
+                }
             }
-            /* TODO On met dans une array l'ensemble des recettes récupèrés et on envoie tout à la fonction fils*/
         }else{
-            $best_cluster_visualization_user = null;
-            $best_cluster_preferences = null;
-        }
-        /*
-        }else{
-            $best_cluster_visualization_user = null;
-            $best_cluster_preferences = null;
+            $ingredients_user = RecipePersistence::getIngredientsOfRatedRecipesByClient($this->client->getId());
+            $preferences_recipes_user = null;
+            $visualized_recipes_user = null;
         }
 
-        $recipes_builds = $this->buildContentBasedRecommender($best_cluster_rated_user,
-            $best_cluster_visualization_user, $best_cluster_preferences, $session);
+        $builded_recipes = $this->buildContentBasedRecommender($rated_recipes_user, $preferences_recipes_user,
+            $visualized_recipes_user, $ingredients_user, $session);
 
         $id_recipes_client = RecipePersistence::getIdRecipesByClient($this->client->getId());
-        foreach($session['visualization'] as $visualized_recipe){
-            if(false === in_array($visualized_recipe, $id_recipes_client)){
-                array_push($id_recipes_client, $visualized_recipe);
+
+        foreach($session['visualization'] as $visualized_recipes_user){
+            if(false === in_array($visualized_recipes_user, $id_recipes_client)){
+                array_push($id_recipes_client, $visualized_recipes_user);
             }
         }
-
-        foreach($recipes_builds as $recipe){
+        foreach($builded_recipes as $recipe){
             if(false === in_array($recipe['recipe']->getId(), $id_recipes_client)){
                 array_push($recipes_to_suggest['recipe'], $recipe['recipe']);
             }
         }
         $this->recipes = $recipes_to_suggest;
-        */
     }
 
     /**
-     * @param int $rated_cluster
-     * @param int $visualization_cluster
+     * @param array $rated_recipes_user
+     * @param array $preferences_recipes_user
+     * @param array $visualized_recipes_user
+     * @param array $ingredients_user
      * @param array $session
      * @return array
      */
-    private function buildContentBasedRecommender($rated_cluster, $visualization_cluster, $preferences_cluster, $session)
+    private function buildContentBasedRecommender($rated_recipes_user, $preferences_recipes_user, $visualized_recipes_user,
+                                                  $ingredients_user, $session)
     {
-        /* TODO Dans cette fonction, on récupère l'ensemble des recettes proches de l'array des recettes en paramètres
-            et on récupère l'ensembles des ingrédients de l'utilisateur (évaluation, preferences et/ou visualisation
-        */
+        $id_recipes = array();
 
-        $clusters = array();
-        if(false === is_null($preferences_cluster)){
-            if(false == is_null($visualization_cluster)){
-                array_push($clusters, $visualization_cluster);
-            }
-            array_push($clusters, $preferences_cluster);
-        }else {
-            if (false === is_null($rated_cluster)) {
-                array_push($clusters, $rated_cluster);
-            }
-            if (false === is_null($visualization_cluster)) {
-                array_push($clusters, $visualization_cluster);
+        foreach($rated_recipes_user as $recipe){
+            if(false === in_array($recipe->getId(), $id_recipes)){
+                array_push($id_recipes, $recipe->getId());
             }
         }
-        $recipes = RecipePersistence::getRecipesByCluster($clusters);
+        foreach($preferences_recipes_user as $recipe){
+            if(false === in_array($recipe->getId(), $id_recipes)){
+                array_push($id_recipes, $recipe->getId());
+            }
+        }
+        foreach($visualized_recipes_user as $recipe){
+            if(false === in_array($recipe->getId(), $id_recipes)){
+                array_push($id_recipes, $recipe->getId());
+            }
+        }
+        $proximity_recipes = RecipePersistence::getProximityRecipes($id_recipes);
 
-        if(true === empty($recipes)){
+        if(true === empty($proximity_recipes) or true === is_null($proximity_recipes)){
             return array();
         }
 
-        if(false === is_null($preferences_cluster)){
-            $ingredients_user = ClientPersistence::getPreferencesIngredientsClient($this->client->getId());
-        }else{
-            $ingredients_user = RecipePersistence::getIngredientsOfClient($this->client->getId());
-        }
-
         $ingredients = array();
-        if(false == is_null($visualization_cluster)) {
-            foreach (RecipePersistence::getIngredientsByRecipes($session['visualization']) as $ingredient) {
-                array_push($ingredients_user, $ingredient);
-            }
-        }
 
         foreach($ingredients_user as $ingredient_user){
             if(false == in_array($ingredient_user, $ingredients)){
@@ -136,7 +119,7 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
 
         $ingredients_percentage = $this->buildPercentageIngredient($ingredients_user);
         $row_user = $this->buildVectorUser($ingredients_percentage);
-        $matrix = $this->buildMatrix($recipes, $ingredients);
+        $matrix = $this->buildMatrix($proximity_recipes, $ingredients);
         $similarity_recipes = $this->cosinusSimilarityRecipes($matrix, $row_user);
 
         return $this->getBestSimilarity($similarity_recipes);
@@ -172,7 +155,6 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
         foreach ($ingredients_user as $key => $percent_ingredient_user) {
             array_push($row_user, $ingredients_user[$key] /= $total_ingredients_user);
         }
-
         return $row_user;
     }
 
@@ -198,7 +180,6 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
             }
             array_push($matrix, $row);
         }
-
         return $matrix;
     }
 

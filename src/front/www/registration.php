@@ -1,16 +1,13 @@
 <?php
     session_start();
-    require_once('../../back/classes/business/model/Client.php');
-    require_once('../../back/classes/business/model/Ingredient.php');
-    require_once('../../back/classes/database/DatabaseQuery.php');
-    require_once('../../back/classes/database/DatabaseConnection.php');
-    require_once('../../back/classes/database/persistence/ClientPersistence.php');
-    require_once('../../back/classes/database/persistence/RecipePersistence.php');
-    include('../../back/functions/functions_recipes.php');
-    include('../../back/functions/functions_client.php');
+    require_once('./require/require_registration.php');
 ?>
 
 <?php
+    if (isset($_SESSION['client']) and !empty($_SESSION['client'])){
+        $client = getClient();
+    }
+
     if ((isset($_POST['pseudo']) and (!empty($_POST['pseudo'])))
         and (isset($_POST['civility']) and (!empty($_POST['civility'])))
         and (isset($_POST['email']) and (!empty($_POST['email'])))
@@ -27,17 +24,13 @@
             $first_name = $_POST['firstname'];
             $ingredients = $_POST['ingredients'];
             try {
-                registerInscriptionClient($pseudo, $civility, $email, $password, $password_confirm, $last_name, $first_name, $ingredients);
+                ClientFacade::registerInscriptionClient($pseudo, $civility, $email, $password, $password_confirm, $last_name, $first_name, $ingredients);
             } catch (Exception $e) {
             }
         }
     }
 
-    if (isset($_SESSION['client']) and !empty($_SESSION['client'])){
-        $client = unserialize($_SESSION['client']);
-    }
-
-    $list_ingredients = json_encode(getAllIngredients());
+    $list_ingredients = json_encode(RecipeFacade::getAllIngredients());
 ?>
 
 <!DOCTYPE html>

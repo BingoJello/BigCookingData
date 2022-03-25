@@ -1,38 +1,24 @@
 <?php
     session_start();
-    require_once('../../back/classes/business/model/Client.php');
-    require_once('../../back/classes/business/model/Recipe.php');
-    require_once('../../back/classes/business/model/Ingredient.php');
-    require_once('../../back/classes/database/DatabaseQuery.php');
-    require_once('../../back/classes/database/DatabaseConnection.php');
-    require_once('../../back/classes/business/process/recommenderSystem/RecommenderSystem.php');
-    require_once('../../back/classes/business/process/recommenderSystem/ContentBasedRecommenderSystem.php');
-    require_once('../../back/classes/database/persistence/RecipePersistence.php');
-    require_once('../../back/classes/database/persistence/ClientPersistence.php');
-    require_once('../../back/classes/business/service/DecisionTreeCluster.php');
-    include('../../back/functions/functions_utils.php');
-    include('../../back/functions/functions_recipes.php');
-    include('../../back/functions/functions_client.php');
-    include('../../back/utils/constants.php');
+    require_once('./require/require_index.php');
 ?>
 
 <?php
     if(false === isset($_SESSION['visualization'])){
         $_SESSION['visualization'] = array();
     }
-
     if(isset($_SESSION['client']) and !empty($_SESSION['client'])) {
         $client = getClient();
         try {
-            $recipes = getSuggestedRecipes($client, $_SESSION);
+            $recipes = RecipeFacade::getSuggestedRecipes($client, $_SESSION);
         } catch (Exception $e) {
-
+            var_dump($e);
         }
         $json_recipes = getJsonRecipes($recipes);
         $limit = LIMIT_PAGINATION;
         $total_pages = ceil(count($recipes['recipe']) / $limit);
     }else{
-        $recipes = getRandomRecipes();
+        $recipes = RecipeFacade::getRandomRecipes();
         $json_recipes = getJsonRecipes($recipes);
         $limit = LIMIT_PAGINATION;
         $total_pages = ceil(count($recipes['recipe']) / $limit);

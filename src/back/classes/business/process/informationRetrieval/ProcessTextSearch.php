@@ -2,14 +2,26 @@
 
 /**
  * Class Searching
+ * @brief Prétraitement du texte du champ de recherche
  * @author arthur mimouni
  */
 class ProcessTextSearch implements ProcessText
 {
+    /**
+     * @var mixed|string
+     */
     private $words;
+    /**
+     * @var mixed|string
+     */
     private $token;
 
-    public function __construct($words='', $token = ' '){
+    /**
+     * ProcessTextSearch constructor.
+     * @param string $words
+     * @param string $token
+     */
+    public function __construct($words ='', $token = ' '){
         $this->words = $words;
         $this->token = $token;
     }
@@ -23,6 +35,7 @@ class ProcessTextSearch implements ProcessText
     public function tokenize(){
         $tokenized_words= array();
         $tok_str = strtok($this->words, $this->token);
+
         while ($tok_str !== false) {
             $tokenized_words[] = $tok_str;
             $tok_str = strtok($this->token);
@@ -48,6 +61,7 @@ class ProcessTextSearch implements ProcessText
     public function stemmer(){
         $stemmer = StemmerFactory::create('fr');
         $stem_words = array();
+
         foreach($this->words as $word){
             array_push($stem_words,$stemmer->stem($word));
         }

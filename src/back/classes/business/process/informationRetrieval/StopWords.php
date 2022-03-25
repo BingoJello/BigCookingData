@@ -2,10 +2,14 @@
 
 /**
  * Class stopWords
+ * @brief Contient la liste des mots vides francais
  * @author https://github.com/voku
  */
 class stopWords
 {
+    /**
+     * @return string[]
+     */
     public static function getData()
     {
         $data = [

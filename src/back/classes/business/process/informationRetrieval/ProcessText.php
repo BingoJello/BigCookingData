@@ -1,6 +1,9 @@
 <?php
 
-
+/**
+ * Interface ProcessText
+ * @author arthur mimouni
+ */
 interface ProcessText
 {
     function build();

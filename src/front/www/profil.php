@@ -1,32 +1,23 @@
 <?php
     session_start();
-    require_once('../../back/classes/business/model/Client.php');
-    require_once('../../back/classes/business/model/Ingredient.php');
-    require_once('../../back/classes/database/DatabaseQuery.php');
-    require_once('../../back/classes/database/DatabaseConnection.php');
-    require_once('../../back/classes/database/persistence/ClientPersistence.php');
-    require_once('../../back/classes/database/persistence/RecipePersistence.php');
-    include('../../back/functions/functions_recipes.php');
-    include('../../back/functions/functions_client.php');
-    include('../../back/functions/functions_utils.php');
+    require_once('./require/require_profil.php');
 ?>
 
 <?php
     if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
-        $client = unserialize($_SESSION['client']);
+        $client = getClient();
     }else{
         header('location:./connexion.php?error=Veuillez vous connecter pour voir votre profil');
     }
     if(isset($_POST['ingredients'])) {
-        $client = updatePreferencesIngredients($client, $_POST['ingredients']);
+        $client = ClientFacade::updatePreferencesIngredients($client, $_POST['ingredients']);
     }
     if((isset($_POST['password']) AND (!empty($_POST['password']))) AND (isset($_POST['password_confirm']) AND (!empty($_POST['password_confirm'])))){
         $client->setPassword($_POST['password']);
         $_SESSION['client'] = serialize($client);
-        updatePasswordClient($client->getId(), $client->getPassword());
+        ClientFacade::updatePasswordClient($client->getId(), $client->getPassword());
     }
-
-    $list_ingredients = json_encode(getAllIngredients());
+    $list_ingredients = json_encode(RecipeFacade::getAllIngredients());
 ?>
 
 <!DOCTYPE html>
