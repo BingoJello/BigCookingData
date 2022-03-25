@@ -21,11 +21,13 @@ class DatabaseConnection
     /**
      * @var string
      */
-    private static $dp_pass = "A123456*";
+    // private static $dp_pass = "A123456*";
+    private static $dp_pass = "";
     /**
      * @var string
      */
-    private static $db_name = "big_cooking_data";
+    // private static $db_name = "big_cooking_data";
+    private static $db_name = "bigcookingdata";
     /**
      * @var string
      */
