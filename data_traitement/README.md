@@ -1,5 +1,5 @@
 # Big-Cooking-Data
-<h4>This project is a submodule and can be found @: https://github.com/IamDiallo/Big-Cooking-Data</h4>
+
 This project has 4 main parts:
 
 <h3>A. Data Scraping</h3>
