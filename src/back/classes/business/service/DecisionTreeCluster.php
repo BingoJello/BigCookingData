@@ -2,6 +2,7 @@
 
 /**
  * Class DecisionTreeCluster
+ * @brief Récupère le meilleur cluster comportant les ingrédients demandés (Appelle un web service python à l'aide de SOAP)
  * @author arthur mimouni
  */
 class DecisionTreeCluster

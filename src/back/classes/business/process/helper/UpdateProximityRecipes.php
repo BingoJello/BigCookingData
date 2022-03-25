@@ -1,11 +1,15 @@
 <?php
 
 /**
- * @author arthur mimouni
  * Class UpdateProximityRecipes
+ * @brief Mets à jour les recettes proches de chaque de recette
+ * @author arthur mimouni
  */
 class UpdateProximityRecipes
 {
+    /**
+     * UpdateProximityRecipes constructor.
+     */
     public function __construct(){
         ini_set(PHP_INI_ALL, 100000);
     }
@@ -18,6 +22,9 @@ class UpdateProximityRecipes
         }
     }
 
+    /**
+     * @param int $id_recipe
+     */
     public function buildProximityRecipe($id_recipe){
         $recipes_with_distance = array('recipe' => array(), 'distance' => array());
         $recipe = RecipePersistence::getRecipe($id_recipe);
@@ -37,6 +44,7 @@ class UpdateProximityRecipes
 
         $nbr_distance = 0;
         $mean_distance =0;
+
         foreach($recipes_with_distance['distance'] as $distance){
             $nbr_distance++;
             $mean_distance += $distance;
@@ -53,16 +61,19 @@ class UpdateProximityRecipes
             }
             $index++;
         }
-/*
+        /*
         usort($id_recipes_close, function ($a, $b){
             if ($a->getDistance() == $b->getDistance()) return 0;
             return ($a->getDistance() < $b->getDistance())?-1:1;
         });
-*/
+        */
         RecipePersistence::updateProximityRecipe($id_recipe, $id_recipes_close);
-
     }
 
+    /**
+     * @param string $coord
+     * @return false|string[]
+     */
     public function normalizeCoord($coord){
         $coord = str_replace("[", "", $coord);
         $coord = str_replace("]", "",$coord);

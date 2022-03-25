@@ -2,6 +2,7 @@
 
 /**
  * Class DatabaseConnection
+ * @brief Génère une instance d'une connection à la base de données (Singleton Design Pattern)
  * @author arthur mimouni
  */
 class DatabaseConnection

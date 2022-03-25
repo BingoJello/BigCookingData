@@ -1,6 +1,9 @@
 <?php
 
-
+/**
+ * Class Assess
+ * @author arthur mimouni
+ */
 class Assess
 {
     /**

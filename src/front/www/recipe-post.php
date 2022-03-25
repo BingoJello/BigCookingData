@@ -1,17 +1,6 @@
 <?php
-session_start();
-require_once('../../back/classes/business/model/Client.php');
-require_once('../../back/classes/business/model/Recipe.php');
-require_once('../../back/classes/business/model/Assess.php');
-require_once('../../back/classes/business/model/Ingredient.php');
-require_once('../../back/classes/database/DatabaseQuery.php');
-require_once('../../back/classes/database/DatabaseConnection.php');
-require_once('../../back/classes/database/persistence/RecipePersistence.php');
-require_once('../../back/classes/database/persistence/ClientPersistence.php');
-include('../../back/functions/functions_utils.php');
-include('../../back/functions/functions_recipes.php');
-include('../../back/functions/functions_client.php');
-include('../../back/utils/constants.php');
+    session_start();
+    require_once('./require/require_recipe_post.php');
 ?>
 
 <?php
@@ -19,7 +8,7 @@ include('../../back/utils/constants.php');
         $client = getClient();
     }
     if(isset($_GET['recipe']) and !empty($_GET['recipe'])) {
-        $recipe = getRecipe($_GET['recipe']);
+        $recipe = RecipeFacade::getRecipe($_GET['recipe']);
         if(isset($_SESSION['visualization'])){
             if(false === in_array($recipe->getId(), $_SESSION['visualization'])){
                 array_push($_SESSION['visualization'], $recipe->getId());
@@ -29,13 +18,13 @@ include('../../back/utils/constants.php');
             array_push($_SESSION['recipe'], $recipe->getId());
         }
     } elseif (isset($_POST['recipe']) and !empty($_POST['recipe'])){
-        $recipe = getRecipe($_POST['recipe']);
+        $recipe = RecipeFacade::getRecipe($_POST['recipe']);
     } else{
         header('location:recettes');
     }
 
     if(isset($_GET['record']) and !empty($_GET['record'])){
-        insertRecord($client->getId(), $recipe->getId());
+        ClientFacade::insertRecord($client->getId(), $recipe->getId());
     }
 
     if(isset($_POST['rate']) and !empty($_POST['rate']) AND (isset($_POST['date']) and !empty($_POST['date']))) {
@@ -44,18 +33,18 @@ include('../../back/utils/constants.php');
         }
         $rating = $_POST['rate'];
         $date = $_POST['date'];
+
         if(isset($_POST['commentary']) and !empty($_POST['commentary'])) {
             $commentary = $_POST['commentary'];
-            insertRatingAndCommentary($recipe->getId(), $client->getId(), $rating, $date, $commentary);
+            ClientFacade::insertRatingAndCommentary($recipe->getId(), $client->getId(), $rating, $date, $commentary);
         }else{
-            insertRatingAndCommentary($recipe->getId(), $client->getId(), $rating, $date);
+            ClientFacade::insertRatingAndCommentary($recipe->getId(), $client->getId(), $rating, $date);
         }
     }
 
-    $assessed_recipe = getAssessRecipe($recipe->getId());
-    $global_rating = getGlobalRating($recipe->getId());
+    $assessed_recipe = RecipeFacade::getAssessRecipe($recipe->getId());
+    $global_rating = RecipeFacade::getGlobalRating($recipe->getId());
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">

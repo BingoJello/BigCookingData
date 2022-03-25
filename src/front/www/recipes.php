@@ -1,31 +1,11 @@
 <?php
-session_start();
-require_once('../../back/classes/business/model/Client.php');
-require_once('../../back/classes/business/model/Recipe.php');
-require_once('../../back/classes/business/model/Ingredient.php');
-require_once('../../back/classes/business/process/recommenderSystem/RecommenderSystem.php');
-require_once('../../back/classes/business/process/recommenderSystem/ContentBasedRecommenderSystem.php');
-require_once('../../back/classes/business/process/informationRetrieval/Stemmer.php');
-require_once('../../back/classes/business/process/informationRetrieval/Stem.php');
-require_once('../../back/classes/business/process/informationRetrieval/ProcessText.php');
-require_once('../../back/classes/business/process/informationRetrieval/ProcessTextSearch.php');
-require_once('../../back/classes/business/process/informationRetrieval/StemmerFactory.php');
-require_once('../../back/classes/business/process/informationRetrieval/FrenchStemmer.php');
-require_once('../../back/classes/business/process/informationRetrieval/StopWords.php');
-require_once('../../back/classes/database/DatabaseQuery.php');
-require_once('../../back/classes/database/DatabaseConnection.php');
-require_once('../../back/classes/database/persistence/RecipePersistence.php');
-require_once('../../back/classes/database/persistence/ClientPersistence.php');
-require_once('../../back/classes/business/service/DecisionTreeCluster.php');
-include('../../back/functions/functions_utils.php');
-include('../../back/functions/functions_recipes.php');
-include('../../back/functions/functions_client.php');
-include('../../back/utils/constants.php');
+    session_start();
+    require_once('./require/require_recipes.php');
 ?>
 
 <?php
     if (isset($_POST['search']) and !empty($_POST['search'])) {
-        $recipes = getRecipesSearching($_POST['search']);
+        $recipes = RecipeFacade::getRecipesSearching($_POST['search']);
         $json_recipes = getJsonRecipes($recipes, true);
         $limit = LIMIT_PAGINATION;
         $total_pages = ceil(count($recipes) / $limit);
@@ -35,17 +15,17 @@ include('../../back/utils/constants.php');
         if(isset($_POST['include_ingredients']) and !empty($_POST['include_ingredients'])){
             $exclude_ingredients = $_POST['exclude_ingredients'];
         }
-        $recipes = getRecipesIncludeExclude($_POST['include_ingredients'], $_POST['exclude_ingredients']);
+        $recipes = RecipeFacade::getRecipesIncludeExclude($_POST['include_ingredients'], $_POST['exclude_ingredients']);
         $json_recipes = getJsonRecipes($recipes, true);
         $limit = LIMIT_PAGINATION;
         $total_pages = ceil(count($recipes) / $limit);
     } else {
-        $recipes = getRandomRecipes();
+        $recipes = RecipeFacade::getRandomRecipes();
         $json_recipes = getJsonRecipes($recipes);
         $limit = LIMIT_PAGINATION;
         $total_pages = ceil(count($recipes['recipe']) / $limit);
     }
-    $list_ingredients = json_encode(getAllIngredients());
+    $list_ingredients = json_encode(RecipeFacade::getAllIngredients());
 ?>
 
 <!DOCTYPE html>

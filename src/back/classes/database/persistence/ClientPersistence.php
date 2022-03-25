@@ -2,6 +2,7 @@
 
 /**
  * Class ClientPersistence
+ * @brief Contient l'ensemble des requêtes SQL en rapport avec un client
  * @author arthur mimouni
  */
 class ClientPersistence
@@ -33,7 +34,7 @@ class ClientPersistence
     }
 
     /**
-     * @brief Récupère les préférences ingrédients du client
+     * @brief Récupère les ingrédients de préférences du client
      * @param int $id_client
      * @return array
      */
@@ -49,23 +50,24 @@ class ClientPersistence
 
         $result = DatabaseQuery::selectQuery($query, $params);
 
-        foreach($result as $row)
+        foreach($result as $row) {
             array_push($preferences_ingredients_user, new Ingredient($row['id_ingredient'], $row['name'], $row['url_pic']));
+        }
         return $preferences_ingredients_user;
     }
 
     /**
-     * @brief Récupère le dernier ID des clients
+     * @brief Récupère le dernier ID de la table client
      * @return int
      */
     public static function getLastIdClient()
     {
         $query="SELECT id_client FROM client ORDER BY id_client DESC LIMIT 1";
-        $result = DatabaseQuery::selectQuery($query, []);
+        $result = DatabaseQuery::selectQuery($query);
 
-        foreach($result as $row)
+        foreach($result as $row) {
             return $row['id_client'];
-
+        }
         return 0;
     }
 
@@ -88,17 +90,19 @@ class ClientPersistence
             $query = "SELECT COUNT(id_client) AS client_exist FROM client WHERE mail=? AND password=?";
             $params = [$email, $password];
         }
+
         $result = DatabaseQuery::selectQuery($query, $params);
 
         foreach($result as $row) {
-            if (0 < $row['client_exist'])
+            if (0 < $row['client_exist']) {
                 return true;
+            }
             return false;
         }
     }
 
     /**
-     * @brief Vérifie si un client à déjà noté la recette
+     * @brief Vérifie si un client à déjà noté la recette demandée
      * @param int $id_client
      * @param int $id_recipe
      * @return bool
@@ -106,11 +110,12 @@ class ClientPersistence
     public static function hasAlreadyRatingRecipe($id_client, $id_recipe){
         $query = "SELECT id_client FROM assess WHERE id_client = ? AND id_recipe = ?";
         $params = [$id_client, $id_recipe];
+
         $result = DatabaseQuery::selectQuery($query, $params);
 
-        foreach($result as $row)
+        foreach($result as $row) {
             return true;
-
+        }
         return false;
     }
 
@@ -138,7 +143,7 @@ class ClientPersistence
     }
 
     /**
-     * @brief Insert les préférences ingrédients d'un client
+     * @brief Insert les ingrédients de préférences d'un client
      * @param int $id_client
      * @param array $ingredients
      */
@@ -147,6 +152,7 @@ class ClientPersistence
         foreach($ingredients as $ingredient) {
             $query = "INSERT INTO have_preferences_ingredient(id_client,id_ingredient) VALUES (?,?)";
             $params=[$id_client, $ingredient];
+
             DatabaseQuery::insertQuery($query, $params);
         }
     }
@@ -165,6 +171,7 @@ class ClientPersistence
         }
         $query = "INSERT INTO assess(id_recipe, id_client, rating, commentary, date_assess) VALUES (?,?,?,?,?)";
         $params=[$id_recipe, $id_client, $rating, $commentary, $date];
+
         DatabaseQuery::insertQuery($query, $params);
     }
 
@@ -215,14 +222,13 @@ class ClientPersistence
         $new_ingredients = array();
         $delete_ingredients = array();
 
-        foreach ($old_ingredients_client as $ingredient)
+        foreach ($old_ingredients_client as $ingredient) {
             array_push($old_ingredients_name_client, $ingredient->getName());
-
+        }
         foreach($ingredients as $ingredient) {
             if (!in_array($ingredient, $old_ingredients_name_client))
                 array_push($new_ingredients, $ingredient);
         }
-
         foreach($old_ingredients_name_client as $old_ingredient) {
             if (!in_array($old_ingredient, $ingredients))
                 array_push($delete_ingredients, $old_ingredient);
@@ -239,6 +245,7 @@ class ClientPersistence
             foreach($new_ingredients as $id_ingredient){
                 $query = "INSERT INTO have_preferences_ingredient(id_client,id_ingredient) VALUES (?,?)";
                 $params = [$id_client, $id_ingredient];
+
                 DatabaseQuery::insertQuery($query, $params);
             }
         }

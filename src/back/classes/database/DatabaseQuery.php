@@ -2,12 +2,12 @@
 
 /**
  * Class DatabaseQuery
+ * @brief Génère des requêtes génériques
  * @author arthur mimouni
  */
 class DatabaseQuery
 {
     /**
-     * @brief Generic select query in database
      * @param string $query
      * @param array $params
      * @return array

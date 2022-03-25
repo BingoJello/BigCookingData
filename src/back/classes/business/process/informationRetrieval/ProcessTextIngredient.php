@@ -1,11 +1,26 @@
 <?php
 
-
+/**
+ * Class ProcessTextIngredient
+ * @brief Prétraitement du texte des différents ingrédients
+ * @author arthur mimouni
+ */
 class ProcessTextIngredient implements ProcessText
 {
+    /**
+     * @var mixed|string
+     */
     private $words;
+    /**
+     * @var mixed|string
+     */
     private $token;
 
+    /**
+     * ProcessTextIngredient constructor.
+     * @param string $words
+     * @param string $token
+     */
     public function __construct($words='', $token = ' '){
         $this->words = $words;
         $this->token = $token;
@@ -22,8 +37,8 @@ class ProcessTextIngredient implements ProcessText
     {
         $tokenized_words= array();
         $list_words = array();
-
         $tok_str = strtok($this->words, $this->token);
+
         while ($tok_str !== false) {
             $tokenized_words[] = $tok_str;
             $tok_str = strtok($this->token);
@@ -66,6 +81,7 @@ class ProcessTextIngredient implements ProcessText
     {
         $stemmer = StemmerFactory::create('fr');
         $list_words = array();
+
         foreach($this->words as $word){
             $stem_words = array();
             foreach($word as $part_word){
@@ -76,9 +92,14 @@ class ProcessTextIngredient implements ProcessText
         $this->words = $list_words;
     }
 
-    public function getWordsString(){
+    /**
+     * @return string
+     */
+    public function getWordsString()
+    {
         $words_string = "";
         $index_words = 0;
+
         foreach($this->words as $word){
             $index_part_words = 0;
             foreach($word as $part_word){

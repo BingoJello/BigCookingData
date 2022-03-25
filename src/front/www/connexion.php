@@ -1,11 +1,6 @@
 <?php
     session_start();
-    require_once('../../back/classes/business/model/Client.php');
-    require_once('../../back/classes/business/model/Ingredient.php');
-    require_once('../../back/classes/database/DatabaseQuery.php');
-    require_once('../../back/classes/database/DatabaseConnection.php');
-    require_once('../../back/classes/database/persistence/ClientPersistence.php');
-    include('../../back/functions/functions_client.php');
+    require_once('require/require_connexion.php');
 ?>
 
 <?php
@@ -14,7 +9,11 @@
     }
 
     if((isset($_POST['password']) AND (!empty($_POST['password']))) AND (isset($_POST['email']) AND (!empty($_POST['email'])))){
-        connexionToProfil($_POST['email'], $_POST['password']);
+        try {
+            ClientFacade::connexionToProfil($_POST['email'], $_POST['password']);
+        } catch (Exception $e) {
+            var_dump($e);
+        }
     }
 ?>
 

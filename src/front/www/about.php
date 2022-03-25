@@ -1,16 +1,13 @@
 <?php
     session_start();
-    require_once('../../back/classes/business/model/Client.php');
-    require_once('../../back/classes/database/DatabaseQuery.php');
-    require_once('../../back/classes/database/DatabaseConnection.php');
-    require_once('../../back/classes/database/persistence/RecipePersistence.php');
-    require_once('../../back/classes/database/persistence/ClientPersistence.php');
-    include('../../back/functions/functions_utils.php');
-    include('../../back/functions/functions_recipes.php');
-    include('../../back/functions/functions_client.php');
+    require_once('./require/require_about.php');
 ?>
+
 <?php
-    $nbr_recipes = getNbrRecipes();
+    if(isset($_SESSION['client']) and !empty($_SESSION['client'])) {
+        $client = getClient();
+    }
+    $nbr_recipes = RecipeFacade::getNbrRecipes();
 ?>
 
 <!DOCTYPE html>
