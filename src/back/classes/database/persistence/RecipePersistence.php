@@ -447,7 +447,9 @@ class RecipePersistence
         foreach($result as $row) {
             array_push($recipes['recipe'], new Recipe($row['id_recipe'], $row['name'], $row['url_pic'],$row['categories'],
                 $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
-                $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']));
+                // $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']));
+                $row['serving'], $row['clusterNumber'], $row['coordonnees']));
+
         }
 
         return $recipes;
