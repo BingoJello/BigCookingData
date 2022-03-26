@@ -632,6 +632,17 @@ class RecipePersistence
         return 0;
     }
 
+    public static function getNbrIngredients(){
+        $query="SELECT COUNT(*) as nbr_ingredient FROM ingredient";
+
+        $result = DatabaseQuery::selectQuery($query);
+
+        foreach($result as $row) {
+            return $row['nbr_ingredient'];
+        }
+        return 0;
+    }
+
     /**
      * @brief Récupère les recettes proches des recettes demandées
      * @param array $id_recipes

@@ -8,6 +8,7 @@
         $client = getClient();
     }
     $nbr_recipes = RecipeFacade::getNbrRecipes();
+    $nbr_ingredients = RecipeFacade::getNbrIngredients();
 ?>
 
 <!DOCTYPE html>
@@ -105,8 +106,8 @@
                 <div class="col-12 col-sm-6 col-lg-3">
                     <div class="single-cool-fact">
                         <img src="../img/core-img/salad.png" alt="">
-                        <h3><span class="counter">25</span></h3>
-                        <h6>Recettes vegan</h6>
+                        <h3><span class="counter"><?php echo $nbr_ingredients; ?></span></h3>
+                        <h6>Ingredients</h6>
                     </div>
                 </div>
 
@@ -153,6 +154,7 @@
                     <div class="single-contact-information mb-30">
                         <h6>Email:</h6>
                         <p>arthur.mimouni@gmail.com</p>
+                        <p>belladialloamd@gmail.com</p>
                     </div>
                 </div>
             </div>

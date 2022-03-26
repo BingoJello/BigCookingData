@@ -78,10 +78,31 @@ class RecipeFacade
         $include_ingredients_name = RecipePersistence::getIngredientNameByWord($process_text_ingredient->getWords());
         $id_cluster = DecisionTreeCluster::getCluster($include_ingredients_name);
 
-        if(true === empty($exclude_ingredients)){
-            $process_text_ingredient = new ProcessTextIngredient($include_ingredients, ';', true);
+        if(false === empty($exclude_ingredients)){
+            $recipes = array();
+            $recipes_include = RecipePersistence::getRecipesByIngredientsCluster($id_cluster, $include_ingredients_name);
+            $process_text_ingredient = new ProcessTextIngredient($exclude_ingredients, ';', true);
             $process_text_ingredient->build();
             $exclude_ingredients_name = RecipePersistence::getIngredientNameByWord($process_text_ingredient->getWords());
+
+            foreach($recipes_include as $recipe_include){
+                $is_exclude = false;
+                foreach($exclude_ingredients_name as $exclude_ingredient){
+                    foreach($recipe_include->getIngredients() as $ingredient){
+                        if($exclude_ingredient == $ingredient->getName()){
+                            $is_exclude = true;
+                            break;
+                        }
+                    }
+                    if(true == $is_exclude){
+                        break;
+                    }
+                }
+                if(false === $is_exclude){
+                    array_push($recipes, $recipe_include);
+                }
+            }
+            return $recipes;
         }
         return RecipePersistence::getRecipesByIngredientsCluster($id_cluster, $include_ingredients_name);
     }
@@ -91,5 +112,12 @@ class RecipeFacade
      */
     public static function getNbrRecipes(){
         return RecipePersistence::getNbrRecipes();
+    }
+
+    /**
+     * @return int|mixed
+     */
+    public static function getNbrIngredients(){
+        return RecipePersistence::getNbrIngredients();
     }
 }

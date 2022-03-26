@@ -166,8 +166,8 @@
                     <!-- Cta Content -->
                     <div class="cta-content text-center">
                         <h2>Meal Planner</h2>
-                        <p>Créez des plans de repas personnalisés en fonction de vos préférences alimentaires. Atteignez votre régime alimentaire et vos objectifs nutritionnels avec notre calculateur de calories.
-						</p>
+                        <p>Créez des plans de repas personnalisés en fonction de vos préférences alimentaires. Atteignez votre régime alimentaire et vos objectifs nutritionnels avec notre calculateur de calories.</p>
+                        <p>Cette fonctionnalité est toujours en développement</p>
                         <a href="./mealPlanner.php" class="btn delicious-btn">Discover</a>
                     </div>
                 </div>
