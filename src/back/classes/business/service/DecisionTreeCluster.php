@@ -7,26 +7,20 @@
  */
 class DecisionTreeCluster
 {
-    public static function getCluster($ingredients, $is_array = false)
+    public static function getCluster($ingredients)
     {
-        $process_text_ingredient = new ProcessTextIngredient($ingredients, ';');
-        $process_text_ingredient->build();
-
-        $ingredients = RecipePersistence::getIngredientNameByWord($process_text_ingredient->getWords());
-
-        if(true === $is_array){
-            $ingredient_string = "";
-            $index = 0;
-            foreach($ingredients as $ingredient){
-                if($index == count($ingredients) - 1){
-                    $ingredient_string.=$ingredient;
-                }else{
-                    $ingredient_string.=$ingredient.";";
-                }
-                $index++;
+        $ingredient_string = "";
+        $index = 0;
+        foreach($ingredients as $ingredient){
+            if($index == count($ingredients) - 1){
+                $ingredient_string.=$ingredient;
+            }else{
+                $ingredient_string.=$ingredient.";";
             }
-            $ingredients = $ingredient_string;
+            $index++;
         }
+        $ingredients = $ingredient_string;
+
         try{
             /*Connection to the soap service */
             $soap_client = new SoapClient("http://localhost:8080/DecisionTreeService/soap/description");

@@ -11,11 +11,20 @@ class UpdateProximityRecipes
      * UpdateProximityRecipes constructor.
      */
     public function __construct(){
-        ini_set(PHP_INI_ALL, 100000);
+
     }
 
     public function buildAllProximity(){
         $recipes = RecipePersistence::getRecipes();
+
+        foreach($recipes as $recipe){
+            $this->buildProximityRecipe($recipe->getId());
+        }
+    }
+
+    public function buildProximityCluster($id_cluster){
+        ini_set('max_execution_time', 0);
+        $recipes = RecipePersistence::getRecipesByCluster($id_cluster);
 
         foreach($recipes as $recipe){
             $this->buildProximityRecipe($recipe->getId());

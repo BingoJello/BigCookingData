@@ -12,10 +12,10 @@
 
     } elseif (isset($_POST['include_ingredients']) and !empty($_POST['include_ingredients'])){
         $exclude_ingredients = '';
-        if(isset($_POST['include_ingredients']) and !empty($_POST['include_ingredients'])){
+        if(isset($_POST['exclude_ingredients']) and !empty($_POST['exclude_ingredients'])){
             $exclude_ingredients = $_POST['exclude_ingredients'];
         }
-        $recipes = RecipeFacade::getRecipesIncludeExclude($_POST['include_ingredients'], $_POST['exclude_ingredients']);
+        $recipes = RecipeFacade::getRecipesIncludeExclude($_POST['include_ingredients'], $exclude_ingredients);
         $json_recipes = getJsonRecipes($recipes, true);
         $limit = LIMIT_PAGINATION;
         $total_pages = ceil(count($recipes) / $limit);

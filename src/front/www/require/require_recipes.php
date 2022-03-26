@@ -2,11 +2,10 @@
 require_once('../../back/classes/business/model/Client.php');
 require_once('../../back/classes/business/model/Recipe.php');
 require_once('../../back/classes/business/model/Ingredient.php');
-require_once('../../back/classes/business/process/recommenderSystem/RecommenderSystem.php');
-require_once('../../back/classes/business/process/recommenderSystem/ContentBasedRecommenderSystem.php');
 require_once('../../back/classes/business/process/informationRetrieval/Stemmer.php');
 require_once('../../back/classes/business/process/informationRetrieval/Stem.php');
 require_once('../../back/classes/business/process/informationRetrieval/ProcessText.php');
+require_once('../../back/classes/business/process/informationRetrieval/ProcessTextIngredient.php');
 require_once('../../back/classes/business/process/informationRetrieval/ProcessTextSearch.php');
 require_once('../../back/classes/business/process/informationRetrieval/StemmerFactory.php');
 require_once('../../back/classes/business/process/informationRetrieval/FrenchStemmer.php');

@@ -53,6 +53,10 @@ class ClientPersistence
         foreach($result as $row) {
             array_push($preferences_ingredients_user, new Ingredient($row['id_ingredient'], $row['name'], $row['url_pic']));
         }
+
+        if(true === empty($preferences_ingredients_user)){
+            return null;
+        }
         return $preferences_ingredients_user;
     }
 
