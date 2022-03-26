@@ -5,12 +5,13 @@
 function printPreferencesIngredients($client){
     $preferences_ingredients_array = $client->getPreferencesIngredients();
     $preferences_ingredients_string = "";
-
-    foreach($preferences_ingredients_array as $ingredient){
-        $preferences_ingredients_string.=$ingredient->getName();
-        $preferences_ingredients_string.=";";
+var_dump($preferences_ingredients_array);
+    if(false === is_null($preferences_ingredients_array)){
+        foreach($preferences_ingredients_array as $ingredient){
+            $preferences_ingredients_string.=$ingredient->getName();
+            $preferences_ingredients_string.=";";
+        }
     }
-
     echo $preferences_ingredients_string;
 }
 ?>
@@ -198,4 +199,82 @@ function printGlobalRating($score, $nbr_reviews){
 
     echo $html;
 }
+?>
+
+<?php
+function printGlobalRatingIndex($score){
+    $html = "<div class='ratings'>";
+
+    $score = round($score,1);
+    $score = sprintf("%.1f",$score);
+    $score_tab=explode(".",$score);
+    $score_before_comma=$score_tab[0];
+    $tmp=0;
+    $score_after_comma=$score_tab[1];
+
+    while($score_before_comma>0){
+        $html.= "<i class='fa fa-star' style='color:yellowgreen' aria-hidden='true'></i>";
+        $score_before_comma--;
+        $tmp++;
+    }
+    if($score_after_comma>=5){
+        $html.= "<i class='fa fa-star-half' style='color:yellowgreen' aria-hidden='true'></i>";
+        $tmp++;
+    }
+    while($tmp<5){
+        $html.="<i class='fa fa-star' style='color:grey' aria-hidden='true'></i>";
+        $tmp++;
+    }
+
+    $html.="</div>";
+
+    echo $html;
+}
+?>
+
+<?php
+function getRandomRecipes($recipes){
+    $random_id = array();
+    $recipes_slides = array();
+    $cpt = 0;
+    if(count($recipes) < 5){
+        $nbr_recipes = count($recipes);
+    }else{
+        $nbr_recipes = NBR_RANDOM_RECIPES_SLIDE;
+    }
+    while($cpt < $nbr_recipes){
+        $rand = rand(0, count($recipes) - 1);
+        if(false === in_array($rand, $random_id)){
+            array_push($recipes_slides, $recipes[$rand]);
+            array_push($random_id, $rand);
+            $cpt++;
+        }
+    }
+    return $recipes_slides;
+}
+?>
+
+<?php
+function printRecipesSlides($recipes){
+    ?>
+    <section class="hero-area">
+        <div class="hero-slides owl-carousel">
+            <?php foreach($recipes as $recipe){ ?>
+                <div class="single-hero-slide bg-img" style="background-image: url(<?php echo $recipe->getUrlPic(); ?>);">
+                    <div class="container h-100">
+                        <div class="row h-100 align-items-center">
+                            <div class="col-12 col-md-9 col-lg-7 col-xl-6">
+                                <div class="hero-slides-content" data-animation="fadeInUp" data-delay="100ms">
+                                    <h2 data-animation="fadeInUp" data-delay="300ms"><?php echo $recipe->getName(); ?></h2>
+                                    <!--<p data-animation="fadeInUp" data-delay="700ms">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras tristique nisl vitae luctus sollicitudin. Fusce consectetur sem eget dui tristique, ac posuere arcu varius.</p>-->
+                                    <a href="recipe-post.php?recipe=<?php echo $recipe->getId();?>" class="btn delicious-btn" data-animation="fadeInUp" data-delay="1000ms">Voir la recette</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <?php } ?>
+        </div>
+    </section>
+<?php }
 ?>

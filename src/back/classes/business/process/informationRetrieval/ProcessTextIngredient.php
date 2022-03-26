@@ -21,8 +21,23 @@ class ProcessTextIngredient implements ProcessText
      * @param string $words
      * @param string $token
      */
-    public function __construct($words='', $token = ' '){
-        $this->words = $words;
+    public function __construct($words, $token = ';', $is_string = false){
+        $words_string ="";
+
+        if(false === $is_string){
+            $cpt_words = 0;
+            foreach($words as $word){
+                if($cpt_words == count($words)){
+                    $words_string.=$word->getName();
+                }else{
+                    $words_string.=$word->getName().";";
+                }
+            }
+        }else{
+            $words_string = $words;
+        }
+
+        $this->words = $words_string;
         $this->token = $token;
     }
 
@@ -37,6 +52,7 @@ class ProcessTextIngredient implements ProcessText
     {
         $tokenized_words= array();
         $list_words = array();
+
         $tok_str = strtok($this->words, $this->token);
 
         while ($tok_str !== false) {
@@ -54,6 +70,7 @@ class ProcessTextIngredient implements ProcessText
             }
             array_push($list_words, $tokenized_words);
         }
+
         $this->words = $list_words;
     }
 

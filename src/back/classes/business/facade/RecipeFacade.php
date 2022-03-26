@@ -72,9 +72,18 @@ class RecipeFacade
      * @param string $exclude_ingredients
      * @return array|null
      */
-    public static function getRecipesIncludeExclude($include_ingredients, $exclude_ingredients = ''){
-        $id_cluster = DecisionTreeCluster::getCluster($include_ingredients);
-        return RecipePersistence::getRecipesByIngredientsAndCluster($id_cluster, $include_ingredients, false, $exclude_ingredients);
+    public static function getRecipesIncludeExclude($include_ingredients, $exclude_ingredients){
+        $process_text_ingredient = new ProcessTextIngredient($include_ingredients, ';', true);
+        $process_text_ingredient->build();
+        $include_ingredients_name = RecipePersistence::getIngredientNameByWord($process_text_ingredient->getWords());
+        $id_cluster = DecisionTreeCluster::getCluster($include_ingredients_name);
+
+        if(true === empty($exclude_ingredients)){
+            $process_text_ingredient = new ProcessTextIngredient($include_ingredients, ';', true);
+            $process_text_ingredient->build();
+            $exclude_ingredients_name = RecipePersistence::getIngredientNameByWord($process_text_ingredient->getWords());
+        }
+        return RecipePersistence::getRecipesByIngredientsCluster($id_cluster, $include_ingredients_name);
     }
 
     /**

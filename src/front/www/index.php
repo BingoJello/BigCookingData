@@ -4,6 +4,8 @@
 ?>
 
 <?php
+    $random = false;
+
     if(false === isset($_SESSION['visualization'])){
         $_SESSION['visualization'] = array();
     }
@@ -11,6 +13,13 @@
         $client = getClient();
         try {
             $recipes = RecipeFacade::getSuggestedRecipes($client, $_SESSION);
+            if(true == empty($recipes['recipe'])){
+                $random = true;
+                $recipes = RecipeFacade::getRandomRecipes();
+                $json_recipes = getJsonRecipes($recipes);
+                $limit = LIMIT_PAGINATION;
+                $total_pages = ceil(count($recipes['recipe']) / $limit);
+            }
         } catch (Exception $e) {
             var_dump($e);
         }
@@ -18,11 +27,14 @@
         $limit = LIMIT_PAGINATION;
         $total_pages = ceil(count($recipes['recipe']) / $limit);
     }else{
+        $random = true;
         $recipes = RecipeFacade::getRandomRecipes();
         $json_recipes = getJsonRecipes($recipes);
         $limit = LIMIT_PAGINATION;
         $total_pages = ceil(count($recipes['recipe']) / $limit);
     }
+
+    $recipes_slide = getRandomRecipes($recipes['recipe']);
 ?>
 
 <!DOCTYPE html>
@@ -70,54 +82,7 @@
     <?php include("./include/header.php");?>
 
     <!-- ##### Hero Area Start ##### -->
-    <section class="hero-area">
-        <div class="hero-slides owl-carousel">
-            <!-- Single Hero Slide -->
-            <div class="single-hero-slide bg-img" style="background-image: url(https://assets.afcdn.com/recipe/20131106/63010_w1024h778c1cx1633cy2449.webp);">
-                <div class="container h-100">
-                    <div class="row h-100 align-items-center">
-                        <div class="col-12 col-md-9 col-lg-7 col-xl-6">
-                            <div class="hero-slides-content" data-animation="fadeInUp" data-delay="100ms">
-                                <h2 data-animation="fadeInUp" data-delay="300ms">Delicios Homemade Burger</h2>
-                                <p data-animation="fadeInUp" data-delay="700ms">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras tristique nisl vitae luctus sollicitudin. Fusce consectetur sem eget dui tristique, ac posuere arcu varius.</p>
-                                <a href="#" class="btn delicious-btn" data-animation="fadeInUp" data-delay="1000ms">See Recipe</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Single Hero Slide -->
-            <div class="single-hero-slide bg-img" style="background-image: url(https://assets.afcdn.com/recipe/20130924/13020_w1024h778c1cx2376cy1584.webp);">
-                <div class="container h-100">
-                    <div class="row h-100 align-items-center">
-                        <div class="col-12 col-md-9 col-lg-7 col-xl-6">
-                            <div class="hero-slides-content" data-animation="fadeInUp" data-delay="100ms">
-                                <h2 data-animation="fadeInUp" data-delay="300ms">Delicios Homemade Burger</h2>
-                                <p data-animation="fadeInUp" data-delay="700ms">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras tristique nisl vitae luctus sollicitudin. Fusce consectetur sem eget dui tristique, ac posuere arcu varius.</p>
-                                <a href="#" class="btn delicious-btn" data-animation="fadeInUp" data-delay="1000ms">See Recipe</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Single Hero Slide -->
-            <div class="single-hero-slide bg-img" style="background-image: url(../img/bg-img/bg7.jpg);">
-                <div class="container h-100">
-                    <div class="row h-100 align-items-center">
-                        <div class="col-12 col-md-9 col-lg-7 col-xl-6">
-                            <div class="hero-slides-content" data-animation="fadeInUp" data-delay="100ms">
-                                <h2 data-animation="fadeInUp" data-delay="300ms">Delicios Homemade Burger</h2>
-                                <p data-animation="fadeInUp" data-delay="700ms">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras tristique nisl vitae luctus sollicitudin. Fusce consectetur sem eget dui tristique, ac posuere arcu varius.</p>
-                                <a href="#" class="btn delicious-btn" data-animation="fadeInUp" data-delay="1000ms">See Recipe</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <?php printRecipesSlides($recipes_slide); ?>
     <!-- ##### Hero Area End ##### -->
 
     <!-- ##### Best Recipe Area Start ##### -->
@@ -126,7 +91,11 @@
             <div class="row">
                 <div class="col-12">
                     <div class="section-heading">
-                        <h3 style="margin-top: 25px">Recettes que vous pourriez aimer</h3>
+                        <?php if (true === $random){ ?>
+                            <h3 style="margin-top: 25px">Recettes aléatoires</h3>
+                        <?php }else{ ?>
+                            <h3 style="margin-top: 25px">Recettes que vous pourriez aimer</h3>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
@@ -206,246 +175,6 @@
         </div>
     </section>
     <!-- ##### CTA Area End ##### -->
-
-    <!-- ##### Small Recipe Area Start ##### -->
-    <section class="small-recipe-area section-padding-80-0">
-		<div class="row">
-			<div class="col-12">
-				<div class="section-heading">
-					<h3 style="margin-top: -50px">Recettes du jour</h3>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                <!-- Small Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-small-recipe-area d-flex">
-                        <!-- Recipe Thumb -->
-                        <div class="recipe-thumb">
-                            <img src="../img/bg-img/sr1.jpg" alt="">
-                        </div>
-                        <!-- Recipe Content -->
-                        <div class="recipe-content">
-                            <span>January 04, 2018</span>
-                            <a href="recipe-post.php">
-                                <h5>Homemade italian pasta</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                            <p>2 Comments</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Small Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-small-recipe-area d-flex">
-                        <!-- Recipe Thumb -->
-                        <div class="recipe-thumb">
-                            <img src="../img/bg-img/sr2.jpg" alt="">
-                        </div>
-                        <!-- Recipe Content -->
-                        <div class="recipe-content">
-                            <span>January 04, 2018</span>
-                            <a href="recipe-post.php">
-                                <h5>Baked Bread</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                            <p>2 Comments</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Small Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-small-recipe-area d-flex">
-                        <!-- Recipe Thumb -->
-                        <div class="recipe-thumb">
-                            <img src="../img/bg-img/sr3.jpg" alt="">
-                        </div>
-                        <!-- Recipe Content -->
-                        <div class="recipe-content">
-                            <span>January 04, 2018</span>
-                            <a href="recipe-post.php">
-                                <h5>Scalops on salt</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                            <p>2 Comments</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Small Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-small-recipe-area d-flex">
-                        <!-- Recipe Thumb -->
-                        <div class="recipe-thumb">
-                            <img src="../img/bg-img/sr4.jpg" alt="">
-                        </div>
-                        <!-- Recipe Content -->
-                        <div class="recipe-content">
-                            <span>January 04, 2018</span>
-                            <a href="recipe-post.php">
-                                <h5>Fruits on plate</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                            <p>2 Comments</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Small Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-small-recipe-area d-flex">
-                        <!-- Recipe Thumb -->
-                        <div class="recipe-thumb">
-                            <img src="../img/bg-img/sr5.jpg" alt="">
-                        </div>
-                        <!-- Recipe Content -->
-                        <div class="recipe-content">
-                            <span>January 04, 2018</span>
-                            <a href="recipe-post.php">
-                                <h5>Macaroons</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                            <p>2 Comments</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Small Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-small-recipe-area d-flex">
-                        <!-- Recipe Thumb -->
-                        <div class="recipe-thumb">
-                            <img src="../img/bg-img/sr6.jpg" alt="">
-                        </div>
-                        <!-- Recipe Content -->
-                        <div class="recipe-content">
-                            <span>January 04, 2018</span>
-                            <a href="recipe-post.php">
-                                <h5>Chocolate tart</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                            <p>2 Comments</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Small Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-small-recipe-area d-flex">
-                        <!-- Recipe Thumb -->
-                        <div class="recipe-thumb">
-                            <img src="../img/bg-img/sr7.jpg" alt="">
-                        </div>
-                        <!-- Recipe Content -->
-                        <div class="recipe-content">
-                            <span>January 04, 2018</span>
-                            <a href="recipe-post.php">
-                                <h5>Berry Desert</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                            <p>2 Comments</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Small Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-small-recipe-area d-flex">
-                        <!-- Recipe Thumb -->
-                        <div class="recipe-thumb">
-                            <img src="../img/bg-img/sr8.jpg" alt="">
-                        </div>
-                        <!-- Recipe Content -->
-                        <div class="recipe-content">
-                            <span>January 04, 2018</span>
-                            <a href="recipe-post.php">
-                                <h5>Zucchini Grilled on peper</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                            <p>2 Comments</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Small Recipe Area -->
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <div class="single-small-recipe-area d-flex">
-                        <!-- Recipe Thumb -->
-                        <div class="recipe-thumb">
-                            <img src="../img/bg-img/sr9.jpg" alt="">
-                        </div>
-                        <!-- Recipe Content -->
-                        <div class="recipe-content">
-                            <span>January 04, 2018</span>
-                            <a href="recipe-post.php">
-                                <h5>Chicken Salad</h5>
-                            </a>
-                            <div class="ratings">
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star" aria-hidden="true"></i>
-                                <i class="fa fa-star-o" aria-hidden="true"></i>
-                            </div>
-                            <p>2 Comments</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- ##### Small Recipe Area End ##### -->
 
     <!-- ##### Footer Area Start ##### -->
     <?php include('include/footer.php');?>
