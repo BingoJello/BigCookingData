@@ -151,8 +151,11 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
         }
 
         $ingredients_percentage = $this->buildPercentageIngredient($ingredients_user);
+        var_dump($ingredients_percentage);
         $row_user = $this->buildVectorUser($ingredients_percentage);
+        var_dump($row_user);
         $matrix = $this->buildMatrix($proximity_recipes, $ingredients);
+        var_dump($matrix);
         $similarity_recipes = $this->cosinusSimilarityRecipes($matrix, $row_user);
 
         return $this->getBestSimilarity($similarity_recipes);
@@ -182,11 +185,15 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
     private function buildVectorUser($ingredients_user)
     {
         $row_user = array();
+        $total_ingredients_user = 0;
         array_push($row_user, $this->client->getId());
-        $total_ingredients_user = count($ingredients_user);
 
         foreach ($ingredients_user as $key => $percent_ingredient_user) {
-            array_push($row_user, $ingredients_user[$key] /= $total_ingredients_user);
+            $total_ingredients_user += $percent_ingredient_user;
+        }
+
+        foreach ($ingredients_user as $key => $percent_ingredient_user) {
+            array_push($row_user, $percent_ingredient_user /= $total_ingredients_user);
         }
         return $row_user;
     }
