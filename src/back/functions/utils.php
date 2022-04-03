@@ -2,7 +2,9 @@
 /**
  * @param Client $client
  */
-function printPreferencesIngredients($client){
+function printPreferencesIngredientsLabel($client){
+    echo $client->getPreferencesIngredientsLabel();
+    /*
     $preferences_ingredients_array = $client->getPreferencesIngredients();
     $preferences_ingredients_string = "";
     if(false === is_null($preferences_ingredients_array)){
@@ -12,6 +14,7 @@ function printPreferencesIngredients($client){
         }
     }
     echo $preferences_ingredients_string;
+    */
 }
 ?>
 

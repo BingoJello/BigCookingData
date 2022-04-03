@@ -152,9 +152,18 @@
                             </div>
                         </div>
                         <div class="row form-group">
-                            <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="list_ingredients">Ingredients préférés</label>
+                            <!--
+                            <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label">Ingredients préférés</label>
                             <div class="col-12 col-sm-9 col-md-6 col-lg-6 col-xl-5">
-                                <input type="text" id="list_ingredients" class="form-control" name="ingredients" value="<?php printPreferencesIngredients($client)?>"/>
+                                <input type="text" id="list_ingredients" class="form-control" name="ingredients"/>
+                            </div>
+                            -->
+                            <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="password-confirm">Ingredients préférés</label>
+                            <div class="col-12 col-sm-9 col-md-6 col-lg-6 col-xl-5">
+                                <input type="text" class="form-control" class="form-control" name="ingredients"  value="<?php echo $client->getPreferencesIngredientsLabel();?>"/>
+                                <div id="ingredientdHelp" class="form-text">
+                                    <label style="font-size:12px">Veuillez separez les ingrédients par ";"</label>
+                                </div>
                             </div>
                         </div>
                         <div class="row form-group small_top_spacer">
@@ -188,6 +197,7 @@
      <script src="../js/changeProfil.js"></script>
      <!-- List Ingredient multiple select js -->
      <script>
+         /*
          var listIngredientsJson = <?php echo $list_ingredients; ?>;
          var listIngredients = [];
 
@@ -202,6 +212,7 @@
              "autoComplete": true,
              "name": "b"
          });
+         */
      </script>
 	<?php include('./include/connexion_profil.php'); ?>
 </body>

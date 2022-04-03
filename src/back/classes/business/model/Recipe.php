@@ -113,13 +113,13 @@ class Recipe
     }
 
     /**
-     * @param int $id_ingredient
+     * @param Ingredient $id_ingredient
      * @return bool
      */
-    public function hasIngredient($id_ingredient):bool
+    public function hasIngredient($ingredient):bool
     {
-        foreach ($this->ingredients as $ingredient) {
-            if($ingredient->getId() == $id_ingredient)
+        foreach ($this->ingredients as $ingredient_user) {
+            if($ingredient_user->getId() == $ingredient->getId())
                 return true;
         }
         return false;

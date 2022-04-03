@@ -54,24 +54,32 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
                     }
                 }
             }else{
-                $process_text_ingredient = new ProcessTextIngredient($ingredients_preferences, ';');
-                $process_text_ingredient->build();
-
-                $ingredients_user_name = RecipePersistence::getIngredientNameByWord($process_text_ingredient->getWords());
-                $best_cluster_preferences = DecisionTreeCluster::getCluster($ingredients_user_name);
-
-                $ingredients_user = RecipePersistence::getIngredientsByName($ingredients_user_name);
-                $preferences_recipes_user = RecipePersistence::getRecipesByIngredientsCluster($best_cluster_preferences, $ingredients_user_name);
+                $decision_tree = new DecisionTreeCluster($ingredients_preferences, true);
+                $best_cluster_preferences = $decision_tree->getCluster();
+                $preferences_recipes_user = RecipePersistence::getRecipesByIngredientsCluster($best_cluster_preferences,
+                    $ingredients_preferences, true, $session);
 
                 if(true === is_null($preferences_recipes_user) or count($preferences_recipes_user) < 5){
                     $best_cluster_visualization_user = RecipePersistence::getBestVisualizationClusterUser($session);
                     $visualized_recipes_user = RecipePersistence::getRecipesVisualizatedByCluster($best_cluster_visualization_user, $session);
+                    if(true === is_null($visualized_recipes_user)){
+                        return $recipes_to_suggest;
+                    }
                     foreach($visualized_recipes_user as $recipe){
                         foreach($recipe->getIngredients() as $ingredient)
                             array_push($ingredients_user, $ingredient);
                     }
                 }else{
+                    $recipes_to_suggest['recipe'] = $preferences_recipes_user;
+                    $this->recipes = $recipes_to_suggest;
+                    return;
+                    /*
+                    foreach($preferences_recipes_user as $recipe){
+                        foreach($recipe->getIngredients() as $ingredient)
+                            array_push($ingredients_user, $ingredient);
+                    }
                     $visualized_recipes_user = null;
+                    */
                 }
             }
         }else{
@@ -135,11 +143,11 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
                 }
             }
         }
-        $proximity_recipes = RecipePersistence::getProximityRecipes($id_recipes, true);
-
-        /*if(false ===is_null($preferences_recipes_user)){
-            array_push($preferences_recipes_user, $preferences_recipes_user);
-        }*/
+        if(true === is_null($preferences_recipes_user)) {
+            $proximity_recipes = RecipePersistence::getProximityRecipes($id_recipes, true);
+        }else{
+            $proximity_recipes = RecipePersistence::getRecipesById($id_recipes);
+        }
 
         if(true === empty($proximity_recipes) or true === is_null($proximity_recipes)){
             return array();
@@ -209,12 +217,11 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
     private function buildMatrix($recipes, $ingredients_user)
     {
         $matrix = array();
-
         foreach ($recipes as $recipe) {
             $row = array();
             array_push($row, $recipe);
             foreach ($ingredients_user as $ingredient) {
-                if (true == $recipe->hasIngredient($ingredient->getId())) {
+                if (true == $recipe->hasIngredient($ingredient)) {
                     array_push($row, 1);
                 } else {
                     array_push($row, 0);

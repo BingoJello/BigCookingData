@@ -39,6 +39,10 @@ class Client
      */
     private $preferences_ingredients;
     /**
+     * @var string
+     */
+    private $preferences_ingredients_label;
+    /**
      * @var array|array[]
      */
     private $rated_recipes;
@@ -57,12 +61,13 @@ class Client
      * @param string $mail
      * @param string $password
      * @param array $preferences_ingredients
+     * @param string $preferences_ingredients_label
      * @param array $rated_recipes
      * @param array $recorded_recipes
      */
     public function __construct($id, $first_name = '', $last_name = '', $civility = '', $pseudo = '',
                                 $mail = '', $password = '', $preferences_ingredients = array(),
-                                $rated_recipes = array(), array $recorded_recipes = array())
+                                $preferences_ingredients_label = '', $rated_recipes = array(), array $recorded_recipes = array())
     {
         $this->id = $id;
         $this->first_name = $first_name;
@@ -72,6 +77,7 @@ class Client
         $this->mail = $mail;
         $this->password = $password;
         $this->preferences_ingredients = $preferences_ingredients;
+        $this->preferences_ingredients_label = $preferences_ingredients_label;
         $this->rated_recipes = $rated_recipes;
         $this->recorded_recipes = $recorded_recipes;
     }
@@ -234,6 +240,22 @@ class Client
     public function setPreferencesIngredients($preferences_ingredients)
     {
         $this->preferences_ingredients = $preferences_ingredients;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPreferencesIngredientsLabel()
+    {
+        return $this->preferences_ingredients_label;
+    }
+
+    /**
+     * @param string $preferences_ingredients_label
+     */
+    public function setPreferencesIngredientsLabel($preferences_ingredients_label)
+    {
+        $this->preferences_ingredients_label = $preferences_ingredients_label;
     }
 
     /**

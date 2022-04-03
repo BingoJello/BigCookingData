@@ -47,9 +47,20 @@ class ClientFacade
      * @return mixed
      */
     public static function updatePreferencesIngredients($client, $ingredients){
+        /*
         $ingredients = explode(";", $ingredients);
         array_pop($ingredients);
         ClientPersistence::updateIngredientsPreferencesClient($client->getId(), $ingredients);
+        $client->setPreferencesIngredients(ClientPersistence::getPreferencesIngredientsClient($client->getId()));
+        $_SESSION['client'] = serialize($client);
+        */
+
+        ClientPersistence::updatePreferencesIngredientsLabelClient($client->getId(), $ingredients);
+        $process_text_ingredient = new ProcessTextIngredient($ingredients, ';', true);
+        $process_text_ingredient->build();
+        $id_ingredients = RecipePersistence::getIdIngredientByWord($process_text_ingredient->getWords());
+        ClientPersistence::insertIngredientsPreferences($client->getId(), $id_ingredients);
+        $client->setPreferencesIngredientsLabel($ingredients);
         $client->setPreferencesIngredients(ClientPersistence::getPreferencesIngredientsClient($client->getId()));
         $_SESSION['client'] = serialize($client);
 

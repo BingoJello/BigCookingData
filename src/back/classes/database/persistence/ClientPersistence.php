@@ -28,6 +28,7 @@ class ClientPersistence
         foreach($result as $row) {
             $client = new Client($row['id_client'], $row['firstname'], $row['lastname'], $row['civility'], $row['pseudo'], $row['mail'], $row['password']);
             $client->setPreferencesIngredients(ClientPersistence::getPreferencesIngredientsClient($row['id_client']));
+            $client->setPreferencesIngredientsLabel($row['preferences_label']);
             return $client;
         }
         return null;
@@ -253,6 +254,16 @@ class ClientPersistence
                 DatabaseQuery::insertQuery($query, $params);
             }
         }
+    }
+
+    public static function updatePreferencesIngredientsLabelClient($id_client, $preferences_label)
+    {
+        $query = "UPDATE client 
+                  SET preferences_label = ?
+                  WHERE id_client = ?";
+        $params = [$preferences_label, $id_client];
+
+        DatabaseQuery::updateQuery($query, $params);
     }
 
     /**

@@ -27,7 +27,7 @@ class ProcessTextIngredient implements ProcessText
         if(false === $is_string){
             $cpt_words = 0;
             foreach($words as $word){
-                if($cpt_words == count($words)){
+                if($cpt_words == count($words) - 1){
                     $words_string.=$word->getName();
                 }else{
                     $words_string.=$word->getName().";";

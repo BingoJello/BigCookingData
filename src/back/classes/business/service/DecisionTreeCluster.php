@@ -7,24 +7,18 @@
  */
 class DecisionTreeCluster
 {
-    public static function getCluster($ingredients)
-    {
-        $ingredient_string = "";
-        $index = 0;
-        foreach($ingredients as $ingredient){
-            if($index == count($ingredients) - 1){
-                $ingredient_string.=$ingredient;
-            }else{
-                $ingredient_string.=$ingredient.";";
-            }
-            $index++;
-        }
-        $ingredients = $ingredient_string;
+    private $ingredients;
 
+    public function __construct($ingredients, $is_object = false){
+        $this->ingredients = $this->formatIngredient($ingredients, $is_object);
+    }
+
+    public function getCluster()
+    {
         try{
             /*Connection to the soap service */
             $soap_client = new SoapClient("http://localhost:8080/DecisionTreeService/soap/description");
-            $query = array('ingredients-user' => $ingredients);
+            $query = array('ingredients-user' => $this->ingredients);
             $cluster = $soap_client->add($query);
 
             return $cluster->result;
@@ -32,4 +26,45 @@ class DecisionTreeCluster
             echo $exception->getMessage();
         }
     }
+
+    private function formatIngredient($ingredients, $is_object)
+    {
+        $ingredient_string = "";
+        $index = 0;
+        foreach($ingredients as $ingredient){
+            if($index == count($ingredients) - 1){
+                if(true === $is_object){
+                    $ingredient_string.=$ingredient->getName();
+                }else{
+                    $ingredient_string.=$ingredient;
+                }
+
+            }else{
+                if(true === $is_object){
+                    $ingredient_string.=$ingredient->getName().";";
+                }else{
+                    $ingredient_string.=$ingredient;
+                }
+            }
+            $index++;
+        }
+        return $ingredient_string;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIngredients(): string
+    {
+        return $this->ingredients;
+    }
+
+    /**
+     * @param string $ingredients
+     */
+    public function setIngredients(string $ingredients): void
+    {
+        $this->ingredients = $ingredients;
+    }
+
 }

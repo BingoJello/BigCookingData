@@ -44,11 +44,19 @@ class RegistrationInscription
                             , $civility, addslashes($pseudo), addslashes($mail), addslashes($password));
 
                         if($result) {
-                            $ingredients = explode(";", $ingredients);
-                            array_pop($ingredients);
+                            ClientPersistence::updatePreferencesIngredientsLabelClient($id_client, $ingredients);
+                            /*
                             $id_ingredients = RecipePersistence::getIdIngredientByName($ingredients);
                             ClientPersistence::insertIngredientsPreferences($id_client, $id_ingredients);
                             $client = ClientPersistence::getClient($mail, $password);
+                            $client->setPreferencesIngredients(ClientPersistence::getPreferencesIngredientsClient($client->getId()));
+                            */
+                            $process_text_ingredient = new ProcessTextIngredient($ingredients, ';', true);
+                            $process_text_ingredient->build();
+                            $id_ingredients = RecipePersistence::getIdIngredientByWord($process_text_ingredient->getWords());
+                            ClientPersistence::insertIngredientsPreferences($id_client, $id_ingredients);
+                            $client = ClientPersistence::getClient($mail, $password);
+                            $client->setPreferencesIngredientsLabel($ingredients);
                             $client->setPreferencesIngredients(ClientPersistence::getPreferencesIngredientsClient($client->getId()));
                             $_SESSION['client'] = serialize($client);
 
