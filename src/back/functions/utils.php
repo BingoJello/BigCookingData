@@ -5,7 +5,6 @@
 function printPreferencesIngredients($client){
     $preferences_ingredients_array = $client->getPreferencesIngredients();
     $preferences_ingredients_string = "";
-var_dump($preferences_ingredients_array);
     if(false === is_null($preferences_ingredients_array)){
         foreach($preferences_ingredients_array as $ingredient){
             $preferences_ingredients_string.=$ingredient->getName();

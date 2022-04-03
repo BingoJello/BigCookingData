@@ -114,7 +114,6 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
                                                   $ingredients_user)
     {
         $id_recipes = array();
-
         if(false === is_null($rated_recipes_user)) {
             foreach ($rated_recipes_user as $recipe) {
                 if (false === in_array($recipe->getId(), $id_recipes)) {
@@ -136,7 +135,11 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
                 }
             }
         }
-        $proximity_recipes = RecipePersistence::getProximityRecipes($id_recipes);
+        $proximity_recipes = RecipePersistence::getProximityRecipes($id_recipes, true);
+
+        /*if(false ===is_null($preferences_recipes_user)){
+            array_push($preferences_recipes_user, $preferences_recipes_user);
+        }*/
 
         if(true === empty($proximity_recipes) or true === is_null($proximity_recipes)){
             return array();
@@ -151,13 +154,13 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
         }
 
         $ingredients_percentage = $this->buildPercentageIngredient($ingredients_user);
-        var_dump($ingredients_percentage);
         $row_user = $this->buildVectorUser($ingredients_percentage);
-        var_dump($row_user);
         $matrix = $this->buildMatrix($proximity_recipes, $ingredients);
-        var_dump($matrix);
         $similarity_recipes = $this->cosinusSimilarityRecipes($matrix, $row_user);
 
+        if(0 == count($similarity_recipes)){
+            return array();
+        }
         return $this->getBestSimilarity($similarity_recipes);
     }
 
@@ -210,7 +213,6 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
         foreach ($recipes as $recipe) {
             $row = array();
             array_push($row, $recipe);
-
             foreach ($ingredients_user as $ingredient) {
                 if (true == $recipe->hasIngredient($ingredient->getId())) {
                     array_push($row, 1);

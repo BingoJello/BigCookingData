@@ -176,7 +176,7 @@
                     }
                 ?>
                 <a href="#" data-toggle='modal' data-target=<?php echo $data_target;?> class="btn delicious-btn" data-animation="fadeInUp" data-delay="1000ms">Donnez votre avis</a>
-                <a href="recipe-post.php?recipe=<?php echo $recipe->getId();?>&amp;record=true"  class="btn delicious-btn">Enregistrez la recette</a>
+                <!--<a href="recipe-post.php?recipe=<?php echo $recipe->getId();?>&amp;record=true"  class="btn delicious-btn">Enregistrez la recette</a>-->
                 <?php printAssessRecipe($assessed_recipe);?>
             </div>
         </div>

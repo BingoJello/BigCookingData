@@ -97,8 +97,9 @@
                 <form action="./recipes" method="post">
 					<div class="row">
 						<div class="col 12 col-lg-3">
-                            <input type="text" class="form-control" name="include_ingredients" placeholder="Inclure des ingredients"/>
-						</div>
+                            <input for="test" type="text" class="form-control" name="include_ingredients" placeholder="Inclure des ingredients"/>
+                            <label style="font-size:11px">Separez les ingrédients par ";"</label>
+                        </div>
 						<div class="col 12 col-lg-3">
                             <input type="text" class="form-control" name="exclude_ingredients" placeholder="Exclure des ingredients"/>
 						</div>

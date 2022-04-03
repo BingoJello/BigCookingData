@@ -648,12 +648,17 @@ class RecipePersistence
      * @param array $id_recipes
      * @return array|null
      */
-    public static function getProximityRecipes($id_recipes){
+    public static function getProximityRecipes($id_recipes, $t = false){
         $recipes = array();
         $id_recipes_proximity = array();
         $id_recipes_string = "";
         $cpt_id_recipes = 0;
 
+        if(true === $t){
+            foreach($id_recipes as $id){
+                array_push($id_recipes_proximity, $id);
+            }
+        }
         foreach($id_recipes as $id){
             if($cpt_id_recipes == count($id_recipes) - 1){
                 $id_recipes_string.=$id;
