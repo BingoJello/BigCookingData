@@ -7,12 +7,23 @@
  */
 class DecisionTreeCluster
 {
+    /**
+     * @var string
+     */
     private $ingredients;
 
+    /**
+     * DecisionTreeCluster constructor.
+     * @param $ingredients
+     * @param false $is_object
+     */
     public function __construct($ingredients, $is_object = false){
         $this->ingredients = $this->formatIngredient($ingredients, $is_object);
     }
 
+    /**
+     * @return mixed
+     */
     public function getCluster()
     {
         try{
@@ -27,6 +38,11 @@ class DecisionTreeCluster
         }
     }
 
+    /**
+     * @param $ingredients
+     * @param bool $is_object
+     * @return string
+     */
     private function formatIngredient($ingredients, $is_object)
     {
         $ingredient_string = "";

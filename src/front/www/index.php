@@ -116,47 +116,6 @@
         </div>
     </section>
     <!-- ##### Best Recipe Area End ##### -->
-	
-	 <!-- ##### Top Catagory Area Start ##### -->
-    <section class="top-category-area section-padding-80-0">
-		<div class="row">
-			<div class="col-12">
-				<div class="section-heading">
-					<h3 style="margin-top: -150px">Catégories suggérées</h3>
-                </div>
-            </div>
-        </div>
-		
-        <div class="container">
-            <div class="row">
-                <!-- Top Catagory Area -->
-                <div class="col-12 col-lg-6">
-                    <div class="single-top-category">
-                        <img src="../img/bg-img/bg2.jpg" alt="">
-                        <!-- Content -->
-                        <div class="top-cta-content">
-                            <h3>Strawberry Cake</h3>
-                            <h6>Simple &amp; Delicios</h6>
-                            <a href="recipe-post.php" class="btn delicious-btn">See Full Recipe</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Top Catagory Area -->
-                <div class="col-12 col-lg-6">
-                    <div class="single-top-category">
-                        <img src="../img/bg-img/bg3.jpg" alt="">
-                        <!-- Content -->
-                        <div class="top-cta-content">
-                            <h3>Chinesse Noodles</h3>
-                            <h6>Simple &amp; Delicios</h6>
-                            <a href="recette" class="btn delicious-btn">See Full Recipe</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- ##### Top Category Area End ##### -->
 
     <!-- ##### CTA Area Start ##### -->
     <section class="cta-area bg-img bg-overlay" style="background-image: url(../img/bg-img/bg4.jpg);">

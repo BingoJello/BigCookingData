@@ -7,6 +7,7 @@
 class RecipeFacade
 {
     /**
+     * @brief Recupère les recettes à suggérer
      * @param Client $client
      * @param array $session
      * @return array
@@ -20,6 +21,7 @@ class RecipeFacade
     }
 
     /**
+     * @brief Récupère des recettes aléatoires
      * @return array|array[]
      */
     public static function getRandomRecipes(){
@@ -27,6 +29,7 @@ class RecipeFacade
     }
 
     /**
+     * @brief Récupère la recette
      * @param int $id_recipe
      * @return Recipe
      */
@@ -35,6 +38,7 @@ class RecipeFacade
     }
 
     /**
+     * @brief Récupère la recette d'une évaluation
      * @param int $id_recipe
      * @return array
      */
@@ -43,6 +47,7 @@ class RecipeFacade
     }
 
     /**
+     * @brief Récupère la note global d'une recette
      * @param int $id_recipe
      * @return array|null
      */
@@ -51,6 +56,7 @@ class RecipeFacade
     }
 
     /**
+     * @brief Récupère l'ensemble des ingrédients
      * @return array
      */
     public static function getAllIngredients(){
@@ -58,6 +64,7 @@ class RecipeFacade
     }
 
     /**
+     * @brief Récupère les recettes basé sur des mots-clefs
      * @param string $words
      * @return array
      */
@@ -68,6 +75,7 @@ class RecipeFacade
     }
 
     /**
+     * @brief Récupère des recettes basés sur ingrédients inclus/exclus
      * @param $include_ingredients
      * @param string $exclude_ingredients
      * @return array|null
@@ -109,6 +117,7 @@ class RecipeFacade
     }
 
     /**
+     * @brief Récupère le nombre de recettes
      * @return int|mixed
      */
     public static function getNbrRecipes(){

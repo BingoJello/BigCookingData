@@ -73,13 +73,6 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
                     $recipes_to_suggest['recipe'] = $preferences_recipes_user;
                     $this->recipes = $recipes_to_suggest;
                     return;
-                    /*
-                    foreach($preferences_recipes_user as $recipe){
-                        foreach($recipe->getIngredients() as $ingredient)
-                            array_push($ingredients_user, $ingredient);
-                    }
-                    $visualized_recipes_user = null;
-                    */
                 }
             }
         }else{

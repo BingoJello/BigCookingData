@@ -2,12 +2,12 @@
 
 /**
  * Class UpdateProximityRecipes
- * @brief Mets à jour les recettes proches de chaque de recette
+ * @brief Mets à jour les recettes proches de chaque recette
+ * ATTENTION : Ce script ne doit être exécuté seulement lors de l'insertion des données dans la base de données
  * @author arthur mimouni
  */
 class UpdateProximityRecipes
 {
-
     public static function buildAllProximity(){
         $recipes = RecipePersistence::getRecipes();
 
@@ -16,6 +16,9 @@ class UpdateProximityRecipes
         }
     }
 
+    /**
+     * @param array $id_cluster
+     */
     public static function buildProximityCluster($id_cluster){
         ini_set('max_execution_time', 0);
         $recipes = RecipePersistence::getRecipesByCluster($id_cluster);

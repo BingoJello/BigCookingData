@@ -204,6 +204,9 @@ function printGlobalRating($score, $nbr_reviews){
 ?>
 
 <?php
+/**
+ * @param $score
+ */
 function printGlobalRatingIndex($score){
     $html = "<div class='ratings'>";
 
@@ -235,6 +238,10 @@ function printGlobalRatingIndex($score){
 ?>
 
 <?php
+/**
+ * @param $recipes
+ * @return array
+ */
 function getRandomRecipes($recipes){
     $random_id = array();
     $recipes_slides = array();
@@ -257,6 +264,9 @@ function getRandomRecipes($recipes){
 ?>
 
 <?php
+/**
+ * @param $recipes
+ */
 function printRecipesSlides($recipes){
     ?>
     <section class="hero-area">
