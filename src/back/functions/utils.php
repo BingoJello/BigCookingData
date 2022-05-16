@@ -35,7 +35,6 @@ function getClient(){
 function getJsonRecipes($recipes, $by_searching = false){
     $recipes_array = array();
     $i =0;
-
     if(true == $by_searching){
         foreach($recipes as $recipe){
             $recipes_array[$i]['id_recipe'] = $recipe->getId();
@@ -91,7 +90,9 @@ function printIngredients($recipe){
         <div>
             <label class="ingredient-label">
                 <img src=<?php echo $ingredient->getUrlPic();?> height="40" width="40">
-                <?php echo $ingredient->getName();?>
+                <?php
+                    echo $ingredient->getQuantity()." ".$ingredient->getName();
+                ?>
             </label>
         </div>
     <?php }

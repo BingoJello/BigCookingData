@@ -67,12 +67,12 @@ class UpdateProximityRecipes
             }
             $index++;
         }
-        /*
+
         usort($id_recipes_close, function ($a, $b){
             if ($a->getDistance() == $b->getDistance()) return 0;
             return ($a->getDistance() < $b->getDistance())?-1:1;
         });
-        */
+
         RecipePersistence::updateProximityRecipe($id_recipe, $id_recipes_close);
     }
 

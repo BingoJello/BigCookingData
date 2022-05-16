@@ -84,6 +84,7 @@ class RecipeFacade
         $process_text_ingredient = new ProcessTextIngredient($include_ingredients, ';', true);
         $process_text_ingredient->build();
         $include_ingredients_name = RecipePersistence::getIngredientNameByWord($process_text_ingredient->getWords());
+
         $decision_tree = new DecisionTreeCluster($include_ingredients_name);
         $id_cluster = $decision_tree->getCluster();
 

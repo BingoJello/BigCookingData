@@ -59,7 +59,7 @@ class DecisionTreeCluster
                 if(true === $is_object){
                     $ingredient_string.=$ingredient->getName().";";
                 }else{
-                    $ingredient_string.=$ingredient;
+                    $ingredient_string.=$ingredient.";";
                 }
             }
             $index++;

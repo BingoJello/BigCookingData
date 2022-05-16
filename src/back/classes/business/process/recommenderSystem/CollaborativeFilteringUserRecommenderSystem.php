@@ -4,7 +4,7 @@
  * @brief Effectue le processus de création des recommandations de recettes
  * @author arthur mimouni
  */
-class ContentBasedRecommenderSystem implements RecommenderSystem
+class CollaborativeFilteringUserRecommenderSystem implements RecommenderSystem
 {
     /**
      * @var Client $client
@@ -36,7 +36,7 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
         $recipes_to_suggest = array('recipe' => array());
         $ingredients_user = array();
 
-        $rated_recipes_user = RecipePersistence::getBestRatedRecipesUser($this->client->getId());
+        $rated_recipes_user = RecipePersistence::getRatedRecipesUser($this->client->getId());
 
         if(true === is_null($rated_recipes_user)){
             $ingredients_preferences = ClientPersistence::getPreferencesIngredientsClient($this->client->getId());
@@ -46,14 +46,9 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
                 $best_cluster_visualization_user = RecipePersistence::getBestVisualizationClusterUser($session);
                 $visualized_recipes_user = RecipePersistence::getRecipesVisualizatedByCluster($best_cluster_visualization_user, $session);
 
-                if(false === is_null($visualized_recipes_user)){
-                    foreach($visualized_recipes_user as $recipe){
-                        foreach($recipe->getIngredients() as $ingredient) {
-                            if(false === in_array($ingredient->getName(), REMOVED_INGREDIENTS)){
-                                array_push($ingredients_user, $ingredient);
-                            }
-                        }
-                    }
+                if(true === is_null($visualized_recipes_user)){
+                    $this->recipes = $recipes_to_suggest;
+                    return;
                 }
             }else{
                 $decision_tree = new DecisionTreeCluster($ingredients_preferences, true);
@@ -61,17 +56,12 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
                 $preferences_recipes_user = RecipePersistence::getRecipesByIngredientsCluster($best_cluster_preferences,
                     $ingredients_preferences, true, $session);
 
-                if(true === is_null($preferences_recipes_user) or count($preferences_recipes_user) < 5){
+                if(true === is_null($preferences_recipes_user) or count($preferences_recipes_user) < LIMIT_MIN_SUGGESTION){
                     $best_cluster_visualization_user = RecipePersistence::getBestVisualizationClusterUser($session);
                     $visualized_recipes_user = RecipePersistence::getRecipesVisualizatedByCluster($best_cluster_visualization_user, $session);
                     if(true === is_null($visualized_recipes_user)){
-                        return $recipes_to_suggest;
-                    }
-                    foreach($visualized_recipes_user as $recipe){
-                        foreach($recipe->getIngredients() as $ingredient)
-                            if(false === in_array($ingredient->getName(), REMOVED_INGREDIENTS)) {
-                                array_push($ingredients_user, $ingredient);
-                            }
+                        $this->recipes = $recipes_to_suggest;
+                        return;
                     }
                 }else{
                     $recipes_to_suggest['recipe'] = $preferences_recipes_user;
@@ -86,7 +76,7 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
         }
 
         if(true === is_null($preferences_recipes_user) AND true === is_null($rated_recipes_user) AND true === is_null($visualized_recipes_user)){
-           return $recipes_to_suggest;
+            return $recipes_to_suggest;
         }
 
         $builded_recipes = $this->buildContentBasedRecommender($rated_recipes_user, $preferences_recipes_user,

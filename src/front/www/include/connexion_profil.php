@@ -35,7 +35,7 @@
 									Ici on met les alerts
 								</div>
 								<div class="row">
-									<a href="./registration.php" style="font-size:16px;color:#1E90FF;margin:0 auto">Create an account</a>
+									<a href="./registration.php" style="font-size:16px;color:#1E90FF;margin:0 auto">Créer un compte</a>
 								</div>
 							</fieldset>
 						</form>

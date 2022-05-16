@@ -16,9 +16,13 @@
             $exclude_ingredients = $_POST['exclude_ingredients'];
         }
         $recipes = RecipeFacade::getRecipesIncludeExclude($_POST['include_ingredients'], $exclude_ingredients);
-        $json_recipes = getJsonRecipes($recipes, true);
-        $limit = LIMIT_PAGINATION;
-        $total_pages = ceil(count($recipes) / $limit);
+        if(false === is_null($recipes)){
+            $json_recipes = getJsonRecipes($recipes, true);
+            $limit = LIMIT_PAGINATION;
+            $total_pages = ceil(count($recipes) / $limit);
+        }else{
+            $total_pages = 0;
+        }
     } else {
         $recipes = RecipeFacade::getRandomRecipes();
         $json_recipes = getJsonRecipes($recipes);
@@ -113,13 +117,6 @@
                 </form>
             </div>
         </div>
-		
-		 <!-- Recipe Categories Search -->
-        <div class="recipe-post-category mb-80">
-			<div class="container">
-				<?php include("./include/category-recipes.php");?>
-			</div>
-        </div>
 
         <section class="best-recipe-area">
             <div class="container">
@@ -189,7 +186,6 @@
             let Datas = new FormData();
             Datas.append("page", 1);
             Datas.append("recipes", JSON.stringify(<?php echo $json_recipes; ?>));
-            console.log(Datas);
             let request = $.ajax({
                 type: "POST",
                 url: "pagination.php",

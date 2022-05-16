@@ -29,11 +29,12 @@ class Ingredient
      * @param string $name
      * @param string $url_pic
      */
-    public function __construct($id, $name, $url_pic="")
+    public function __construct($id, $name, $url_pic="", $quantity = 0)
     {
         $this->id = $id;
         $this->name = $name;
         $this->url_pic = $url_pic;
+        $this->quantity = $quantity;
     }
 
     /**
@@ -84,4 +85,19 @@ class Ingredient
         $this->url_pic = $url_pic;
     }
 
+    /**
+     * @return string
+     */
+    public function getQuantity()
+    {
+        return $this->quantity;
+    }
+
+    /**
+     * @param string $quantity
+     */
+    public function setQuantity($quantity): void
+    {
+        $this->quantity = $quantity;
+    }
 }

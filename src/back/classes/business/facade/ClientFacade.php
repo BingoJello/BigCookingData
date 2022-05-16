@@ -58,7 +58,9 @@ class ClientFacade
         $id_ingredients = RecipePersistence::getIdIngredientByWord($process_text_ingredient->getWords());
         ClientPersistence::deleteIngredientPreferencesClient($client->getId());
 
-        ClientPersistence::insertIngredientsPreferences($client->getId(), $id_ingredients);
+        if(false === empty($id_ingredients)){
+            ClientPersistence::insertIngredientsPreferences($client->getId(), $id_ingredients);
+        }
         $client->setPreferencesIngredientsLabel($ingredients);
         $client->setPreferencesIngredients(ClientPersistence::getPreferencesIngredientsClient($client->getId()));
         $_SESSION['client'] = serialize($client);

@@ -102,6 +102,35 @@ class RecipePersistence
     }
 
     /**
+     * @brief Récupère les recettes évaluées par l'utilisateur
+     * @param int $id_client
+     * @return array
+     */
+    public static function getRatedRecipesUser($id_client){
+        $recipes = array();
+
+        $query = "SELECT DISTINCT recipe.* FROM recipe
+                  INNER JOIN assess ON assess.id_recipe = recipe.id_recipe
+                  INNER JOIN client ON client.id_client = assess.id_client
+                  WHERE client.id_client = ?";
+        $params = [$id_client];
+
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
+                $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']);
+            $recipe->setIngredients(self::getIngredientsByRecipes([$row['id_recipe']]));
+            array_push($recipes, $recipe);
+        }
+        if(true === empty($recipes)){
+            return null;
+        }
+        return $recipes;
+    }
+
+    /**
      * @brief Récupère les ID des recettes évaluées par le client
      * @param int $id_client
      * @return array
@@ -387,7 +416,9 @@ class RecipePersistence
         $result = DatabaseQuery::selectQuery($query, $params);
 
         foreach($result as $row) {
-            array_push($ingredients, new Ingredient($row['id_ingredient'], $row['name'], $row['url_pic']));
+            if(false === in_array($row['name'], REMOVED_INGREDIENTS)) {
+                array_push($ingredients, new Ingredient($row['id_ingredient'], $row['name'], $row['url_pic']));
+            }
         }
         return $ingredients;
     }
@@ -402,7 +433,7 @@ class RecipePersistence
         $ingredients = array();
         $id_recipes = join(",", $id_recipes);
 
-        $query="SELECT ingredient.id_ingredient, ingredient.name, ingredient.url_pic FROM ingredient
+        $query="SELECT ingredient.id_ingredient, ingredient.name, ingredient.url_pic, cri.quantity FROM ingredient
                 INNER JOIN contain_recipe_ingredient AS cri ON cri.id_ingredient = ingredient.id_ingredient
                 INNER JOIN recipe ON recipe.id_recipe = cri.id_recipe
                 WHERE recipe.id_recipe IN(".$id_recipes.")";
@@ -410,7 +441,7 @@ class RecipePersistence
         $result = DatabaseQuery::selectQuery($query);
 
         foreach($result as $row) {
-            array_push($ingredients, new Ingredient($row['id_ingredient'], $row['name'], $row['url_pic']));
+            array_push($ingredients, new Ingredient($row['id_ingredient'], $row['name'], $row['url_pic'], $row['quantity']));
         }
         return $ingredients;
     }
@@ -585,6 +616,29 @@ class RecipePersistence
         }
 
         return $recipes;
+    }
+
+    /**
+     * @param int $random_limit
+     * @param array $not_in_ingredients
+     * @return array
+     */
+    public static function getRandomIngredients($random_limit, $not_in_ingredients){
+        $ingredients = array();
+
+        $query = "SELECT ingredient.id_ingredient FROM ingredient 
+                  WHERE ingredient.id_ingredient";
+        if(0 == empty($not_in_ingredients)){
+            $not_in_ingredients = join(",", $not_in_ingredients);
+            $query.=" NOT IN(".$not_in_ingredients.")";
+        }
+        $query.=" ORDER BY RAND() LIMIT ".$random_limit;
+        $result = DatabaseQuery::selectQuery($query);
+
+        foreach($result as $row) {
+            array_push($ingredients, $row['id_ingredient']);
+        }
+        return $ingredients;
     }
 
     /*******************
