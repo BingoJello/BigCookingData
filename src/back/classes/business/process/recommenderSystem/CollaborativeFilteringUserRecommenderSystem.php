@@ -4,7 +4,7 @@
  * @brief Effectue le processus de création des recommandations de recettes
  * @author arthur mimouni
  */
-class CollaborativeFilteringUserRecommenderSystem implements RecommenderSystem
+class CollaborativeFilteringUserRecommenderSystem
 {
     /**
      * @var Client $client
@@ -34,9 +34,8 @@ class CollaborativeFilteringUserRecommenderSystem implements RecommenderSystem
     public function buildRecipes($session)
     {
         $recipes_to_suggest = array('recipe' => array());
-        $ingredients_user = array();
 
-        $rated_recipes_user = RecipePersistence::getRatedRecipesUser($this->client->getId());
+        $rated_recipes_user = RecipePersistence::getRatedRecipesUser($this->client->getId(), 30);
 
         if(true === is_null($rated_recipes_user)){
             $ingredients_preferences = ClientPersistence::getPreferencesIngredientsClient($this->client->getId());
@@ -51,17 +50,17 @@ class CollaborativeFilteringUserRecommenderSystem implements RecommenderSystem
                     return;
                 }
             }else{
+                $visualized_recipes_user = null;
                 $decision_tree = new DecisionTreeCluster($ingredients_preferences, true);
                 $best_cluster_preferences = $decision_tree->getCluster();
                 $preferences_recipes_user = RecipePersistence::getRecipesByIngredientsCluster($best_cluster_preferences,
                     $ingredients_preferences, true, $session);
 
-                if(true === is_null($preferences_recipes_user) or count($preferences_recipes_user) < LIMIT_MIN_SUGGESTION){
+                if(true === is_null($preferences_recipes_user)){
                     $best_cluster_visualization_user = RecipePersistence::getBestVisualizationClusterUser($session);
                     $visualized_recipes_user = RecipePersistence::getRecipesVisualizatedByCluster($best_cluster_visualization_user, $session);
                     if(true === is_null($visualized_recipes_user)){
-                        $this->recipes = $recipes_to_suggest;
-                        return;
+                        return $recipes_to_suggest;
                     }
                 }else{
                     $recipes_to_suggest['recipe'] = $preferences_recipes_user;
@@ -70,7 +69,6 @@ class CollaborativeFilteringUserRecommenderSystem implements RecommenderSystem
                 }
             }
         }else{
-            $ingredients_user = RecipePersistence::getIngredientsOfRatedRecipesByClient($this->client->getId());
             $preferences_recipes_user = null;
             $visualized_recipes_user = null;
         }
@@ -79,234 +77,133 @@ class CollaborativeFilteringUserRecommenderSystem implements RecommenderSystem
             return $recipes_to_suggest;
         }
 
-        $builded_recipes = $this->buildContentBasedRecommender($rated_recipes_user, $preferences_recipes_user,
-            $visualized_recipes_user, $ingredients_user);
-
-        $id_recipes_client = RecipePersistence::getIdRecipesByClient($this->client->getId());
-
-        foreach($session['visualization'] as $visualized_recipes_user){
-            if(false === in_array($visualized_recipes_user, $id_recipes_client)){
-                array_push($id_recipes_client, $visualized_recipes_user);
-            }
-        }
-        foreach($builded_recipes as $recipe){
-            if(false === in_array($recipe['recipe']->getId(), $id_recipes_client)){
-                array_push($recipes_to_suggest['recipe'], $recipe['recipe']);
-            }
-        }
-        $this->recipes = $recipes_to_suggest;
+        $builded_recipes = $this->build($rated_recipes_user, $preferences_recipes_user,
+            $visualized_recipes_user);
     }
 
     /**
      * @param array $rated_recipes_user
      * @param array $preferences_recipes_user
      * @param array $visualized_recipes_user
-     * @param array $ingredients_user
-     * @param array $session
      * @return array
      */
-    private function buildContentBasedRecommender($rated_recipes_user, $preferences_recipes_user, $visualized_recipes_user,
-                                                  $ingredients_user)
+    private function build($rated_recipes_user, $preferences_recipes_user, $visualized_recipes_user)
     {
-        $id_recipes = array();
-        if(false === is_null($rated_recipes_user)) {
+        $ratings_recipes_user = array("id_recipes" => array(), "ratings" => array());
+
+        if (false === is_null($rated_recipes_user)) {
             foreach ($rated_recipes_user as $recipe) {
-                if (false === in_array($recipe->getId(), $id_recipes)) {
-                    array_push($id_recipes, $recipe->getId());
+                if (false === in_array($recipe->getId(), $ratings_recipes_user['id_recipes'])) {
+                    array_push($ratings_recipes_user['id_recipes'], $recipe->getId());
+                    array_push($ratings_recipes_user['ratings'], new Rating($recipe->getId(), $recipe->getScore()));
                 }
             }
         }
-        if(false === is_null($preferences_recipes_user)) {
+        if (false === is_null($preferences_recipes_user)) {
             foreach ($preferences_recipes_user as $recipe) {
-                if (false === in_array($recipe->getId(), $id_recipes)) {
-                    array_push($id_recipes, $recipe->getId());
+                if (false === in_array($recipe->getId(), $ratings_recipes_user['id_recipes'])) {
+                    array_push($ratings_recipes_user['id_recipes'], $recipe->getId());
+                    array_push($ratings_recipes_user['ratings'], new Rating($recipe->getId(), $recipe->getScore()));
                 }
             }
         }
-        if(false === is_null($visualized_recipes_user)) {
+        if (false === is_null($visualized_recipes_user)) {
             foreach ($visualized_recipes_user as $recipe) {
-                if (false === in_array($recipe->getId(), $id_recipes)) {
-                    array_push($id_recipes, $recipe->getId());
+                if (false === in_array($recipe->getId(), $ratings_recipes_user['id_recipes'])) {
+                    array_push($ratings_recipes_user['id_recipes'], $recipe->getId());
+                    array_push($ratings_recipes_user['ratings'], new Rating($recipe->getId(), $recipe->getScore()));
                 }
             }
         }
-        if(true === is_null($preferences_recipes_user)) {
-            $proximity_recipes = RecipePersistence::getProximityRecipes($id_recipes, true);
-        }else{
-            $proximity_recipes = RecipePersistence::getRecipesById($id_recipes);
+
+        $this->client->setRatedRecipes($ratings_recipes_user['ratings']);
+
+
+
+
+        $similar_clients = RecipePersistence::getSimilarClientsOfRatingsRecipesClient($this->client->getId());
+        $id_recipes = array();
+
+        foreach($this->client->getRatedRecipes() as $rating){
+            if (false === in_array($rating->getIdRecipe(), $id_recipes)) {
+                array_push($id_recipes, $rating->getIdRecipe());
+            }
         }
-
-        if(true === empty($proximity_recipes) or true === is_null($proximity_recipes)){
-            return array();
-        }
-
-        $ingredients = array();
-
-        foreach($ingredients_user as $ingredient_user){
-            if(false == in_array($ingredient_user, $ingredients)){
-                array_push($ingredients, $ingredient_user);
+        foreach($similar_clients['id_recipes'] as $id_recipe){
+            if (false === in_array($id_recipe, $id_recipes)) {
+                array_push($id_recipes, $id_recipe);
             }
         }
 
-        $ingredients_percentage = $this->buildPercentageIngredient($ingredients_user);
-        $row_user = $this->buildVectorUser($ingredients_percentage);
-        $matrix = $this->buildMatrix($proximity_recipes, $ingredients);
-        $similarity_recipes = $this->cosinusSimilarityRecipes($matrix, $row_user);
+        $vectors = array();
+        $vector_user = array();
+        $cpt = 0;
+        $sum = 0;
+        array_push($vector_user, $this->client->getId());
 
-        if(0 == count($similarity_recipes)){
-            return array();
+        foreach($id_recipes as $id_recipe){
+            $score = $this->client->hasRatedRecipe($id_recipe);
+            array_push($vector_user, $score);
+            $cpt++;
+            $sum+=$score;
         }
-        return $this->getBestSimilarity($similarity_recipes);
-    }
+        array_push($vector_user, round($sum / $cpt, 2));
+        array_push($vectors, $vector_user);
 
-    /**
-     * @param array $ingredients_user
-     * @return array
-     */
-    private function buildPercentageIngredient($ingredients_user){
-        $percentage_ingredients_user = array();
-
-        foreach ($ingredients_user as $ingredient_user) {
-            if (!array_key_exists($ingredient_user->getId(), $percentage_ingredients_user)) {
-                $percentage_ingredients_user[$ingredient_user->getId()] = 1;
-            } else {
-                $percentage_ingredients_user[$ingredient_user->getId()] += 1;
-            }
-        }
-        return $percentage_ingredients_user;
-    }
-
-    /**
-     * @param array $ingredients_user
-     * @return array
-     */
-    private function buildVectorUser($ingredients_user)
-    {
-        $row_user = array();
-        $total_ingredients_user = 0;
-        array_push($row_user, $this->client->getId());
-
-        foreach ($ingredients_user as $key => $percent_ingredient_user) {
-            $total_ingredients_user += $percent_ingredient_user;
-        }
-
-        foreach ($ingredients_user as $key => $percent_ingredient_user) {
-            array_push($row_user, $percent_ingredient_user /= $total_ingredients_user);
-        }
-        return $row_user;
-    }
-
-    /**
-     * @param array $recipes
-     * @param array $ingredients_user
-     * @return array
-     */
-    private function buildMatrix($recipes, $ingredients_user)
-    {
-        $matrix = array();
-        foreach ($recipes as $recipe) {
-            $row = array();
-            array_push($row, $recipe);
-            foreach ($ingredients_user as $ingredient) {
-                if (true == $recipe->hasIngredient($ingredient)) {
-                    array_push($row, 1);
-                } else {
-                    array_push($row, 0);
+        foreach($similar_clients['users'] as $user){
+            $vector = array();
+            $cpt = 0;
+            $sum = 0;
+            array_push($vector, $user->getId());
+            foreach($id_recipes as $id_recipe){
+                $score = $user->hasRatedRecipe($id_recipe);
+                array_push($vector, $score);
+                if(false == is_null($score)){
+                    $cpt++;
+                    $sum+=$score;
                 }
             }
-            array_push($matrix, $row);
+            array_push($vector, round($sum / $cpt, 2));
+            array_push($vectors, $vector);
         }
-        return $matrix;
-    }
 
-    /**
-     * @param array $matrix
-     * @param array $row_user
-     * @return array
-     */
-    private function cosinusSimilarityRecipes($matrix, $row_user)
-    {
-        $user_vector = 0;
-        $bool_user_vector = false;
-        $similarity_recipes = array();
-        $index_similarity = 0;
+        $index_vectors = 0;
+        foreach($vectors as $vector){
+            $vector_tmp = $vector;
+            $index_vector = -1;
+            $mean = end($vector);
+            $last_index = array_key_last($vector);
+            foreach($vector as $score){
+                $index_vector++;
+                if($index_vector == 0 or $index_vector == $last_index){
+                    continue;
+                }
+                if(false == is_null($vector_tmp[$index_vector])){
+                    $vector_tmp[$index_vector] = $score - $mean;
+                }
+            }
+            $vectors[$index_vectors] = $vector_tmp;
+            $index_vectors++;
+        }
+        $vector_user = array_shift($vectors);
+        var_dump($vectors);
+        $similarity = array("id_client" => array(), "score" => array());
 
-        foreach($matrix as $row)
-        {
-            $product_vector = 0;
-            $recipe_vector = 0;
-            $index_item = 0;
-            foreach($row as $ingredient_recipe) {
-                if($index_item == 0) {
-                    $object_recipe = $ingredient_recipe;
-                } else {
-                    $product_vector += $row_user[$index_item] * $ingredient_recipe;
-                    $recipe_vector += pow($ingredient_recipe, 2);
-
-                    if($bool_user_vector == false)
-                        $user_vector +=pow($row_user[$index_item], 2);
+        foreach($vectors as $vector){
+            $index = 0;
+            $numerator = 0;
+            $denominator = 0;
+            foreach($vector as $score){
+                if($index == 0){
+                    array_push($similarity['id_client'], $score);
+                }
+                if($index = $last_index){
+                    break;
+                }
+                if(false == is_null($vector[$index])){
 
                 }
-                $index_item++;
             }
-            $recipe_vector = sqrt($recipe_vector);
-
-            if($bool_user_vector == false)
-                $user_vector = sqrt($user_vector);
-
-            $bool_user_vector = true;
-            $cross_product_vector = $user_vector * $recipe_vector;
-
-            if($cross_product_vector != 0 and $product_vector !=0) {
-                $object_recipe->setScore($product_vector / ($cross_product_vector));
-                $similarity_recipes[$index_similarity]['recipe'] = $object_recipe;
-            }
-            $index_similarity++;
         }
-        return $similarity_recipes;
-    }
-
-    /**
-     * @param array $recipes
-     * @return array
-     */
-    private function getBestSimilarity($recipes)
-    {
-        $best_similarity = array();
-
-        $mean_similarity = 0;
-        foreach($recipes as $k=>$v){
-            $mean_similarity += $v['recipe']->getScore();
-        }
-        $mean_similarity /= count($recipes);
-        $mean_similarity = round($mean_similarity, 2);
-
-        foreach($recipes as $k=>$v) {
-            if(round($v['recipe']->getScore(),2) >= $mean_similarity)
-                array_push($best_similarity, $recipes[$k]);
-        }
-        return $this->sortRecipes($best_similarity);
-    }
-
-    /**
-     * @param array $recipes
-     * @return array
-     */
-    private function sortRecipes($recipes)
-    {
-        usort($recipes, function ($a, $b){
-            if ($a['recipe']->getScore() == $b['recipe']->getScore()) return 0;
-            return ($a['recipe']->getScore() < $b['recipe']->getScore())?1:-1;
-        });
-
-        return $recipes;
-    }
-
-    /**
-     * @return array
-     */
-    public function getRecipes()
-    {
-        return $this->recipes;
     }
 }

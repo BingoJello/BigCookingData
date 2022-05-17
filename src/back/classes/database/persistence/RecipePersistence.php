@@ -62,7 +62,7 @@ class RecipePersistence
         foreach($result as $row) {
             $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
                 $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
-                $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']);
+                $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to'], mt_rand(3, 4));
             $recipe->setIngredients(self::getIngredientsByRecipes([$row['id_recipe']]));
             array_push($recipes, $recipe);
         }
@@ -106,13 +106,16 @@ class RecipePersistence
      * @param int $id_client
      * @return array
      */
-    public static function getRatedRecipesUser($id_client){
+    public static function getRatedRecipesUser($id_client, $limit=null){
         $recipes = array();
 
-        $query = "SELECT DISTINCT recipe.* FROM recipe
+        $query = "SELECT DISTINCT recipe.*, assess.rating FROM recipe
                   INNER JOIN assess ON assess.id_recipe = recipe.id_recipe
-                  INNER JOIN client ON client.id_client = assess.id_client
-                  WHERE client.id_client = ?";
+                  WHERE assess.id_client = ?
+                   ORDER BY(date_assess) DESC";
+        if(false == is_null($limit)){
+            $query.=" limit 20";
+        }
         $params = [$id_client];
 
         $result = DatabaseQuery::selectQuery($query, $params);
@@ -120,7 +123,7 @@ class RecipePersistence
         foreach($result as $row) {
             $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
                 $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
-                $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']);
+                $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to'], $row['rating']);
             $recipe->setIngredients(self::getIngredientsByRecipes([$row['id_recipe']]));
             array_push($recipes, $recipe);
         }
@@ -484,7 +487,6 @@ class RecipePersistence
         foreach($result as $row) {
             array_push($recipes['recipe'], new Recipe($row['id_recipe'], $row['name'], $row['url_pic'],$row['categories'],
                 $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
-                // $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']));
                 $row['serving'], $row['clusterNumber'], $row['coordonnees']));
 
         }
@@ -641,6 +643,56 @@ class RecipePersistence
         return $ingredients;
     }
 
+
+    /**
+     * @brief Récupère les clients qui ont évalué au moins une recette de celles évalués par l'utilisateur ciblé
+     * @param int $id_client
+     * @return array
+     */
+    public static function getSimilarClientsOfRatingsRecipesClient($id_client){
+        $recipes_users = array('id_users' => array(), 'users' => array(), 'id_recipes' => array());
+
+        /*$query = "SELECT assess.id_client, assess.id_recipe, assess.rating FROM assess
+                  WHERE assess.id_recipe IN (
+                        SELECT assess.id_recipe FROM assess
+                        WHERE assess.id_client=?
+                  )
+                  AND assess.id_client != ?
+                  ORDER BY(assess.id_client)";
+        */
+        $query = " SELECT assess.id_client, assess.id_recipe, assess.rating FROM `assess` 
+WHERE assess.id_client IN(
+            SELECT assess.id_client FROM assess 
+    WHERE assess.id_recipe IN (
+            SELECT assess.id_recipe FROM assess
+    	WHERE assess.id_client=?
+     )
+      AND assess.id_client != ?
+ )
+ ORDER BY(assess.id_client)";
+
+        $params = [$id_client, $id_client];
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            if (false === in_array($row['id_recipe'], $recipes_users['id_recipes'])) {
+                array_push($recipes_users['id_recipes'], $row['id_recipe']);
+            }
+
+            if (false === in_array($row['id_client'], $recipes_users['id_users'])) {
+                $client = new Client($row['id_client']);
+                array_push($recipes_users['id_users'], $client->getId());
+                array_push($recipes_users['users'], $client);
+            }
+            $key_client = array_search($row['id_client'], $recipes_users['id_users']);
+            $client = $recipes_users['users'][$key_client];
+
+            $client->addRatedRecipes(new Rating($row['id_recipe'], $row['rating']));
+
+            $recipes_users['users'][$key_client] = $client;
+        }
+        return $recipes_users;
+    }
     /*******************
      * UPDATE Methods
      ******************/

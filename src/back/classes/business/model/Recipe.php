@@ -92,7 +92,7 @@ class Recipe
      */
     public function __construct($id, $name = '', $url_pic = '', $categories = '', $directions = '', $prep_time = 0,
                                 $cook_time = 0, $break_time = 0, $difficulty = '', $budget = '', $serving = 0, $cluster = -1,
-                                $coord='', $ingredients = array(), $score = 0, $close_to ='')
+                                $coord='', $close_to = '', $score = 0,  $ingredients = array())
     {
         $this->id = $id;
         $this->name = $name;
