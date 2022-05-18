@@ -10,4 +10,5 @@
     const NBR_RECIPES_TO_RATE = 60;
     const CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const LIMIT_MIN_SUGGESTION = 5;
+    const NBR_SIMILAR_RECIPES = 20;
 ?>

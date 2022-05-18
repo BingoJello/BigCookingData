@@ -18,7 +18,7 @@ include('./src/back/functions/utils.php');
 include('./src/back/utils/constants.php');
 require_once ('./src/back/classes/business/process/helper/GenerationClient.php');
 
-    $test = new CollaborativeFilteringUserRecommenderSystem("Y1vR1oQ@gmail.com", "g1cYL4GxutJ1F");
+    $test = new CollaborativeFilteringUserRecommenderSystem("test@gmail.com", "azertyuiopq");
    $_SESSION['visualization'] = array();
     $test->buildRecipes($_SESSION);
     exit(0);

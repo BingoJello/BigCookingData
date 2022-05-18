@@ -61,7 +61,7 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
                 $preferences_recipes_user = RecipePersistence::getRecipesByIngredientsCluster($best_cluster_preferences,
                     $ingredients_preferences, true, $session);
 
-                if(true === is_null($preferences_recipes_user) or count($preferences_recipes_user) < 5){
+                if(true === is_null($preferences_recipes_user) or count($preferences_recipes_user) < LIMIT_MIN_SUGGESTION){
                     $best_cluster_visualization_user = RecipePersistence::getBestVisualizationClusterUser($session);
                     $visualized_recipes_user = RecipePersistence::getRecipesVisualizatedByCluster($best_cluster_visualization_user, $session);
                     if(true === is_null($visualized_recipes_user)){

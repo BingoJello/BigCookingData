@@ -20,7 +20,7 @@ class Rating
      * @param int $id_recipe
      * @param float $rating
      */
-    public function __construct($id_recipe, $score){
+    public function __construct($id_recipe, $score = null){
         $this->id_recipe = $id_recipe;
         $this->score = $score;
    }

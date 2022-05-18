@@ -112,10 +112,11 @@ class RecipePersistence
         $query = "SELECT DISTINCT recipe.*, assess.rating FROM recipe
                   INNER JOIN assess ON assess.id_recipe = recipe.id_recipe
                   WHERE assess.id_client = ?
-                   ORDER BY(date_assess) DESC";
+                  ORDER BY(date_assess) DESC";
         if(false == is_null($limit)){
-            $query.=" limit 20";
+            $query.=" LIMIT ".$limit;
         }
+
         $params = [$id_client];
 
         $result = DatabaseQuery::selectQuery($query, $params);
@@ -643,35 +644,22 @@ class RecipePersistence
         return $ingredients;
     }
 
-
     /**
      * @brief Récupère les clients qui ont évalué au moins une recette de celles évalués par l'utilisateur ciblé
      * @param int $id_client
+     * @param array $id_recipes
      * @return array
      */
-    public static function getSimilarClientsOfRatingsRecipesClient($id_client){
+    public static function getClientsOfRatingsSimilarRecipes($id_client, $id_recipes){
         $recipes_users = array('id_users' => array(), 'users' => array(), 'id_recipes' => array());
 
-        /*$query = "SELECT assess.id_client, assess.id_recipe, assess.rating FROM assess
-                  WHERE assess.id_recipe IN (
-                        SELECT assess.id_recipe FROM assess
-                        WHERE assess.id_client=?
-                  )
-                  AND assess.id_client != ?
-                  ORDER BY(assess.id_client)";
-        */
-        $query = " SELECT assess.id_client, assess.id_recipe, assess.rating FROM `assess` 
-WHERE assess.id_client IN(
-            SELECT assess.id_client FROM assess 
-    WHERE assess.id_recipe IN (
-            SELECT assess.id_recipe FROM assess
-    	WHERE assess.id_client=?
-     )
-      AND assess.id_client != ?
- )
- ORDER BY(assess.id_client)";
+        $id_recipes = join(",", $id_recipes);
 
-        $params = [$id_client, $id_client];
+        $query = " SELECT assess.id_recipe, assess.id_client, assess.rating FROM assess
+                   WHERE assess.id_recipe IN(".$id_recipes.") AND assess.id_client != ?
+                   ORDER BY assess.id_client";
+
+        $params = [$id_client];
         $result = DatabaseQuery::selectQuery($query, $params);
 
         foreach($result as $row) {
@@ -693,6 +681,44 @@ WHERE assess.id_client IN(
         }
         return $recipes_users;
     }
+
+    /**
+     * @param $id_client
+     * @param $id_recipes
+     * @return array|array[]
+     */
+    public static function getRatedRecipesSimilarUser($id_client, $id_client_similar_user){
+        $recipes_users = array('id_users' => array(), 'users' => array(), 'id_recipes' => array());
+
+        $id_client_similar_user = join(",", $id_client_similar_user);
+
+        $query = " SELECT assess.id_recipe, assess.id_client, assess.rating FROM assess
+                   WHERE assess.i IN(".$id_client_similar_user.") AND assess.id_client != ?
+                   ORDER BY assess.id_client";
+
+        $params = [$id_client];
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            if (false === in_array($row['id_recipe'], $recipes_users['id_recipes'])) {
+                array_push($recipes_users['id_recipes'], $row['id_recipe']);
+            }
+
+            if (false === in_array($row['id_client'], $recipes_users['id_users'])) {
+                $client = new Client($row['id_client']);
+                array_push($recipes_users['id_users'], $client->getId());
+                array_push($recipes_users['users'], $client);
+            }
+            $key_client = array_search($row['id_client'], $recipes_users['id_users']);
+            $client = $recipes_users['users'][$key_client];
+
+            $client->addRatedRecipes(new Rating($row['id_recipe'], $row['rating']));
+
+            $recipes_users['users'][$key_client] = $client;
+        }
+        return $recipes_users;
+    }
+
     /*******************
      * UPDATE Methods
      ******************/
