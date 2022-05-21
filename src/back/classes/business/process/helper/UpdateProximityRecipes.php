@@ -60,6 +60,16 @@ class UpdateProximityRecipes
         $id_recipes_close = array();
         $index=0;
 
+        array_multisort($recipes_with_distance['distance'], SORT_ASC, $recipes_with_distance['recipe']);
+
+/*
+        usort($id_recipes_close, function ($a, $b){
+            if ($a->getDistance() == $b->getDistance()) return 0;
+            return ($a->getDistance() < $b->getDistance())?-1:1;
+        });
+*/
+        array_shift($recipes_with_distance['distance']);
+        array_shift($recipes_with_distance['recipe']);
         foreach($recipes_with_distance['distance'] as $recipe_with_distance){
             $id_recipe_close = $recipes_with_distance['recipe'][$index];
             if($recipe_with_distance <= $mean_distance){
@@ -67,11 +77,6 @@ class UpdateProximityRecipes
             }
             $index++;
         }
-
-        usort($id_recipes_close, function ($a, $b){
-            if ($a->getDistance() == $b->getDistance()) return 0;
-            return ($a->getDistance() < $b->getDistance())?-1:1;
-        });
 
         RecipePersistence::updateProximityRecipe($id_recipe, $id_recipes_close);
     }

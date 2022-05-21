@@ -125,7 +125,7 @@ function printAssessRecipe($assessed_recipe){
                                 <p class='name-pseudo'>".$assess->getPseudo()."</p>
                             </div>
                          <div class='rating-commentary'>";
-        $rating = $assess->getRating();
+        $rating = $assess->getScore();
 
         for($i=0; $i<5; $i++){
             if($rating > 0){
@@ -135,7 +135,7 @@ function printAssessRecipe($assessed_recipe){
                 $html.="<i class='fa fa-star' style='color:grey' aria-hidden='true'></i>";
             }
         }
-        $html.="<label> ".$assess->getRating()."/5</label>
+        $html.="<label> ".$assess->getScore()."/5</label>
              </div>
             </div>
            </div>
@@ -290,4 +290,24 @@ function printRecipesSlides($recipes){
         </div>
     </section>
 <?php }
+?>
+
+<?php
+function printSimilarRecipes($recipes){
+    ?><div class="row"><?php
+    foreach($recipes as $recipe){?>
+        <div class='col-12 col-sm-6 col-lg-4'>
+            <div class='single-best-recipe-area mb-30'>
+                <img src=<?php echo $recipe->getUrlPic();?>  style="min-width:250px;max-width:250px;min-height:200px;max-height:200px" alt=''>
+                <div class='recipe-content' style="width:250px"">
+                    <a href="recette-<?php echo $recipe->getId();?>">
+                        <h5><?php echo $recipe->getName();?></h5>
+                    </a>
+                </div>
+            </div>
+        </div>
+<?php
+    }
+    ?></div><?php
+}
 ?>

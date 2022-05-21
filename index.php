@@ -17,11 +17,12 @@ require_once('./src/back/classes/business/process/helper/UpdateProximityRecipes.
 include('./src/back/functions/utils.php');
 include('./src/back/utils/constants.php');
 require_once ('./src/back/classes/business/process/helper/GenerationClient.php');
-
-    $test = new CollaborativeFilteringUserRecommenderSystem("test@gmail.com", "azertyuiopq");
+/**
+    $test = new CollaborativeFilteringUserRecommenderSystem("Tqprys@gmail.com", "CjUvjg5rVV6VFr856uWO2Tb");
    $_SESSION['visualization'] = array();
     $test->buildRecipes($_SESSION);
-    exit(0);
+    var_dump($test->getRecipes());
+ **/
     header('Location: ./src/front/www/accueil');
     exit();
 ?>

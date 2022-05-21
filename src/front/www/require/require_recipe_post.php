@@ -1,7 +1,7 @@
 <?php
 require_once('../../back/classes/business/model/Client.php');
 require_once('../../back/classes/business/model/Recipe.php');
-require_once('../../back/classes/business/model/Assess.php');
+require_once('../../back/classes/business/model/Rating.php');
 require_once('../../back/classes/business/model/Ingredient.php');
 require_once('../../back/classes/database/DatabaseQuery.php');
 require_once('../../back/classes/database/DatabaseConnection.php');

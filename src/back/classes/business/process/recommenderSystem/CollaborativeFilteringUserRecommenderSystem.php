@@ -1,10 +1,10 @@
 <?php
 /**
- * Class ContentBasedRecommenderSystem
+ * Class CollaborativeFilteringUserRecommenderSystem
  * @brief Effectue le processus de création des recommandations de recettes
  * @author arthur mimouni
  */
-class CollaborativeFilteringUserRecommenderSystem
+class CollaborativeFilteringUserRecommenderSystem implements RecommenderSystem
 {
     /**
      * @var Client $client
@@ -59,7 +59,7 @@ class CollaborativeFilteringUserRecommenderSystem
                 }
             }
         }
-        $similar_recipes = $this->buildCollaborativeFiltering($rated_recipes_client);
+        $this->recipes['recipe'] = $this->buildCollaborativeFiltering($rated_recipes_client);
     }
 
 
@@ -84,122 +84,21 @@ class CollaborativeFilteringUserRecommenderSystem
         array_push($matrix, $vector_user);
 
         $matrix = $this->buildVectorsUsers($matrix, $similar_users, $id_recipes);
-        $last_index_vector = array_key_last($matrix[0]);
-        $matrix_tmp = $matrix;
-        $index_matrix = 0;
 
-        foreach($matrix as $vector){
-            $vector_tmp = $vector;
-            $index_vector = -1;
-            $mean_vector = end($vector);
-            $last_index_vector = array_key_last($vector);
+        $mean_centered_matrix = $this->createMeanCenteredMatrix($matrix);
 
-            foreach($vector as $score){
-                $index_vector++;
-                if($index_vector == 0 or $index_vector == $last_index_vector){
-                    continue;
-                }
-                if(false == is_null($vector_tmp[$index_vector])){
-                    $vector_tmp[$index_vector] = $score - $mean_vector;
-                }
-            }
-            $matrix[$index_matrix] = $vector_tmp;
-            $index_matrix++;
-        }
-        $vector_user = array_shift($matrix);
+        $vector_user = array_shift($mean_centered_matrix);
 
-        $cache_users = array("id_client" => array(), "score" => array());
-        $score_similarity_user= array();
-        $mean_cos_similarity = 0;
+        $result = $this->getBestSimilarUsers($mean_centered_matrix, $matrix, $vector_user);
 
-        foreach($matrix as $vector){
-            $index_vector = -1;
-            $numerator = 0;
-            $denominator = 0;
-            $denominator_user = 0;
-            foreach($vector as $score){
-                $index_vector++;
-                if($index_vector == 0){
-                    array_push($cache_users['id_client'], $score);
-                    continue;
-                }
-                if($index_vector == $last_index_vector){
-                    break;
-                }
-                if(false == is_null($score) and false == is_null($vector_user[$index_vector])){
-                    $numerator+=$score*$vector_user[$index_vector];
-                    $denominator += pow($score, 2);
-                    $denominator_user += pow($vector_user[$index_vector], 2);
-                }
-            }
-            if($denominator != 0 and $denominator_user != 0){
-                $denominator = sqrt($denominator);
-                $denominator_user = sqrt($denominator_user);
-                $cos_similarity = $numerator / ($denominator_user * $denominator);
-            }else{
-                $cos_similarity = null;
-            }
-            array_push($cache_users['score'], $cos_similarity);
-            $mean_cos_similarity += $cos_similarity;
-        }
-        $mean_cos_similarity = $mean_cos_similarity / count($cache_users['score']);
-        $index = 0;
-        $similar_user_vector = array();
-        foreach ($cache_users['score'] as $score){
-            if($score >= $mean_cos_similarity){
-                array_push($similar_user_vector, $matrix_tmp[$index]);
-                array_push($score_similarity_user, $score);
-            }
-            $index++;
-        }
+        $similar_user_vector = $result['similar_user_vector'];
+        $score_similarity_user = $result['score_similarity_user'];
 
-        $recipes_to_send = array('id_recipe' => array(), 'score' => array());
-        $index_recipes_to_send = -1;
-        $index_user = -1;
-        $mean_predictions_score = 0;
+        unset($result);
 
-        foreach($vector_user as $score){
-            $index_user++;
-            $index_score_similarity_user = -1;
-            $nominator = 0;
-            $denominator = 0;
-            if($index_user == 0 or $index_user == $last_index_vector){
-                continue;
-            }
-            $index_recipes_to_send++;
-            if(false == is_null($score)){
-                continue;
-            }
-            foreach($similar_user_vector as $vector){
-                $index_score_similarity_user++;
-                if(false == is_null($vector[$index_user])){
-                    $nominator+=$vector[$index_user]*$score_similarity_user[$index_score_similarity_user];
-                    $denominator+=$score_similarity_user[$index_score_similarity_user];
-                }
-            }
-            if($denominator != 0){
-                $prediction_score = $nominator / $denominator;
-            }else{
-                $prediction_score = 0;
-            }
-            $mean_predictions_score+=$prediction_score;
-            array_push($recipes_to_send['id_recipe'], $id_recipes[$index_recipes_to_send]);
-            array_push($recipes_to_send['score'], $prediction_score);
-        }
-        $mean_predictions_score = $mean_predictions_score / count($recipes_to_send['score']);
+        $recipes = $this->getRecipesToSend($mean_centered_matrix, $vector_user, $similar_user_vector, $score_similarity_user, $id_recipes);
+        return RecipePersistence::getSortRecipesById($recipes['id_recipe']);
 
-        $index = 0;
-        $recipes_to_send_tmp = array('id_recipe' => array(), 'score' => array());
-
-        foreach($recipes_to_send['score'] as $score){
-            if($score >= $mean_predictions_score){
-                array_push($recipes_to_send_tmp['id_recipe'], $recipes_to_send['id_recipe'][$index]);
-                array_push($recipes_to_send_tmp['score'], $recipes_to_send['score'][$index]);
-            }
-            $index++;
-        }
-        var_dump($recipes_to_send_tmp);
-        exit(0);
     }
 
     private function getSimilarUsers($rated_recipes_client){
@@ -218,7 +117,7 @@ class CollaborativeFilteringUserRecommenderSystem
         foreach($rated_recipes_client as $recipe){
             $cpt = 0;
             foreach(explode(",", $recipe->getCloseTo()) as $id_close_recipe){
-                if($cpt == 100){
+                if($cpt == NBR_SIMILAR_RECIPES){
                     break;
                 }
                 if (false === in_array($id_close_recipe, $recipes['id_recipes'])) {
@@ -269,6 +168,138 @@ class CollaborativeFilteringUserRecommenderSystem
     }
 
     private function createMeanCenteredMatrix($matrix){
+        $last_index_vector = array_key_last($matrix[0]);
+        $index_matrix = 0;
 
+        foreach($matrix as $vector){
+            $vector_tmp = $vector;
+            $index_vector = -1;
+            $mean_vector = end($vector);
+
+            foreach($vector as $score){
+                $index_vector++;
+                if($index_vector == 0 or $index_vector == $last_index_vector){
+                    continue;
+                }
+                if(false == is_null($vector_tmp[$index_vector])){
+                    $vector_tmp[$index_vector] = $score - $mean_vector;
+                }
+            }
+            $matrix[$index_matrix] = $vector_tmp;
+            $index_matrix++;
+        }
+        return $matrix;
+    }
+
+    private function getBestSimilarUsers($mean_centered_matrix, $matrix, $vector_user){
+        $cache_users = array("id_client" => array(), "score" => array());
+
+        $score_similarity_user= array();
+        $similar_user_vector = array();
+        $mean_cos_similarity = 0;
+        $last_index_vector = array_key_last($mean_centered_matrix[0]);
+        $i = -1;
+        foreach($mean_centered_matrix as $vector){
+            $i++;
+            $index_vector = -1;
+            $numerator = 0;
+            $denominator = 0;
+            $denominator_user = 0;
+            foreach($vector as $score){
+                $index_vector++;
+                if($index_vector == 0){
+                    array_push($cache_users['id_client'], $score);
+                    continue;
+                }
+                if($index_vector == $last_index_vector){
+                    break;
+                }
+                if(false === is_null($score) and false === is_null($vector_user[$index_vector])){
+                    $numerator += $score * $vector_user[$index_vector];
+                    $denominator += pow($score, 2);
+                    $denominator_user += pow($vector_user[$index_vector], 2);
+                }
+            }
+            if($denominator != 0 and $denominator_user != 0){
+                $denominator = sqrt($denominator);
+                $denominator_user = sqrt($denominator_user);
+                $cos_similarity = $numerator / ($denominator_user * $denominator);
+            }else{
+                $cos_similarity = null;
+            }
+            array_push($cache_users['score'], $cos_similarity);
+            $mean_cos_similarity += $cos_similarity;
+        }
+        $mean_cos_similarity = $mean_cos_similarity / count($cache_users['score']);
+        $index = 0;
+        foreach ($cache_users['score'] as $score){
+            if($score >= $mean_cos_similarity){
+                $index==
+                array_push($similar_user_vector, $matrix[$index]);
+                array_push($score_similarity_user, $score);
+            }
+            $index++;
+        }
+        return array('similar_user_vector' => $similar_user_vector, 'score_similarity_user' => $score_similarity_user);
+    }
+
+    private function getRecipesToSend($matrix, $vector_user, $similar_user_vector, $score_similarity_user, $id_recipes){
+        $recipes_to_send = array('id_recipe' => array(), 'score' => array());
+        $last_index_vector = array_key_last($matrix[0]);
+        $index_recipes_to_send = -1;
+        $index_user = -1;
+        $mean_predictions_score = 0;
+
+        foreach($vector_user as $score){
+            $index_user++;
+            $index_score_similarity_user = -1;
+            $nominator = 0;
+            $denominator = 0;
+            if($index_user == 0 or $index_user == $last_index_vector){
+                continue;
+            }
+            $index_recipes_to_send++;
+            if(false == is_null($score)){
+                continue;
+            }
+            foreach($similar_user_vector as $vector){
+                $index_score_similarity_user++;
+                if(false == is_null($vector[$index_user])){
+                    $nominator+=$vector[$index_user] * $score_similarity_user[$index_score_similarity_user];
+                    $denominator+=$score_similarity_user[$index_score_similarity_user];
+                }
+            }
+            if($denominator != 0){
+                $prediction_score = $nominator / $denominator;
+            }else{
+                $prediction_score = 0;
+            }
+           // $mean_predictions_score+=$prediction_score;
+            array_push($recipes_to_send['id_recipe'], $id_recipes[$index_recipes_to_send]);
+            array_push($recipes_to_send['score'], $prediction_score);
+        }
+        //$mean_predictions_score = $mean_predictions_score / count($recipes_to_send['score']);
+
+        $index = 0;
+        $recipes_to_send_tmp = array('id_recipe' => array(), 'score' => array());
+
+        foreach($recipes_to_send['score'] as $score){
+            if($score >= MIN_SCORE){
+                array_push($recipes_to_send_tmp['id_recipe'], $recipes_to_send['id_recipe'][$index]);
+                array_push($recipes_to_send_tmp['score'], $recipes_to_send['score'][$index]);
+            }
+            $index++;
+        }
+
+        array_multisort($recipes_to_send_tmp['score'], SORT_DESC, $recipes_to_send_tmp['id_recipe']);
+        return $recipes_to_send_tmp;
+    }
+
+    /**
+     * @return array
+     */
+    public function getRecipes()
+    {
+        return $this->recipes;
     }
 }

@@ -131,4 +131,8 @@ class RecipeFacade
     public static function getNbrIngredients(){
         return RecipePersistence::getNbrIngredients();
     }
+
+    public static function getSimilarRecipes($id_recipe){
+        return RecipePersistence::getSimilarRecipes($id_recipe, 3);
+    }
 }

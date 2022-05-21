@@ -303,6 +303,25 @@ class RecipePersistence
         return $recipes;
     }
 
+    public static function getSortRecipesById($id_recipes){
+        $recipes = array();
+
+        foreach($id_recipes as $id_recipe){
+            $query = "SELECT recipe.* FROM recipe
+                  WHERE recipe.id_recipe = ?";
+            $params = [$id_recipe];
+            $result = DatabaseQuery::selectQuery($query, $params);
+            foreach($result as $row) {
+                $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
+                    $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                    $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']);
+                $recipe->setIngredients(self::getIngredientsByRecipes([$row['id_recipe']]));
+                array_push($recipes, $recipe);
+            }
+        }
+        return $recipes;
+    }
+
     /**
      * @brief Récupère l'ensemble des recettes
      * @return array
@@ -459,7 +478,7 @@ class RecipePersistence
     {
         $assessed_recipe = array();
 
-        $query="SELECT client.pseudo, assess.rating, assess.commentary, assess.date_assess FROM assess 
+        $query="SELECT client.pseudo, assess.* FROM assess 
                 INNER JOIN recipe ON recipe.id_recipe = assess.id_recipe
                 INNER JOIN client ON client.id_client = assess.id_client
                 WHERE recipe.id_recipe = ?";
@@ -468,7 +487,7 @@ class RecipePersistence
         $result = DatabaseQuery::selectQuery($query, $params);
 
         foreach($result as $row) {
-            array_push($assessed_recipe, new Assess($row['pseudo'], $row['rating'], $row['commentary'], $row['date_assess']));
+            array_push($assessed_recipe, new Rating($row['id_recipe'], $row['rating'], $row['pseudo'], $row['commentary'], $row['date_assess']));
         }
         return $assessed_recipe;
     }
@@ -717,6 +736,23 @@ class RecipePersistence
             $recipes_users['users'][$key_client] = $client;
         }
         return $recipes_users;
+    }
+
+    public static function getSimilarRecipes($id_recipe, $nbr_similar_recipes){
+        $recipes = array();
+
+        $query = "SELECT recipe.close_to FROM recipe WHERE id_recipe = ?";
+
+        $params = [$id_recipe];
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            $similar_id_recipes = explode(",", $row['close_to']);
+            for($i = 0; $i < $nbr_similar_recipes; $i++){
+                array_push($recipes, RecipePersistence::getRecipe($similar_id_recipes[$i]));
+            }
+        }
+        return $recipes;
     }
 
     /*******************

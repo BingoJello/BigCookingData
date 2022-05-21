@@ -7,8 +7,9 @@
 
     const NBR_INGREDIENTS_LIKED = 200;
     const NBR_INGREDIENTS_UNLIKED = 80;
-    const NBR_RECIPES_TO_RATE = 60;
+    const NBR_RECIPES_TO_RATE = 20;
     const CHARACTERS = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const LIMIT_MIN_SUGGESTION = 5;
-    const NBR_SIMILAR_RECIPES = 20;
+    const NBR_SIMILAR_RECIPES = 50;
+    const MIN_SCORE = 3.0;
 ?>

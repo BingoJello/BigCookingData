@@ -9,6 +9,7 @@
     }
     if(isset($_GET['recipe']) and !empty($_GET['recipe'])) {
         $recipe = RecipeFacade::getRecipe($_GET['recipe']);
+        $similar_recipes = RecipeFacade::getSimilarRecipes($_GET['recipe']);
         if(isset($_SESSION['visualization'])){
             if(false === in_array($recipe->getId(), $_SESSION['visualization'])){
                 array_push($_SESSION['visualization'], $recipe->getId());
@@ -177,39 +178,8 @@
                         </div>
                     </div>
                 </div>
-                <h3>Recettes similaires</h3>
-                <div class="row">
-                    <div class='col-12 col-sm-6 col-lg-4'>
-                    <div class='single-best-recipe-area mb-30'>
-                        <img src="https://assets.afcdn.com/recipe/20171120/75380_w1000h1000.jpg" style="min-width:250px;max-width:250px;min-height:200px;max-height:200px" alt=''>
-                        <div class='recipe-content'>
-                            <a href='#'
-                            <h5>test</h5>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class='col-12 col-sm-6 col-lg-4'>
-                    <div class='single-best-recipe-area mb-30'>
-                        <img src="https://assets.afcdn.com/recipe/20171120/75380_w1000h1000.jpg" style="min-width:250px;max-width:250px;min-height:200px;max-height:200px" alt=''>
-                        <div class='recipe-content'>
-                            <a href='#'
-                            <h5>test</h5>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                <div class='col-12 col-sm-6 col-lg-4'>
-                    <div class='single-best-recipe-area mb-30'>
-                        <img src="https://assets.afcdn.com/recipe/20171120/75380_w1000h1000.jpg" style="min-width:250px;max-width:250px;min-height:200px;max-height:200px" alt=''>
-                        <div class='recipe-content'>
-                            <a href='#'
-                            <h5>test</h5>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-                </div>
+                <h3 style="padding-bottom:20px">Recettes similaires</h3>
+                <?php printSimilarRecipes($similar_recipes)?>
                 <!--<a href="recipe-post.php?recipe=<?php echo $recipe->getId();?>&amp;record=true"  class="btn delicious-btn">Enregistrez la recette</a>-->
                 <?php printAssessRecipe($assessed_recipe);?>
             </div>

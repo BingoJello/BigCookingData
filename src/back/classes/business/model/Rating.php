@@ -14,15 +14,30 @@ class Rating
      * @var float
      */
     private $score;
+    /**
+     * @var string
+     */
+    private $pseudo;
+    /**
+     * @var string
+     */
+    private $commentary;
+    /**
+     * @var string
+     */
+    private $date;
 
     /**
      * Rating constructor.
      * @param int $id_recipe
      * @param float $rating
      */
-    public function __construct($id_recipe, $score = null){
+    public function __construct($id_recipe, $score = null, $pseudo = "", $commentary = "", $date = ""){
         $this->id_recipe = $id_recipe;
         $this->score = $score;
+        $this->pseudo = $pseudo;
+        $this->commentary = $commentary;
+        $this->date = $date;
    }
 
     /**
@@ -54,4 +69,54 @@ class Rating
     {
         $this->score = $score;
     }
+
+    /**
+     * @return string
+     */
+    public function getPseudo(): string
+    {
+        return $this->pseudo;
+    }
+
+    /**
+     * @param string $pseudo
+     */
+    public function setPseudo(string $pseudo): void
+    {
+        $this->pseudo = $pseudo;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCommentary()
+    {
+        return $this->commentary;
+    }
+
+    /**
+     * @param string $commentary
+     */
+    public function setCommentary($commentary): void
+    {
+        $this->commentary = $commentary;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
+
+    /**
+     * @param string $date
+     */
+    public function setDate($date): void
+    {
+        $this->date = $date;
+    }
+
+
 }
