@@ -77,13 +77,18 @@ class RecipePersistence
      * @param int $id_client
      * @return array
      */
-    public static function getBestRatedRecipesUser($id_client){
+    public static function getBestRatedRecipesUser($id_client, $limit = null){
         $recipes = array();
 
         $query = "SELECT DISTINCT recipe.* FROM recipe
                   INNER JOIN assess ON assess.id_recipe = recipe.id_recipe
                   INNER JOIN client ON client.id_client = assess.id_client
-                  WHERE client.id_client = ? AND assess.rating >=3";
+                  WHERE client.id_client = ? AND assess.rating >=3
+                  ORDER BY(date_assess) DESC";
+
+        if(false == is_null($limit)){
+            $query.=" LIMIT ".$limit;
+        }
         $params = [$id_client];
 
         $result = DatabaseQuery::selectQuery($query, $params);
@@ -203,11 +208,17 @@ class RecipePersistence
      */
     public static function getRecipesByIngredientsCluster($id_cluster, $ingredients, $is_object = false, $session = array()){
         $recipes = array();
-
+        $without_ingredients = array();
+        foreach(REMOVED_INGREDIENTS as $remove_ingredient){
+            if(false == in_array($remove_ingredient, $ingredients)){
+                array_push($without_ingredients, $remove_ingredient);
+            }
+        }
+        $without_ingredients = "'".implode("','",$without_ingredients)."'";
         $query = "SELECT DISTINCT recipe.* FROM recipe 
                   INNER JOIN contain_recipe_ingredient AS cri ON cri.id_recipe = recipe.id_recipe 
                   INNER JOIN ingredient ON ingredient.id_ingredient = cri.id_ingredient 
-                  WHERE recipe.clusterNumber = ? AND ";
+                  WHERE recipe.clusterNumber = ? AND ingredient.name NOT IN (".$without_ingredients.")AND (";
         $cpt = 0;
 
         foreach($ingredients as $ingredient){
@@ -226,7 +237,7 @@ class RecipePersistence
             }
             $cpt++;
         }
-        $query.=" GROUP BY recipe.id_recipe";
+        $query.=" ) GROUP BY recipe.id_recipe";
 
         $params = [$id_cluster];
         $result = DatabaseQuery::selectQuery($query, $params);
@@ -360,7 +371,8 @@ class RecipePersistence
             $name_ingredient.="%";
             array_push($list_words, $name_ingredient);
         }
-        $query = "SELECT ingredient.name FROM ingredient WHERE ingredient.name LIKE('".$list_words[0]."')";
+        $query = "SELECT ingredient.name FROM ingredient 
+                  WHERE ingredient.name LIKE('".$list_words[0]."') AND ingredient.is_active = 1";
 
         array_shift($list_words);
 
@@ -399,7 +411,8 @@ class RecipePersistence
             $name_ingredient.="%";
             array_push($list_words, $name_ingredient);
         }
-        $query = "SELECT ingredient.id_ingredient FROM ingredient WHERE ingredient.name LIKE('".$list_words[0]."')";
+        $query = "SELECT ingredient.id_ingredient FROM ingredient 
+                  WHERE ingredient.name LIKE('".$list_words[0]."') AND ingredient.is_active = 1";
 
         array_shift($list_words);
 
@@ -500,7 +513,8 @@ class RecipePersistence
     public static function getRandomRecipes($limit)
     {
         $recipes = array('recipe' => array());
-        $query="SELECT * FROM recipe ORDER BY RAND ( ) LIMIT ".$limit;
+
+        $query = "SELECT * FROM recipe ORDER BY RAND ( ) LIMIT ".$limit;
 
         $result = DatabaseQuery::selectQuery($query);
 
@@ -510,7 +524,28 @@ class RecipePersistence
                 $row['serving'], $row['clusterNumber'], $row['coordonnees']));
 
         }
+        return $recipes;
+    }
 
+    /**
+     * @brief Récupère des recettes aléatoires d'un cluster
+     * @param int $limit
+     * @return array
+     */
+    public static function getRandomRecipesByCluster($limit, $id_cluster)
+    {
+        $query = "SELECT * FROM recipe WHERE recipe.clusterNumber = ? ORDER BY RAND ( ) LIMIT ".$limit;
+        $params = [$id_cluster];
+
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'],$row['categories'], $row['directions'],
+                $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                $row['serving'], $row['clusterNumber'], $row['coordonnees']);
+            $recipe->setIngredients(self::getIngredientsByRecipes([$row['id_recipe']]));
+            array_push($recipes['recipe'], $recipe);
+        }
         return $recipes;
     }
 
@@ -529,6 +564,19 @@ class RecipePersistence
             return array('score' => $row['score'], 'nbr_reviews' => $row['nbr_reviews']);
         }
         return null;
+    }
+
+    public static function getDistinctCluster(){
+        $clusters = array();
+        $query = "SELECT DISTINCT recipe.clusterNumber FROM recipe";
+
+        $result = DatabaseQuery::selectQuery($query);
+
+        foreach($result as $row) {
+            array_push($clusters, $row['clusterNumber']);
+        }
+
+        return $clusters;
     }
 
     /**

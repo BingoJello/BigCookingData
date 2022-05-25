@@ -124,6 +124,29 @@ class ClientPersistence
         return false;
     }
 
+    /**
+     * @param int $id_client
+     * @return mixed|null
+     */
+    public static function getBestSimilarClient($id_client){
+        $best_similar_client = null;
+        $query = "SELECT DISTINCT assess.id_client, COUNT(assess.id_client) as nbr FROM assess 
+                  WHERE assess.id_recipe IN (
+                      SELECT id_recipe FROM assess WHERE assess.id_client = ?
+                  ) AND assess.id_client != ?  
+                  GROUP BY(assess.id_client) 
+                  ORDER BY(nbr) DESC
+                  LIMIT 1";
+        $params = [$id_client, $id_client];
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            $best_similar_client = $row['id_client'];
+        }
+        return $best_similar_client;
+    }
+
+
     /*******************
      * INSERT Methods
      ******************/

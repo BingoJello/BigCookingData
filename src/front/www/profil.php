@@ -17,6 +17,9 @@
         $_SESSION['client'] = serialize($client);
         ClientFacade::updatePasswordClient($client->getId(), $client->getPassword());
     }
+    if(isset($_POST['algo']) and !empty($_POST['algo'])){
+        $_SESSION['algo'] = $_POST['algo'];
+    }
     $list_ingredients = json_encode(RecipeFacade::getAllIngredients());
 ?>
 
@@ -157,6 +160,23 @@
                                 <input type="text" class="form-control" class="form-control" name="ingredients"  value="<?php echo $client->getPreferencesIngredientsLabel();?>"/>
                                 <div id="ingredientdHelp" class="form-text">
                                     <label style="font-size:12px">Veuillez separez les ingrédients par ";"</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row form-group">
+                            <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="password-confirm">Algorithme de Suggestion</label>
+                            <div class="col-12 col-sm-9 col-md-6 col-lg-6 col-xl-5">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" value="content" name="algo" id="flexRadioDefault1" checked>
+                                    <label class="form-check-label" for="flexCheckDefault">
+                                        Algorithme basé sur le contenu
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" value="collaborative" name="algo" id="flexRadioDefault2">
+                                    <label class="form-check-label" for="flexCheckChecked">
+                                        Algorithme de filtrage collaborative
+                                    </label>
                                 </div>
                             </div>
                         </div>

@@ -53,6 +53,7 @@ class RegistrationInscription
                             $client->setPreferencesIngredientsLabel($ingredients);
                             $client->setPreferencesIngredients(ClientPersistence::getPreferencesIngredientsClient($client->getId()));
                             $_SESSION['client'] = serialize($client);
+                            $_SESSION['algo'] = "content";
 
                             header('location:./profil.php');
                         }else{

@@ -11,17 +11,48 @@
     }
     if(isset($_SESSION['client']) and !empty($_SESSION['client'])) {
         $client = getClient();
-        try {
-            $recipes = RecipeFacade::getSuggestedRecipes($client, $_SESSION);
-            if(true == empty($recipes['recipe'])){
-                $random = true;
-                $recipes = RecipeFacade::getRandomRecipes();
-                $json_recipes = getJsonRecipes($recipes);
-                $limit = LIMIT_PAGINATION;
-                $total_pages = ceil(count($recipes['recipe']) / $limit);
+        $recipes = array();
+        if(isset($_SESSION['algo']) and !empty($_SESSION['algo'])){
+            if($_SESSION['algo'] == "collaborative"){
+                try {
+                    $recipes = RecipeFacade::getSuggestedRecipesByCollaborative($client, $_SESSION);
+                    if(true == empty($recipes['recipe'])){
+                        $random = true;
+                        $recipes = RecipeFacade::getRandomRecipes();
+                        $json_recipes = getJsonRecipes($recipes);
+                        $limit = LIMIT_PAGINATION;
+                        $total_pages = ceil(count($recipes['recipe']) / $limit);
+                    }
+                } catch (Exception $e) {
+                    var_dump($e);
+                }
+            }else{
+                try {
+                    $recipes = RecipeFacade::getSuggestedRecipesByContent($client, $_SESSION);
+                    if(true == empty($recipes['recipe'])){
+                        $random = true;
+                        $recipes = RecipeFacade::getRandomRecipes();
+                        $json_recipes = getJsonRecipes($recipes);
+                        $limit = LIMIT_PAGINATION;
+                        $total_pages = ceil(count($recipes['recipe']) / $limit);
+                    }
+                } catch (Exception $e) {
+                    var_dump($e);
+                }
             }
-        } catch (Exception $e) {
-            var_dump($e);
+        }else{
+            try {
+                $recipes = RecipeFacade::getSuggestedRecipesByContent($client, $_SESSION);
+                if(true == empty($recipes['recipe'])){
+                    $random = true;
+                    $recipes = RecipeFacade::getRandomRecipes();
+                    $json_recipes = getJsonRecipes($recipes);
+                    $limit = LIMIT_PAGINATION;
+                    $total_pages = ceil(count($recipes['recipe']) / $limit);
+                }
+            } catch (Exception $e) {
+                var_dump($e);
+            }
         }
         $json_recipes = getJsonRecipes($recipes);
         $limit = LIMIT_PAGINATION;

@@ -86,10 +86,6 @@ class UpdateProximityRecipes
      * @return false|string[]
      */
     private static function normalizeCoord($coord){
-        $coord = str_replace("[", "", $coord);
-        $coord = str_replace("]", "",$coord);
-        $coord = str_replace(" ", ";",$coord);
-        $coord = str_replace(";;", ";",$coord);
         $coord = explode(';', $coord);
 
         $i =0;

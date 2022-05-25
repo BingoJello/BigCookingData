@@ -7,14 +7,28 @@
 class RecipeFacade
 {
     /**
-     * @brief Recupère les recettes à suggérer
+     * @brief Recupère les recettes à suggérer avec l'algorithme basé sur le contenu
      * @param Client $client
      * @param array $session
      * @return array
      * @throws Exception
      */
-    public static function getSuggestedRecipes($client, $session){
+    public static function getSuggestedRecipesByContent($client, $session){
         $contentBasedRecommenderSystem = new ContentBasedRecommenderSystem($client->getMail(), $client->getPassword());
+        $contentBasedRecommenderSystem->buildRecipes($session);
+
+        return $contentBasedRecommenderSystem->getRecipes();
+    }
+
+    /**
+     * @brief Recupère les recettes à suggérer avec l'algorithme basé sur le filtrage collaboratif
+     * @param $client
+     * @param $session
+     * @return array
+     * @throws Exception
+     */
+    public static function getSuggestedRecipesByCollaborative($client, $session){
+        $contentBasedRecommenderSystem = new CollaborativeFilteringUserRecommenderSystem($client->getMail(), $client->getPassword());
         $contentBasedRecommenderSystem->buildRecipes($session);
 
         return $contentBasedRecommenderSystem->getRecipes();

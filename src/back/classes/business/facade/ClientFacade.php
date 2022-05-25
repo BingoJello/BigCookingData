@@ -39,6 +39,7 @@ class ClientFacade
         }
         else {
             $_SESSION['client'] = serialize($client);
+            $_SESSION['algo'] = "content";
             header('location:./profil.php');
         }
     }
