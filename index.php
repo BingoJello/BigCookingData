@@ -22,7 +22,7 @@ require_once('./src/back/classes/business/process/informationRetrieval/StemmerFa
 require_once('./src/back/classes/business/process/informationRetrieval/FrenchStemmer.php');
 require_once('./src/back/classes/business/process/informationRetrieval/StopWords.php');
 require_once('./src/back/classes/business/service/DecisionTreeCluster.php');
-require_once('./src/back/classes/business/process/helper/Test.php');
+require_once('./src/back/classes/business/process/helper/InsertionRecipe.php');
 include('./src/back/functions/utils.php');
 include('./src/back/utils/constants.php');
 require_once ('./src/back/classes/business/process/helper/GenerationClient.php');
@@ -32,8 +32,15 @@ require_once ('./src/back/classes/business/process/helper/GenerationClient.php')
     $test->buildRecipes($_SESSION);
     var_dump($test->getRecipes());
  **/
-//Test::addRecipe();
-
+$recipe = new Recipe(3000, "Test");
+$ingredients = array();
+array_push($ingredients, new Ingredient(3000, "Tomates", "", "23g"));
+array_push($ingredients, new Ingredient(3001, "Poulets", "", "23g"));
+array_push($ingredients, new Ingredient(3002, "Huile d'cdqsrzv", "", "23g"));
+array_push($ingredients, new Ingredient(3003, "Paprika", "", "23g"));
+$recipe->setIngredients($ingredients);
+InsertionRecipe::main($recipe);
+exit(0);
     header('Location: ./src/front/www/accueil');
     exit();
 ?>
