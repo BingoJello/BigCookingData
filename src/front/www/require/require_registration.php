@@ -12,8 +12,11 @@ require_once('../../back/classes/business/process/informationRetrieval/ProcessTe
 require_once('../../back/classes/business/process/informationRetrieval/StemmerFactory.php');
 require_once('../../back/classes/business/process/informationRetrieval/FrenchStemmer.php');
 require_once('../../back/classes/business/process/informationRetrieval/StopWords.php');
+require_once('../../back/classes/business/service/DecisionTreeCluster.php');
 require_once('../../back/classes/business/process/helper/RegistrationInscription.php');
 require_once('../../back/classes/business/facade/ClientFacade.php');
 require_once('../../back/classes/business/facade/RecipeFacade.php');
+require_once('../../back/classes/business/process/helper/InsertionRecipe.php');
 include('../../back/functions/utils.php');
+include('../../back/utils/constants.php');
 ?>

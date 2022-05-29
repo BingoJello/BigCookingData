@@ -1,3 +1,5 @@
+<!-- jQuery-2.2.4 js -->
+<script src="../js/jquery/jquery-2.2.4.min.js"></script>
 <?php
     session_start();
     require_once('./require/require_index.php');
@@ -5,6 +7,21 @@
 
 <?php
     $random = false;
+    if(isset($_POST['add_recipe']) and "true" === $_POST['add_recipe'] and isset($_SESSION['client'])){
+        if(true == RecipePersistence::recipeAlreadyAddByClient($_POST['name'],  $client = getClient()->getId())){
+            $already_add = true;
+            $name_add_recipe = $_POST['name'];
+        }else{
+            $already_add = false;
+            $name_add_recipe = RecipeFacade::addRecipe($_POST, getClient()->getId())->getName();
+        }?>
+        <script>
+        $(document).ready(function(){
+            $("#myModal").modal('show');
+        });
+        </script>
+<?php
+    }
 
     if(false === isset($_SESSION['visualization'])){
         $_SESSION['visualization'] = array();
@@ -171,10 +188,9 @@
     <!-- ##### Footer Area End ##### -->
 
     <?php include('./include/connexion_profil.php'); ?>
+    <?php include('./include/add_recipe.php'); ?>
 
     <!-- ##### All Javascript Files ##### -->
-    <!-- jQuery-2.2.4 js -->
-    <script src="../js/jquery/jquery-2.2.4.min.js"></script>
     <!-- Popper js -->
     <script src="../js/bootstrap/popper.min.js"></script>
     <!-- Bootstrap js -->
@@ -183,6 +199,10 @@
     <script src="../js/plugins/plugins.js"></script>
     <!-- Active js -->
     <script src="../js/tools/active/active.js"></script>
+    <!-- Active js -->
+    <script src="../js/tools/active/active.js"></script>
+    <!-- Add button new recipe js -->
+    <script src="../js/add_button_recipe.js"></script>
 
     <script>
         $(document).ready(function() {
@@ -237,6 +257,30 @@
                 });
             });
         });
+    </script>
+
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajout d'une recette</h5>
+                    <button type="button" class="close" data-dismiss="modal" onclick="relocate_home()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <?php if($already_add == false) {
+                        ?><p>La recette <?php echo $name_add_recipe;?> a bien été ajouté</p><?php
+                    }else{
+                        ?><p>Erreur : La recette <?php echo $name_add_recipe;?> a déja été ajouté par vous</p><?php
+                    }?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function relocate_home() {
+            window.location = "http://localhost/BigCookingData/src/front/www/index.php";
+        }
     </script>
 </body>
 </html>

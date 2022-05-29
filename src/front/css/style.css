@@ -266,7 +266,7 @@ textarea:focus {
   outline: none;
   box-shadow: none;
   border-color: transparent; }
-
+/*
 .nice-select {
   border: none;
   background-color: #f3f5f8;
@@ -286,7 +286,7 @@ textarea:focus {
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.1);
     margin-top: 0;
     width: 100%; }
-
+*/
 /* ScrollUp */
 #scrollUp {
   background-color: #40ba37;
@@ -1419,3 +1419,14 @@ textarea:focus {
 	}
 }
 
+
+.mrtn-input input {
+  background-color: #fff;
+  font-size: 16px;
+  outline: none;
+  border: 0 solid #c9bdbb;
+  border-bottom-width: 0px;
+  border-bottom-width: 1px;
+  padding: 5px 0;
+  width: 100%;
+}

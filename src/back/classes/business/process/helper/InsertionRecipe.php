@@ -3,7 +3,7 @@
 
 class InsertionRecipe
 {
-    public static function main($recipe_to_add = null)
+    public static function main($recipe_to_add = null, $id_client)
     {
         $ingredients_recipe = array();
         $ingredients_str = "";
@@ -17,7 +17,9 @@ class InsertionRecipe
         $process_text_ingredient = new ProcessTextIngredient($ingredients_str, ";", true);
         $process_text_ingredient->build();
         $index_ingredient = -1;
+        $new_ingredients = array();
         $ingredients_object = array();
+
         foreach($process_text_ingredient->getWords() as $word_split){
             $index_ingredient++;
             $word_string = "";
@@ -30,7 +32,7 @@ class InsertionRecipe
             }
             $ingredients = RecipePersistence::getIngredientNameByWord([$word_split]);
             if(true == empty($ingredients)){
-                array_push($ingredients_object, $recipe_to_add->getIngredients()[$index_ingredient]);
+                array_push($new_ingredients, $recipe_to_add->getIngredients()[$index_ingredient]);
                 continue;
             }
             $best_score = null;
@@ -45,7 +47,9 @@ class InsertionRecipe
                 $index++;
             }
             if($index_score != -1){
+                $id_ingredient = RecipePersistence::getIdIngredientByName($ingredients[$index_score]);
                 $recipe_to_add->getIngredients()[$index_ingredient]->setName($ingredients[$index_score]);
+                $recipe_to_add->getIngredients()[$index_ingredient]->setId($id_ingredient);
                 array_push($ingredients_object, $recipe_to_add->getIngredients()[$index_ingredient]);
                 array_push($ingredients_recipe, $ingredients[$index_score]);
             }
@@ -53,9 +57,11 @@ class InsertionRecipe
         $decision_tree = new DecisionTreeCluster($ingredients_recipe);
         $id_cluster = $decision_tree->getCluster();
         $recipe_to_add->setIngredients($ingredients_object);
-        $recipes_close_to = RecipePersistence::getRecipesByIngredientsCluster($id_cluster, $ingredients_recipe);
-        $recipe_to_add->setCloseTo(join(",", $recipes_close_to));
+        $recipes_close_to = RecipePersistence::getIdRecipesByIngredientsCluster($id_cluster, $ingredients_recipe);
+        if(false == empty($recipes_close_to)){
+            $recipe_to_add->setCloseTo(join(",", $recipes_close_to));
+        }
         $recipe_to_add->setCluster($id_cluster);
-        //RecipePersistence::insertRecipe($recipe_to_add);
+        return RecipePersistence::insertRecipe($recipe_to_add, $new_ingredients, $id_client);
     }
 }

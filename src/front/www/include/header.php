@@ -46,31 +46,38 @@
                             <!-- Nav Start -->
                             <div class="classynav">
                                 <ul>
-                                    <li ><a href="index">Home</a></li>
+                                    <li ><a href="index">Accueil</a></li>
                                     <li><a href="recettes">Recettes</a></li>
                                     <!--<li><a href="./mealPlanner.php">Meal Planner</a></li>-->
-                                    <li><a href="qui-sommes-nous">Qui sommes-nous</a></li>
-									<li><a href="#">Profil</a>
-										<ul class="dropdown">
+                                    <?php
+                                    if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
+                                        echo "<li><a href='#' data-toggle='modal' data-target='#addRecipe'>Ajouter une recette</a></li>";
+                                    }else{
+                                        echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Ajouter une recette</a></li>";
+                                    }
+                                    ?>
+                                    <li><a href="#">Profil</a>
+                                        <ul class="dropdown">
                                             <?php
-                                                if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
-                                                    echo "<li class='active'><a href='profil'>Mon compte</a></li>";
-                                                }else{
-                                                    echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Mon profil</a></li>";
-                                                }
-                                                if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
-                                                    echo "<li><a href='carnet-de-recettes'>Mon carnet</a></li>";
-                                                }else{
-                                                    echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Mon carnet</a></li>";
-                                                }
-                                                if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
-                                                    echo "<li><a href='./deconnexion.php'>Déconnexion</a></li>";
-                                                }else{
-                                                    echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Connexion</a></li>";
-                                                }
+                                            if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
+                                                echo "<li class='active'><a href='profil'>Mon compte</a></li>";
+                                            }else{
+                                                echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Mon profil</a></li>";
+                                            }
+                                            if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
+                                                echo "<li><a href='carnet-de-recettes'>Mon carnet</a></li>";
+                                            }else{
+                                                echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Mon carnet</a></li>";
+                                            }
+                                            if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
+                                                echo "<li><a href='./deconnexion.php'>Déconnexion</a></li>";
+                                            }else{
+                                                echo "<li><a href='#' data-toggle='modal' data-target='#loginIHM'>Connexion</a></li>";
+                                            }
                                             ?>
                                         </ul>
-									</li>
+                                    </li>
+                                    <li><a href="qui-sommes-nous">Qui sommes-nous</a></li>
                                 </ul>
 
                                 <!-- Newsletter Form -->

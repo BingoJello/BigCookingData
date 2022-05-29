@@ -3,7 +3,7 @@
 			<div class="modal-content">
 				 <div class="modal-header">
 					<button id="close-btn" type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-						<h4 class="modal-title">Log in</h4>
+						<h4 class="modal-title">Connexion</h4>
 					</button>
 				</div>
 				<div class="modal-body">
@@ -27,13 +27,14 @@
 								<div class="offset-sm-2 col-12 col-sm-8 top_spacer bottom_spacer">
 									<button class="btn btn-lg btn-block btn-orange" id="calculate_button">
 										<i class="fa fa-user" aria-hidden="true"></i>
-											submit
+											Soumettre
 									</button>
 								</div>
-
+                                <!--
 								<div class="alert alert-warning">
-									Ici on met les alerts
+									Ici on met les alertes
 								</div>
+								-->
 								<div class="row">
 									<a href="./registration.php" style="font-size:16px;color:#1E90FF;margin:0 auto">Créer un compte</a>
 								</div>

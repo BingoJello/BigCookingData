@@ -13,7 +13,14 @@ require_once('../../back/classes/business/process/recommenderSystem/ContentBased
 require_once('../../back/classes/business/process/recommenderSystem/CollaborativeFilteringUserRecommenderSystem.php');
 require_once('../../back/classes/business/facade/RecipeFacade.php');
 require_once('../../back/classes/business/facade/ClientFacade.php');
-require_once('../../back/classes/business/process/helper/UpdateProximityRecipes.php');
+require_once('../../back/classes/business/process/helper/InsertionRecipe.php');
+require_once('../../back/classes/business/process/informationRetrieval/Stemmer.php');
+require_once('../../back/classes/business/process/informationRetrieval/Stem.php');
+require_once('../../back/classes/business/process/informationRetrieval/ProcessText.php');
+require_once('../../back/classes/business/process/informationRetrieval/ProcessTextIngredient.php');
+require_once('../../back/classes/business/process/informationRetrieval/StemmerFactory.php');
+require_once('../../back/classes/business/process/informationRetrieval/FrenchStemmer.php');
+require_once('../../back/classes/business/process/informationRetrieval/StopWords.php');
 include('../../back/functions/utils.php');
 include('../../back/utils/constants.php');
 ?>

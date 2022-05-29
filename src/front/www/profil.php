@@ -4,6 +4,21 @@
 ?>
 
 <?php
+    if(isset($_POST['add_recipe']) and "true" === $_POST['add_recipe'] and isset($_SESSION['client'])){
+        if(true == RecipePersistence::recipeAlreadyAddByClient($_POST['name'],  $client = getClient()->getId())){
+            $already_add = true;
+            $name_add_recipe = $_POST['name'];
+        }else{
+            $already_add = false;
+            $name_add_recipe = RecipeFacade::addRecipe($_POST, getClient()->getId())->getName();
+        }?>
+        <script>
+            $(document).ready(function(){
+                $("#myModal").modal('show');
+            });
+        </script>
+        <?php
+    }
     if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
         $client = getClient();
     }else{
@@ -190,10 +205,9 @@
             </div>
         </div>
     </section>
-	
-    <!-- ##### Footer Area Start ##### -->
+
      <?php include('include/footer.php');?>
-     <!-- ##### Footer Area End ##### -->
+     <?php include('./include/add_recipe.php'); ?>
 
      <!-- ##### All Javascript Files ##### -->
      <!-- jQuery-2.2.4 js -->
@@ -210,24 +224,9 @@
      <!-- Change profil js -->
      <script src="../js/changeProfil.js"></script>
      <!-- List Ingredient multiple select js -->
-     <script>
-         /*
-         var listIngredientsJson = <?php echo $list_ingredients; ?>;
-         var listIngredients = [];
+     <!-- Add button new recipe js -->
+     <script src="../js/add_button_recipe.js"></script>
 
-         for(var i = 0; i < listIngredientsJson.length; i++){
-             listIngredients.push(listIngredientsJson[i]);
-         }
-
-         $("#list_ingredients").mSelectDBox({
-             "list": listIngredients,
-             "builtInInput": 0,
-             "multiple": true,
-             "autoComplete": true,
-             "name": "b"
-         });
-         */
-     </script>
 	<?php include('./include/connexion_profil.php'); ?>
 </body>
 </html>
