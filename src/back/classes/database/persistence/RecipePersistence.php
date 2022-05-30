@@ -942,14 +942,8 @@ class RecipePersistence
         $categories = $recipe->getCategories();
         $url_pic = $recipe->getUrlPic();
         $directions_string = null;
-        $index = 0;
         foreach($recipe->getDirections() as $direction){
-            if($index >= count($recipe->getDirections()) - 1){
-                $directions_string.=$direction;
-            }else{
-                $directions_string.=$direction."||";
-            }
-            $index++;
+            $directions_string.=$direction;
         }
         $prep_time = $recipe->getPrepTime();
         $cook_time = $recipe->getCookTime();
@@ -960,7 +954,6 @@ class RecipePersistence
         $coord = $recipe->getCoord();
         $cluster = $recipe->getCluster();
         $close_to = $recipe->getCloseTo();
-var_dump($close_to);
         $ingredients = $recipe->getIngredients();
 
         $query = "INSERT INTO recipe(id_recipe, name, categories, url_pic, clusterNumber, directions, prep_time, cook_time,
@@ -968,6 +961,7 @@ var_dump($close_to);
 
         $params = [$id_recipe, $name, $categories, $url_pic, $cluster, $directions_string, $prep_time, $cook_time,
             $break_time, $difficulty, $close_to, $budget, $serving, $coord, $id_author];
+
         DatabaseQuery::insertQuery($query, $params);
 
         foreach($new_ingredients as $new_ingredient){
@@ -981,6 +975,8 @@ var_dump($close_to);
             self::insertIngredientRecipe($id_recipe, $ingredient);
         }
         $recipe->setIngredients($ingredients);
+
+        self::updateProximityRecipes($id_recipe);
         return $recipe;
     }
 
@@ -1005,5 +1001,20 @@ var_dump($close_to);
 
         $params = [$id_recipe, $id_ingredient, $quantity, $unity];
         DatabaseQuery::insertQuery($query, $params);
+    }
+
+    /*******************
+     * UPDATE Methods
+     ******************/
+
+    public static function updateProximityRecipes($id_new_recipe){
+        $recipes = self::getProximityRecipes([$id_new_recipe]);
+        foreach($recipes as $recipe){
+           $close_to = $recipe->getCloseTo().",".$id_new_recipe;
+           $query = "UPDATE recipe SET recipe.close_to = ? WHERE recipe.id_recipe = ?";
+
+           $params = [$close_to, $recipe->getId()];
+           DatabaseQuery::updateQuery($query, $params);
+        }
     }
 }

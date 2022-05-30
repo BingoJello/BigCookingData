@@ -142,7 +142,7 @@
                             <div class="offset-sm-2 col-12 col-sm-8 top_spacer bottom_spacer">
                                 <button class="btn btn-lg btn-block btn-orange" id="calculate_button">
                                     <i class="fa fa-user" aria-hidden="true"></i>
-                                    submit
+                                    Soumettre
                                 </button>
                             </div>
 

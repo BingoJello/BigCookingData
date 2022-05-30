@@ -182,13 +182,15 @@
                             <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="password-confirm">Algorithme de Suggestion</label>
                             <div class="col-12 col-sm-9 col-md-6 col-lg-6 col-xl-5">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" value="content" name="algo" id="flexRadioDefault1" checked>
+                                    <input class="form-check-input" type="radio" value="content" name="algo" id="flexRadioDefault1"
+                                           <?php if(false == isset($_SESSION['algo']) or 'content' == $_SESSION['algo']) { ?> checked <?php } ?>>
                                     <label class="form-check-label" for="flexCheckDefault">
                                         Algorithme basé sur le contenu
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" value="collaborative" name="algo" id="flexRadioDefault2">
+                                    <input class="form-check-input" type="radio" value="collaborative" name="algo" id="flexRadioDefault2"
+                                        <?php if(true == isset($_SESSION['algo']) and 'collaborative' == $_SESSION['algo']) { ?> checked <?php } ?>>
                                     <label class="form-check-label" for="flexCheckChecked">
                                         Algorithme de filtrage collaborative
                                     </label>
@@ -223,10 +225,33 @@
      <script src="../js/canvas.js"></script>
      <!-- Change profil js -->
      <script src="../js/changeProfil.js"></script>
-     <!-- List Ingredient multiple select js -->
      <!-- Add button new recipe js -->
      <script src="../js/add_button_recipe.js"></script>
 
 	<?php include('./include/connexion_profil.php'); ?>
+
+     <div id="myModal" class="modal fade">
+         <div class="modal-dialog" role="document">
+             <div class="modal-content">
+                 <div class="modal-header">
+                     <h5 class="modal-title">Ajout d'une recette</h5>
+                     <button type="button" class="close" data-dismiss="modal" onclick="relocate_home()">&times;</button>
+                 </div>
+                 <div class="modal-body">
+                     <?php if($already_add == false) {
+                         ?><p>La recette <?php echo $name_add_recipe;?> a bien été ajouté</p><?php
+                     }else{
+                         ?><p>Erreur : La recette <?php echo $name_add_recipe;?> a déja été ajouté par vous</p><?php
+                     }?>
+                 </div>
+             </div>
+         </div>
+     </div>
+
+     <script>
+         function relocate_home() {
+             window.location = "http://localhost/BigCookingData/src/front/www/index.php";
+         }
+     </script>
 </body>
 </html>

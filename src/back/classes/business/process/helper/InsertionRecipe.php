@@ -32,6 +32,7 @@ class InsertionRecipe
             }
             $ingredients = RecipePersistence::getIngredientNameByWord([$word_split]);
             if(true == empty($ingredients)){
+                $recipe_to_add->getIngredients()[$index_ingredient]->setUrlPic("https://assets.afcdn.com/recipe/20100101/recipe_default_img_placeholder_w1000h1000.jpg");
                 array_push($new_ingredients, $recipe_to_add->getIngredients()[$index_ingredient]);
                 continue;
             }
@@ -62,6 +63,8 @@ class InsertionRecipe
             $recipe_to_add->setCloseTo(join(",", $recipes_close_to));
         }
         $recipe_to_add->setCluster($id_cluster);
+
         return RecipePersistence::insertRecipe($recipe_to_add, $new_ingredients, $id_client);
+
     }
 }

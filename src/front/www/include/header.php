@@ -80,12 +80,10 @@
                                     <li><a href="qui-sommes-nous">Qui sommes-nous</a></li>
                                 </ul>
 
-                                <!-- Newsletter Form -->
                                 <div class="search-btn">
                                     <i class="fa fa-search" aria-hidden="true"></i>
                                 </div>
                             </div>
-                            <!-- Nav End -->
                         </div>
                     </nav>
                 </div>

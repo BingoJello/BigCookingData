@@ -40,7 +40,6 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
 
         if(true === is_null($rated_recipes_user)){
             $ingredients_preferences = ClientPersistence::getPreferencesIngredientsClient($this->client->getId());
-
             if(true === is_null($ingredients_preferences)){
                 $preferences_recipes_user = null;
                 $best_cluster_visualization_user = RecipePersistence::getBestVisualizationClusterUser($session);
@@ -151,9 +150,10 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
         }
 
         $ingredients = array();
-
+        $id_ingredients = array();
         foreach($ingredients_user as $ingredient_user){
-            if(false == in_array($ingredient_user, $ingredients)){
+            if(false == in_array($ingredient_user->getId(), $id_ingredients)){
+                array_push($id_ingredients, $ingredient_user->getId());
                 array_push($ingredients, $ingredient_user);
             }
         }
@@ -175,7 +175,6 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
      */
     private function buildPercentageIngredient($ingredients_user){
         $percentage_ingredients_user = array();
-
         foreach ($ingredients_user as $ingredient_user) {
             if (!array_key_exists($ingredient_user->getId(), $percentage_ingredients_user)) {
                 $percentage_ingredients_user[$ingredient_user->getId()] = 1;
@@ -241,8 +240,7 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
         $similarity_recipes = array();
         $index_similarity = 0;
 
-        foreach($matrix as $row)
-        {
+        foreach($matrix as $row) {
             $product_vector = 0;
             $recipe_vector = 0;
             $index_item = 0;
@@ -295,6 +293,7 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
             if(round($v['recipe']->getScore(),2) >= $mean_similarity)
                 array_push($best_similarity, $recipes[$k]);
         }
+
         return $this->sortRecipes($best_similarity);
     }
 

@@ -215,8 +215,13 @@ class RecipeFacade
 
         $directions = array();
         if("" != $_POST['directions'][0]) {
+            $index = 0;
             foreach ($_POST['directions'] as $direction) {
+                if($index < count($_POST['directions']) - 1){
+                    $direction.="||";
+                }
                 array_push($directions, $direction);
+                $index++;
             }
         }
 
