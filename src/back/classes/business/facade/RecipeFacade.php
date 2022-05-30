@@ -248,4 +248,13 @@ class RecipeFacade
         $recipe->setIngredients($ingredients);
         return InsertionRecipe::main($recipe, $id_client);
     }
+
+
+    public static function getRatingRecipesClient($client){
+        return RecipePersistence::getRatedRecipesUser($client->getId());
+    }
+
+    public static function deleteRatedRecipeClient($client, $id_recipe){
+        return RecipePersistence::deleteRatedRecipeClient($client->getId(), $id_recipe);
+    }
 }

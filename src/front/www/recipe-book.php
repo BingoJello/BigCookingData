@@ -24,6 +24,19 @@
     }else{
         header('location:./connexion.php?error=Veuillez vous connecter pour voir votre carnet de recettes');
     }
+
+    if(isset($_GET['delete']) and !empty($_GET['delete'])){
+        $id_recipe = $_GET['delete'];
+        try {
+            RecipeFacade::deleteRatedRecipeClient($client, $id_recipe);
+            header('Location: ./recipe-book.php');
+            exit(0);
+        }catch (Exception $e){
+            var_dump($e);
+        }
+    }
+    $rated_recipes = RecipeFacade::getRatingRecipesClient($client);
+
 ?>
 
 <!DOCTYPE html>
@@ -83,45 +96,7 @@
                     <h1 style="margin:0 auto;font-size:24px" for="num_meals_selector">Mon carnet de recettes</h1>
                 </div>
                 <form id="profil-form" action="profil" method="POST">
-                    <div class="generator_header col-12 col-md-9 col-lg-9" style="margin:0 auto;margin-top:20px">
-                        <div class="row">
-                            <div style="float:left">
-                                <img src="https://assets.afcdn.com/recipe/20131106/63010_w1024h778c1cx1633cy2449.webp" width="116" height="132" alt="">
-                            </div>
-                            <div class="recipe-book-div">
-                                <div>
-                                    <p class = "recipe-book-link">Pasta alla caprese and fjuifnruhvn cnuiergccr crr...</p>
-                                    <p style="color:red;margin-top:-10px">Supprimer</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="generator_header col-12 col-md-9 col-lg-9" style="margin:0 auto;margin-top:20px">
-                        <div class="row">
-                            <div style="float:left">
-                                <img src="https://assets.afcdn.com/recipe/20131106/63010_w1024h778c1cx1633cy2449.webp" width="116" height="132" alt="">
-                            </div>
-                            <div class="recipe-book-div">
-                                <div>
-                                    <p class = "recipe-book-link">Pasta alla caprese and fjuifnruhvn cnuiergccr crr...</p>
-                                    <p style="color:red;margin-top:-10px">Supprimer</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="generator_header col-12 col-md-9 col-lg-9" style="margin:0 auto;margin-top:20px">
-                        <div class="row">
-                            <div style="float:left">
-                                <img src="https://assets.afcdn.com/recipe/20131106/63010_w1024h778c1cx1633cy2449.webp" width="116" height="132" alt="">
-                            </div>
-                            <div class="recipe-book-div">
-                                <div>
-                                    <p class = "recipe-book-link">Pasta alla caprese and fjuifnruhvn cnuiergccr crr...</p>
-                                    <p style="color:red;margin-top:-10px">Supprimer</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <?php printRatedRecipesClient($rated_recipes); ?>
                     <p style="height: 10px"></p>
                 </form>
             </div>
@@ -137,7 +112,6 @@
 <!-- ##### All Javascript Files ##### -->
 <!-- jQuery-2.2.4 js -->
 <script src="../js/jquery/jquery-2.2.4.min.js"></script>
-<script src="../js/tools/md_select_box/dist/m-select-d-box.js"></script>
 <!-- Bootstrap js -->
 <script src="../js/bootstrap/bootstrap.min.js"></script>
 <!-- All Plugins js -->
@@ -146,8 +120,6 @@
 <script src="../js/tools/active/active2.js"></script>
 <!-- Canvas js -->
 <script src="../js/canvas.js"></script>
-<!-- List Ingredient multiple select js -->
-<script src="../js/tools/list_ingredients_select.js"></script>
 <!-- Change profil js -->
 <script src="../js/changeProfil.js"></script>
 <!-- Add button new recipe js -->

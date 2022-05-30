@@ -1,25 +1,5 @@
 <?php
 /**
- * @param Client $client
- */
-function printPreferencesIngredientsLabel($client){
-    echo $client->getPreferencesIngredientsLabel();
-    /*
-    $preferences_ingredients_array = $client->getPreferencesIngredients();
-    $preferences_ingredients_string = "";
-    if(false === is_null($preferences_ingredients_array)){
-        foreach($preferences_ingredients_array as $ingredient){
-            $preferences_ingredients_string.=$ingredient->getName();
-            $preferences_ingredients_string.=";";
-        }
-    }
-    echo $preferences_ingredients_string;
-    */
-}
-?>
-
-<?php
-/**
  * @return mixed
  */
 function getClient(){
@@ -309,5 +289,28 @@ function printSimilarRecipes($recipes){
 <?php
     }
     ?></div><?php
+}
+?>
+
+<?php
+function printRatedRecipesClient($recipes){
+    foreach($recipes as $recipe){?>
+        <div class="generator_header col-12 col-md-9 col-lg-9" style="margin:0 auto;margin-top:20px">
+            <div class="row">
+                <div style="float:left">
+                    <img src=<?php echo $recipe->getUrlPic();?>  width="116" height="132" alt="">
+                </div>
+                <div class="recipe-book-div">
+                    <div>
+                        <a class = "recipe-book-link" href="recette-<?php echo $recipe->getId();?>">
+                            <h5><?php echo $recipe->getName();?></h5>
+                        </a>
+                        <a href="./recipe-book.php?delete=<?php echo $recipe->getId();?>" style="color:red;margin-top:-10px">Supprimer</a>
+                        <p style="margin-top:-10px"><?php echo $recipe->getScore();?> / 5</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php }
 }
 ?>

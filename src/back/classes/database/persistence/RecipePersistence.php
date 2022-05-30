@@ -1017,4 +1017,16 @@ class RecipePersistence
            DatabaseQuery::updateQuery($query, $params);
         }
     }
+
+    /*******************
+     * DELETE Methods
+     ******************/
+
+    public static function deleteRatedRecipeClient($id_client, $id_recipe){
+        $query = "DELETE FROM assess WHERE assess.id_client = ? AND assess.id_recipe = ?";
+        $params = [$id_client, $id_recipe];
+
+        DatabaseQuery::deleteQuery($query, $params);
+
+    }
 }
