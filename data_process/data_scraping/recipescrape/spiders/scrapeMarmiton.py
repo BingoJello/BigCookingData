@@ -1,5 +1,3 @@
-#@author mamadou bella DIALLO
-
 import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
@@ -11,7 +9,7 @@ FIELDS = [
    'id','nom', 'img_url','time_total', 'time_prepa',
    'time_repo','time_cuisson', 'difficulty', 'budget',
    'numberP','ingredients','id_ingre','nom_ingre', 
-   'quantity','image_ingre','titre', 'description', 
+   'quantity','unity','image_ingre','titre', 'description', 
    'etape', 'etap_id', 'category','global_rating'
 ]
 
@@ -51,10 +49,14 @@ class Marmiton(CrawlSpider):
 
     start_urls = [ 
         # 'https://www.marmiton.org/recettes?type=platprincipal',
-        #  'https://www.marmiton.org/recettes?type=boisson',
+        # 'https://www.marmiton.org/recettes?type=boisson&page=2',
         #  'https://www.marmiton.org/recettes/index/categorie/aperitif-ou-buffet?rcp=0'
-        #   'https://www.marmiton.org/recettes?page=2',
-         'https://www.marmiton.org/recettes?type=dessert'
+          'https://www.marmiton.org/recettes?page=3',
+        # 'https://www.marmiton.org/recettes?type=dessert&page=13'
+        # 'https://www.marmiton.org/recettes/recherche.aspx?aqt=accompagnement'
+        # 'https://www.marmiton.org/recettes/recherche.aspx?aqt=boisson-sans-alcool',
+        # 'https://www.marmiton.org/recettes/recherche.aspx?aqt=carrotes%2C-oignons%2Cmoutard'
+        # 'https://www.marmiton.org/recettes/recherche.aspx?aqt=fraise%2Cwhisky'
         ]
     
     # first get the next button which will visit every page of a category
@@ -71,7 +73,7 @@ class Marmiton(CrawlSpider):
                        )
     rules = (rule_recipe, rule_next)
     item_index =-1
-    item_index = 2079
+    # item_index = 7988
     def parse_item(self, response):
         ingre_table = []
         etape_tab = []
@@ -80,32 +82,7 @@ class Marmiton(CrawlSpider):
             self.log(
                 f"{self.state['items_count']} {response.url}", logging.WARN)
         try:
-            img = response.css(".SHRD__sc-dy77ha-0.vKBPb::attr(src)").extract_first()
-            print("------------------------",img)
-            img = img.split("/")
-            img5 = img[5].split("_")
-           
-            if len(img5) >=4:
-                img_url = img[0] + "//" + img[2] + "/" +img[3] + "/"+ img[4] + "/" + img5[0] + "_" + img5[1] + "_" + img5[2] + "_" + img5[3] + "_" + "w1000h1000.jpg"
-            else:
-                img_url = img[0] + "//" + img[2] + "/" +img[3] + "/"+ img[4] + "/" + img5[0] + "_" + "w1000h1000.jpg"
-
-            # print("----------------RECETTES--------------------")
-            # img_recette_source = response.xpath('.//picture[@class="SHRD__sc-1rqpopx-1 kNPyTk"]/source/@srcset').getall()
-            # if img_recette_source == None:
-            #     img_recette_source = response.xpath('.//picture[@class="RCP__sc-40fnuy-0 dslNWH"]/source/@srcset').getall()
-            #     if img_recette_source == None:
-            #         img_recette_source = response.xpath('.//picture[@class=" RCP__sc-vgpd2s-2 fNmocT"]/source/@srcset').getall()
-            #         if  img_recette_source == None:
-            #             img_recette_source = "no image"  
-            # img_recette_source = img_recette_source[0]
-            # img_recette_source = img_recette_source.split(',')
-            # img_recette_source = img_recette_source[-1]
-            # img_recette_source = img_recette_source.split(' ')
-            # img_recette_source = img_recette_source[1]
-
-            
-            name = response.css('h1.SHRD__sc-10plygc-0.itJBWW::text').get()
+            name = response.css('h1.SHRD__sc-10plygc-0::text').get()
             infosRecette  = response.xpath('.//span[@class="SHRD__sc-10plygc-0 cBiAGP"]/p/text()').getall()
             time = response.xpath('.//span[@class="SHRD__sc-10plygc-0 bzAHrL"]/text()').getall()
             time_prepa = time[1]
@@ -134,22 +111,42 @@ class Marmiton(CrawlSpider):
             infos_ingre = response.css('div.MuiGrid-root')
 
             for index, link in enumerate(infos_ingre):
-                img_ingre_url = link.xpath('.//div[@class="RCP__sc-vgpd2s-2 fNmocT"]/picture/img/@src').get()
+                img_ingre_url = link.xpath('.//div[@class="RCP__sc-vgpd2s-2 fNmocT"]/picture/img/@data-src').get()
                 #problem à resoudre
                 # qty_ingre = link.xpath('.//span[@class="SHRD__sc-10plygc-0 epviYI"]/text()').extract_first()
             
                
                 nom_ingre = link.xpath('.//span[@class="RCP__sc-8cqrvd-3 itCXhd"]/text()').get()
-                qty = link.css('span.epviYI::text').get()
+                # qty = link.css('span.epviYI::text').get()
                 qty_ingre = link.xpath('.//span[@class="SHRD__sc-10plygc-0 epviYI"]/text()').getall()
+                # print('qtyIngre', qty_ingre)
+                # qty = re.split('', qty_ingre)
                 if(nom_ingre == None):
                     nom_ingre = link.xpath('.//span[@class="RCP__sc-8cqrvd-3 cDbUWZ"]/text()').get()
                 if(qty_ingre == None):
                     qty_ingre = 'empty'
                 if index !=0:
                     # ingre_dic={"id_ingre":index,"nom_ingre":nom_ingre,"quantity":qty_ingre,"image_ingre":img_ingre_url}
-                    ingre_dic={"id_ingre":index,"nom_ingre":nom_ingre,"quantity":qty_ingre,"image_ingre":img_ingre_url}
-                    ingre_table.append(ingre_dic)
+                    if len(qty_ingre) >1:
+                        unity = qty_ingre[-1].replace('\u00a0', '')
+                        ingre_dic={"id_ingre":index,"nom_ingre":nom_ingre,"quantity":qty_ingre[0],"unity":unity,"image_ingre":img_ingre_url}
+                        ingre_table.append(ingre_dic)
+                    else:
+                        ingre_dic={"id_ingre":index,"nom_ingre":nom_ingre,"quantity":qty_ingre[0],"unity":"","image_ingre":img_ingre_url}
+                        ingre_table.append(ingre_dic)
+                
+                img = response.css("img.SHRD__sc-dy77ha-0.kUBXRp::attr(data-src)").extract_first()
+                # img = response.xpath('.//div[@class="SHRD__sc-1rqpopx-1 eWMFTU"]/picture/img/@data-src').get()
+                print("------------------------",img)
+                
+                img = img.split("/")
+                img5 = img[5].split("_")
+            
+                if len(img5) >=4:
+                    img_url = img[0] + "//" + img[2] + "/" +img[3] + "/"+ img[4] + "/" + img5[0] + "_" + img5[1] + "_" + img5[2] + "_" + img5[3] + "_" + "w1000h1000.jpg"
+                else:
+                    img_url = img[0] + "//" + img[2] + "/" +img[3] + "/"+ img[4] + "/" + img5[0] + "_" + "w1000h1000.jpg"
+                print("------------------------",img_url)
         except:
               print('error: on selecting info')
         self.item_index += 1
