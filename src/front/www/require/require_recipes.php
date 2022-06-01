@@ -1,6 +1,7 @@
 <?php
 require_once('../../back/classes/business/model/Client.php');
 require_once('../../back/classes/business/model/Recipe.php');
+require_once('../../back/classes/business/model/Rating.php');
 require_once('../../back/classes/business/model/Ingredient.php');
 require_once('../../back/classes/business/process/informationRetrieval/Stemmer.php');
 require_once('../../back/classes/business/process/informationRetrieval/Stem.php');
@@ -17,6 +18,7 @@ require_once('../../back/classes/database/persistence/ClientPersistence.php');
 require_once('../../back/classes/business/service/DecisionTreeCluster.php');
 require_once('../../back/classes/business/facade/RecipeFacade.php');
 require_once('../../back/classes/business/facade/ClientFacade.php');
+require_once('../../back/classes/business/process/helper/InsertionRecipe.php');
 include('../../back/functions/utils.php');
 include('../../back/utils/constants.php');
 ?>

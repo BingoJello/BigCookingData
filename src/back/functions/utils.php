@@ -1,23 +1,5 @@
 <?php
 /**
- * @param Client $client
- */
-function printPreferencesIngredients($client){
-    $preferences_ingredients_array = $client->getPreferencesIngredients();
-    $preferences_ingredients_string = "";
-var_dump($preferences_ingredients_array);
-    if(false === is_null($preferences_ingredients_array)){
-        foreach($preferences_ingredients_array as $ingredient){
-            $preferences_ingredients_string.=$ingredient->getName();
-            $preferences_ingredients_string.=";";
-        }
-    }
-    echo $preferences_ingredients_string;
-}
-?>
-
-<?php
-/**
  * @return mixed
  */
 function getClient(){
@@ -33,7 +15,6 @@ function getClient(){
 function getJsonRecipes($recipes, $by_searching = false){
     $recipes_array = array();
     $i =0;
-
     if(true == $by_searching){
         foreach($recipes as $recipe){
             $recipes_array[$i]['id_recipe'] = $recipe->getId();
@@ -89,7 +70,9 @@ function printIngredients($recipe){
         <div>
             <label class="ingredient-label">
                 <img src=<?php echo $ingredient->getUrlPic();?> height="40" width="40">
-                <?php echo $ingredient->getName();?>
+                <?php
+                    echo $ingredient->getQuantity()." ".$ingredient->getName();
+                ?>
             </label>
         </div>
     <?php }
@@ -122,7 +105,7 @@ function printAssessRecipe($assessed_recipe){
                                 <p class='name-pseudo'>".$assess->getPseudo()."</p>
                             </div>
                          <div class='rating-commentary'>";
-        $rating = $assess->getRating();
+        $rating = $assess->getScore();
 
         for($i=0; $i<5; $i++){
             if($rating > 0){
@@ -132,7 +115,7 @@ function printAssessRecipe($assessed_recipe){
                 $html.="<i class='fa fa-star' style='color:grey' aria-hidden='true'></i>";
             }
         }
-        $html.="<label> ".$assess->getRating()."/5</label>
+        $html.="<label> ".$assess->getScore()."/5</label>
              </div>
             </div>
            </div>
@@ -202,6 +185,9 @@ function printGlobalRating($score, $nbr_reviews){
 ?>
 
 <?php
+/**
+ * @param $score
+ */
 function printGlobalRatingIndex($score){
     $html = "<div class='ratings'>";
 
@@ -233,6 +219,10 @@ function printGlobalRatingIndex($score){
 ?>
 
 <?php
+/**
+ * @param $recipes
+ * @return array
+ */
 function getRandomRecipes($recipes){
     $random_id = array();
     $recipes_slides = array();
@@ -255,6 +245,9 @@ function getRandomRecipes($recipes){
 ?>
 
 <?php
+/**
+ * @param $recipes
+ */
 function printRecipesSlides($recipes){
     ?>
     <section class="hero-area">
@@ -277,4 +270,47 @@ function printRecipesSlides($recipes){
         </div>
     </section>
 <?php }
+?>
+
+<?php
+function printSimilarRecipes($recipes){
+    ?><div class="row"><?php
+    foreach($recipes as $recipe){?>
+        <div class='col-12 col-sm-6 col-lg-4'>
+            <div class='single-best-recipe-area mb-30'>
+                <img src=<?php echo $recipe->getUrlPic();?>  style="min-width:250px;max-width:250px;min-height:200px;max-height:200px" alt=''>
+                <div class='recipe-content' style="width:250px"">
+                    <a href="recette-<?php echo $recipe->getId();?>">
+                        <h5><?php echo $recipe->getName();?></h5>
+                    </a>
+                </div>
+            </div>
+        </div>
+<?php
+    }
+    ?></div><?php
+}
+?>
+
+<?php
+function printRatedRecipesClient($recipes){
+    foreach($recipes as $recipe){?>
+        <div class="generator_header col-12 col-md-9 col-lg-9" style="margin:0 auto;margin-top:20px">
+            <div class="row">
+                <div style="float:left">
+                    <img src=<?php echo $recipe->getUrlPic();?>  width="116" height="132" alt="">
+                </div>
+                <div class="recipe-book-div">
+                    <div>
+                        <a class = "recipe-book-link" href="recette-<?php echo $recipe->getId();?>">
+                            <h5><?php echo $recipe->getName();?></h5>
+                        </a>
+                        <a href="./recipe-book.php?delete=<?php echo $recipe->getId();?>" style="color:red;margin-top:-10px">Supprimer</a>
+                        <p style="margin-top:-10px"><?php echo $recipe->getScore();?> / 5</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <?php }
+}
 ?>

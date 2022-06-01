@@ -28,6 +28,7 @@ class ClientPersistence
         foreach($result as $row) {
             $client = new Client($row['id_client'], $row['firstname'], $row['lastname'], $row['civility'], $row['pseudo'], $row['mail'], $row['password']);
             $client->setPreferencesIngredients(ClientPersistence::getPreferencesIngredientsClient($row['id_client']));
+            $client->setPreferencesIngredientsLabel($row['preferences_label']);
             return $client;
         }
         return null;
@@ -123,6 +124,29 @@ class ClientPersistence
         return false;
     }
 
+    /**
+     * @param int $id_client
+     * @return mixed|null
+     */
+    public static function getBestSimilarClient($id_client){
+        $best_similar_client = null;
+        $query = "SELECT DISTINCT assess.id_client, COUNT(assess.id_client) as nbr FROM assess 
+                  WHERE assess.id_recipe IN (
+                      SELECT id_recipe FROM assess WHERE assess.id_client = ?
+                  ) AND assess.id_client != ?  
+                  GROUP BY(assess.id_client) 
+                  ORDER BY(nbr) DESC
+                  LIMIT 1";
+        $params = [$id_client, $id_client];
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            $best_similar_client = $row['id_client'];
+        }
+        return $best_similar_client;
+    }
+
+
     /*******************
      * INSERT Methods
      ******************/
@@ -179,35 +203,22 @@ class ClientPersistence
         DatabaseQuery::insertQuery($query, $params);
     }
 
-    /**
-     * @brief Insert l'enregistrement de la recette
-     * @param int $id_recipe
-     * @param int $id_client
-     */
-    public static function insertRecording($id_recipe, $id_client){
-        $query = "INSERT INTO record(id_recipe, id_client) VALUES (?,?)";
-        $params=[$id_recipe, $id_client];
-
-        DatabaseQuery::insertQuery($query, $params);
-    }
-
     /*******************
      * DELETE Methods
      ******************/
 
     /**
-     * @brief Supprime des ingrédients préférences d'un client
+     * @brief Supprime des ingrédients de préférences d'un client
      * @param int $id_client
      * @param array $ingredients
      */
-    public static function deleteIngredientPreferencesClient($id_client, $ingredients)
+    public static function deleteIngredientPreferencesClient($id_client)
     {
-        $ingredients = join(",", $ingredients);
         $query = "DELETE FROM have_preferences_ingredient 
-                  WHERE have_preferences_ingredient.id_client=? AND have_preferences_ingredient.id_ingredient IN(".$ingredients.")";
+                  WHERE have_preferences_ingredient.id_client=?";
         $params = [$id_client];
 
-        DatabaseQuery::insertQuery($query, $params);
+        DatabaseQuery::updateQuery($query, $params);
     }
 
     /*******************
@@ -215,44 +226,18 @@ class ClientPersistence
      ******************/
 
     /**
-     * @brief Met à jour les préférences ingrédients d'un client
+     * @brief Mets à jour le label des préférences du client
      * @param int $id_client
-     * @param array $ingredients
+     * @param string $preferences_label
      */
-    public static function updateIngredientsPreferencesClient($id_client, $ingredients)
+    public static function updatePreferencesIngredientsLabelClient($id_client, $preferences_label)
     {
-        $old_ingredients_client = ClientPersistence::getPreferencesIngredientsClient($id_client);
-        $old_ingredients_name_client = array();
-        $new_ingredients = array();
-        $delete_ingredients = array();
+        $query = "UPDATE client 
+                  SET preferences_label = ?
+                  WHERE id_client = ?";
+        $params = [$preferences_label, $id_client];
 
-        foreach ($old_ingredients_client as $ingredient) {
-            array_push($old_ingredients_name_client, $ingredient->getName());
-        }
-        foreach($ingredients as $ingredient) {
-            if (!in_array($ingredient, $old_ingredients_name_client))
-                array_push($new_ingredients, $ingredient);
-        }
-        foreach($old_ingredients_name_client as $old_ingredient) {
-            if (!in_array($old_ingredient, $ingredients))
-                array_push($delete_ingredients, $old_ingredient);
-        }
-
-        if(!empty($delete_ingredients)){
-            $delete_ingredients = RecipePersistence::getIdIngredientByName($delete_ingredients);
-            ClientPersistence::deleteIngredientPreferencesClient($id_client, $delete_ingredients);
-        }
-
-        if(!empty($new_ingredients)) {
-            $new_ingredients = RecipePersistence::getIdIngredientByName($new_ingredients);
-
-            foreach($new_ingredients as $id_ingredient){
-                $query = "INSERT INTO have_preferences_ingredient(id_client,id_ingredient) VALUES (?,?)";
-                $params = [$id_client, $id_ingredient];
-
-                DatabaseQuery::insertQuery($query, $params);
-            }
-        }
+        DatabaseQuery::updateQuery($query, $params);
     }
 
     /**
@@ -262,8 +247,8 @@ class ClientPersistence
      */
     public static function updatePasswordClient($id_client, $password)
     {
-        $query ="UPDATE client SET password = ? WHERE id_client = ?";
-        $params=[$password, $id_client];
+        $query = "UPDATE client SET password = ? WHERE id_client = ?";
+        $params = [$password, $id_client];
 
         DatabaseQuery::updateQuery($query, $params);
     }

@@ -7,6 +7,7 @@
 class ClientFacade
 {
     /**
+     * @brief Enregistre un client
      * @param string $pseudo
      * @param string $civility
      * @param string $mail
@@ -24,6 +25,7 @@ class ClientFacade
     }
 
     /**
+     * @brief Connection au profil d'un client
      * @param string $email
      * @param string $password
      * @throws Exception
@@ -37,19 +39,30 @@ class ClientFacade
         }
         else {
             $_SESSION['client'] = serialize($client);
+            $_SESSION['algo'] = "content";
             header('location:./profil.php');
         }
     }
 
     /**
+     * @brief Mets à jour les ingrédients de préférences d'un client
      * @param Client $client
      * @param array $ingredients
      * @return mixed
      */
     public static function updatePreferencesIngredients($client, $ingredients){
-        $ingredients = explode(";", $ingredients);
-        array_pop($ingredients);
-        ClientPersistence::updateIngredientsPreferencesClient($client->getId(), $ingredients);
+        ClientPersistence::updatePreferencesIngredientsLabelClient($client->getId(), $ingredients);
+
+        $process_text_ingredient = new ProcessTextIngredient($ingredients, ';', true);
+        $process_text_ingredient->build();
+
+        $id_ingredients = RecipePersistence::getIdIngredientByWord($process_text_ingredient->getWords());
+        ClientPersistence::deleteIngredientPreferencesClient($client->getId());
+
+        if(false === empty($id_ingredients)){
+            ClientPersistence::insertIngredientsPreferences($client->getId(), $id_ingredients);
+        }
+        $client->setPreferencesIngredientsLabel($ingredients);
         $client->setPreferencesIngredients(ClientPersistence::getPreferencesIngredientsClient($client->getId()));
         $_SESSION['client'] = serialize($client);
 
@@ -57,6 +70,7 @@ class ClientFacade
     }
 
     /**
+     * @brief Mets à jour le mot de passe d'un client
      * @param int $id_client
      * @param string $password
      */
@@ -65,6 +79,7 @@ class ClientFacade
     }
 
     /**
+     * @brief Insert la note et/ou le commentaire d'un client
      * @param int $id_recipe
      * @param int $id_client
      * @param float $rating
@@ -76,14 +91,7 @@ class ClientFacade
     }
 
     /**
-     * @param int $id_client
-     * @param int $id_recipe
-     */
-    public static function insertRecord($id_client, $id_recipe){
-        ClientPersistence::insertRecording($id_recipe, $id_client);
-    }
-
-    /**
+     * @brief Vérifie si un client a déjà évalué une recette
      * @param int $id_client
      * @param int $id_recipe
      * @return bool

@@ -56,4 +56,21 @@ class DatabaseQuery
         }
         return $stmt;
     }
+
+    /**
+     * @brief Generic delete query in database
+     * @param string $query
+     * @param array $params
+     * @return false|PDOStatement
+     */
+    public static function deleteQuery($query, $params=array())
+    {
+        $stmt = DatabaseConnection::getInstance()->prepare($query);
+        try {
+            $stmt->execute($params);
+        } catch(PDOException $error) {
+            echo $error->getMessage();
+        }
+        return $stmt;
+    }
 }

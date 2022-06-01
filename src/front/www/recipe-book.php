@@ -4,11 +4,39 @@
 ?>
 
 <?php
+    if(isset($_POST['add_recipe']) and "true" === $_POST['add_recipe'] and isset($_SESSION['client'])){
+        if(true == RecipePersistence::recipeAlreadyAddByClient($_POST['name'],  $client = getClient()->getId())){
+            $already_add = true;
+            $name_add_recipe = $_POST['name'];
+        }else{
+            $already_add = false;
+            $name_add_recipe = RecipeFacade::addRecipe($_POST, getClient()->getId())->getName();
+        }?>
+        <script>
+            $(document).ready(function(){
+                $("#myModal").modal('show');
+            });
+        </script>
+        <?php
+    }
     if(isset($_SESSION['client']) and !empty($_SESSION['client'])){
         $client = getClient();
     }else{
         header('location:./connexion.php?error=Veuillez vous connecter pour voir votre carnet de recettes');
     }
+
+    if(isset($_GET['delete']) and !empty($_GET['delete'])){
+        $id_recipe = $_GET['delete'];
+        try {
+            RecipeFacade::deleteRatedRecipeClient($client, $id_recipe);
+            header('Location: ./recipe-book.php');
+            exit(0);
+        }catch (Exception $e){
+            var_dump($e);
+        }
+    }
+    $rated_recipes = RecipeFacade::getRatingRecipesClient($client);
+
 ?>
 
 <!DOCTYPE html>
@@ -68,45 +96,7 @@
                     <h1 style="margin:0 auto;font-size:24px" for="num_meals_selector">Mon carnet de recettes</h1>
                 </div>
                 <form id="profil-form" action="profil" method="POST">
-                    <div class="generator_header col-12 col-md-9 col-lg-9" style="margin:0 auto;margin-top:20px">
-                        <div class="row">
-                            <div style="float:left">
-                                <img src="https://assets.afcdn.com/recipe/20131106/63010_w1024h778c1cx1633cy2449.webp" width="116" height="132" alt="">
-                            </div>
-                            <div class="recipe-book-div">
-                                <div>
-                                    <p class = "recipe-book-link">Pasta alla caprese and fjuifnruhvn cnuiergccr crr...</p>
-                                    <p style="color:red;margin-top:-10px">Supprimer</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="generator_header col-12 col-md-9 col-lg-9" style="margin:0 auto;margin-top:20px">
-                        <div class="row">
-                            <div style="float:left">
-                                <img src="https://assets.afcdn.com/recipe/20131106/63010_w1024h778c1cx1633cy2449.webp" width="116" height="132" alt="">
-                            </div>
-                            <div class="recipe-book-div">
-                                <div>
-                                    <p class = "recipe-book-link">Pasta alla caprese and fjuifnruhvn cnuiergccr crr...</p>
-                                    <p style="color:red;margin-top:-10px">Supprimer</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="generator_header col-12 col-md-9 col-lg-9" style="margin:0 auto;margin-top:20px">
-                        <div class="row">
-                            <div style="float:left">
-                                <img src="https://assets.afcdn.com/recipe/20131106/63010_w1024h778c1cx1633cy2449.webp" width="116" height="132" alt="">
-                            </div>
-                            <div class="recipe-book-div">
-                                <div>
-                                    <p class = "recipe-book-link">Pasta alla caprese and fjuifnruhvn cnuiergccr crr...</p>
-                                    <p style="color:red;margin-top:-10px">Supprimer</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <?php printRatedRecipesClient($rated_recipes); ?>
                     <p style="height: 10px"></p>
                 </form>
             </div>
@@ -117,11 +107,11 @@
 <!-- ##### Footer Area Start ##### -->
 <?php include('include/footer.php');?>
 <!-- ##### Footer Area End ##### -->
+<?php include('./include/add_recipe.php'); ?>
 
 <!-- ##### All Javascript Files ##### -->
 <!-- jQuery-2.2.4 js -->
 <script src="../js/jquery/jquery-2.2.4.min.js"></script>
-<script src="../js/tools/md_select_box/dist/m-select-d-box.js"></script>
 <!-- Bootstrap js -->
 <script src="../js/bootstrap/bootstrap.min.js"></script>
 <!-- All Plugins js -->
@@ -130,11 +120,35 @@
 <script src="../js/tools/active/active2.js"></script>
 <!-- Canvas js -->
 <script src="../js/canvas.js"></script>
-<!-- List Ingredient multiple select js -->
-<script src="../js/tools/list_ingredients_select.js"></script>
 <!-- Change profil js -->
 <script src="../js/changeProfil.js"></script>
+<!-- Add button new recipe js -->
+<script src="../js/add_button_recipe.js"></script>
 
 <?php include('./include/connexion_profil.php'); ?>
+
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajout d'une recette</h5>
+                    <button type="button" class="close" data-dismiss="modal" onclick="relocate_home()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <?php if($already_add == false) {
+                        ?><p>La recette <?php echo $name_add_recipe;?> a bien été ajouté</p><?php
+                    }else{
+                        ?><p>Erreur : La recette <?php echo $name_add_recipe;?> a déja été ajouté par vous</p><?php
+                    }?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function relocate_home() {
+            window.location = "http://localhost/BigCookingData/src/front/www/index.php";
+        }
+    </script>
 </body>
 </html>

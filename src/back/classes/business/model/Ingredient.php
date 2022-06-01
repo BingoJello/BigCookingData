@@ -22,18 +22,25 @@ class Ingredient
      * @var string
      */
     private $quantity;
+    /**
+     * @var string|null
+     */
+    private $unity;
 
     /**
      * Ingredient constructor.
      * @param int $id
      * @param string $name
      * @param string $url_pic
+     * @param string $unity
      */
-    public function __construct($id, $name, $url_pic="")
+    public function __construct($id, $name, $url_pic="", $quantity = 0, $unity = null)
     {
         $this->id = $id;
         $this->name = $name;
         $this->url_pic = $url_pic;
+        $this->quantity = $quantity;
+        $this->unity = $unity;
     }
 
     /**
@@ -84,4 +91,35 @@ class Ingredient
         $this->url_pic = $url_pic;
     }
 
+    /**
+     * @return string
+     */
+    public function getQuantity()
+    {
+        return $this->quantity;
+    }
+
+    /**
+     * @param string $quantity
+     */
+    public function setQuantity($quantity): void
+    {
+        $this->quantity = $quantity;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUnity()
+    {
+        return $this->unity;
+    }
+
+    /**
+     * @param string $unity
+     */
+    public function setUnity($unity): void
+    {
+        $this->unity = $unity;
+    }
 }

@@ -23,19 +23,19 @@ class Recipe
      */
     private $url_pic;
     /**
-     * @var string
+     * @var string|string
      */
     private $directions;
     /**
-     * @var int
+     * @var string
      */
     private $prep_time;
     /**
-     * @var int
+     * @var string
      */
     private $cook_time;
     /**
-     * @var int
+     * @var string
      */
     private $break_time;
     /**
@@ -77,10 +77,10 @@ class Recipe
      * @param string $name
      * @param string $categories
      * @param string $url_pic
-     * @param string $directions
-     * @param int $prep_time
-     * @param int $cook_time
-     * @param int $break_time
+     * @param array|string $directions
+     * @param string $prep_time
+     * @param string $cook_time
+     * @param string $break_time
      * @param string $difficulty
      * @param string $budget
      * @param int $serving
@@ -90,9 +90,9 @@ class Recipe
      * @param float $score
      * @param string $close_to
      */
-    public function __construct($id, $name = '', $url_pic = '', $categories = '', $directions = '', $prep_time = 0,
-                                $cook_time = 0, $break_time = 0, $difficulty = '', $budget = '', $serving = 0, $cluster = -1,
-                                $coord='', $ingredients = array(), $score = 0, $close_to ='')
+    public function __construct($id, $name = null, $url_pic = null, $categories = null, $directions = array(), $prep_time = null,
+                                $cook_time = null, $break_time = null, $difficulty = null, $budget = null, $serving = 0, $cluster = -1,
+                                $coord=null, $close_to = null, $score = 0,  $ingredients = array())
     {
         $this->id = $id;
         $this->name = $name;
@@ -113,13 +113,13 @@ class Recipe
     }
 
     /**
-     * @param int $id_ingredient
+     * @param Ingredient $id_ingredient
      * @return bool
      */
-    public function hasIngredient($id_ingredient):bool
+    public function hasIngredient($ingredient):bool
     {
-        foreach ($this->ingredients as $ingredient) {
-            if($ingredient->getId() == $id_ingredient)
+        foreach ($this->ingredients as $ingredient_user) {
+            if($ingredient_user->getId() == $ingredient->getId())
                 return true;
         }
         return false;
@@ -190,7 +190,7 @@ class Recipe
     }
 
     /**
-     * @return string
+     * @return array |string
      */
     public function getDirections()
     {
@@ -198,7 +198,7 @@ class Recipe
     }
 
     /**
-     * @param string $directions
+     * @param array|string $directions
      */
     public function setDirections($directions)
     {
@@ -206,7 +206,7 @@ class Recipe
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getPrepTime()
     {
@@ -214,7 +214,7 @@ class Recipe
     }
 
     /**
-     * @param int $prep_time
+     * @param string $prep_time
      */
     public function setPrepTime($prep_time)
     {
@@ -222,7 +222,7 @@ class Recipe
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getCookTime()
     {
@@ -230,7 +230,7 @@ class Recipe
     }
 
     /**
-     * @param int $cook_time
+     * @param string $cook_time
      */
     public function setCookTime($cook_time)
     {
@@ -238,7 +238,7 @@ class Recipe
     }
 
     /**
-     * @return int
+     * @return string
      */
     public function getBreakTime()
     {
@@ -246,7 +246,7 @@ class Recipe
     }
 
     /**
-     * @param int $break_time
+     * @param string $break_time
      */
     public function setBreakTime($break_time)
     {

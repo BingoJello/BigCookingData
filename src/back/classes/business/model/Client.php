@@ -39,6 +39,10 @@ class Client
      */
     private $preferences_ingredients;
     /**
+     * @var string
+     */
+    private $preferences_ingredients_label;
+    /**
      * @var array|array[]
      */
     private $rated_recipes;
@@ -57,12 +61,13 @@ class Client
      * @param string $mail
      * @param string $password
      * @param array $preferences_ingredients
+     * @param string $preferences_ingredients_label
      * @param array $rated_recipes
      * @param array $recorded_recipes
      */
     public function __construct($id, $first_name = '', $last_name = '', $civility = '', $pseudo = '',
                                 $mail = '', $password = '', $preferences_ingredients = array(),
-                                $rated_recipes = array(), array $recorded_recipes = array())
+                                $preferences_ingredients_label = '', $rated_recipes = array(), array $recorded_recipes = array())
     {
         $this->id = $id;
         $this->first_name = $first_name;
@@ -72,40 +77,32 @@ class Client
         $this->mail = $mail;
         $this->password = $password;
         $this->preferences_ingredients = $preferences_ingredients;
+        $this->preferences_ingredients_label = $preferences_ingredients_label;
         $this->rated_recipes = $rated_recipes;
         $this->recorded_recipes = $recorded_recipes;
     }
 
     /**
-     * @param Recipe $recipe
+     * @param Rating $rating
      * @return void
      */
-    public function addRecordedRecipes($recipe)
+    public function addRatedRecipes($rating)
     {
-        array_push($this->recorded_recipes, $recipe);
-    }
-
-    /**
-     * @param object $recipe
-     * @param float $rating
-     * @return void
-     */
-    public function addRatedRecipes($recipe, $rating)
-    {
-        array_push($this->rated_recipes['recipes'], $recipe);
-        array_push($this->rated_recipes['ratings'], $rating);
+        array_push($this->rated_recipes, $rating);
     }
 
     /**
      * @param int $id_recipe
-     * @return float
+     * @return array|mixed|null
      */
-    public function getRatingRecipe($id_recipe):float
+    public function hasRatedRecipe($id_recipe)
     {
-        foreach($this->rated_recipes as $recipe)
-            if($recipe->getId() == $id_recipe)
-                return $recipe->getScore();
-        return 0;
+        foreach($this->rated_recipes as $rating){;
+            if($rating->getIdRecipe() == $id_recipe){
+                return $rating->getScore();
+            }
+        }
+        return null;
     }
 
     /**
@@ -237,6 +234,22 @@ class Client
     }
 
     /**
+     * @return string
+     */
+    public function getPreferencesIngredientsLabel()
+    {
+        return $this->preferences_ingredients_label;
+    }
+
+    /**
+     * @param string $preferences_ingredients_label
+     */
+    public function setPreferencesIngredientsLabel($preferences_ingredients_label)
+    {
+        $this->preferences_ingredients_label = $preferences_ingredients_label;
+    }
+
+    /**
      * @return array|array[]
      */
     public function getRatedRecipes()
@@ -250,21 +263,5 @@ class Client
     public function setRatedRecipes($rated_recipes)
     {
         $this->rated_recipes = $rated_recipes;
-    }
-
-    /**
-     * @return array
-     */
-    public function getRecordedRecipes()
-    {
-        return $this->recorded_recipes;
-    }
-
-    /**
-     * @param array $recorded_recipes
-     */
-    public function setRecordedRecipes($recorded_recipes)
-    {
-        $this->recorded_recipes = $recorded_recipes;
     }
 }

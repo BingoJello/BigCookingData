@@ -4,6 +4,22 @@
 ?>
 
 <?php
+    if(isset($_POST['add_recipe']) and "true" === $_POST['add_recipe'] and isset($_SESSION['client'])){
+        if(true == RecipePersistence::recipeAlreadyAddByClient($_POST['name'],  $client = getClient()->getId())){
+            $already_add = true;
+            $name_add_recipe = $_POST['name'];
+        }else{
+            $already_add = false;
+            $name_add_recipe = RecipeFacade::addRecipe($_POST, getClient()->getId())->getName();
+        }?>
+        <script>
+            $(document).ready(function(){
+                $("#myModal").modal('show');
+            });
+        </script>
+        <?php
+    }
+
     if (isset($_SESSION['client']) and !empty($_SESSION['client'])){
         $client = getClient();
     }
@@ -158,9 +174,18 @@
 						    </div>
 					    </div>
                         <div class="row form-group">
-                            <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="password-confirm">Ingredients préférés</label>
+                            <!--
+                            <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label">Ingredients préférés</label>
                             <div class="col-12 col-sm-9 col-md-6 col-lg-6 col-xl-5">
                                 <input type="text" id="list_ingredients" class="form-control" name="ingredients"/>
+                            </div>
+                            -->
+                            <label class="col-12 col-sm-3 col-md-4 col-lg-5 text-sm-right col-form-label" for="password-confirm">Ingredients préférés</label>
+                            <div class="col-12 col-sm-9 col-md-6 col-lg-6 col-xl-5">
+                                <input type="text" class="form-control" class="form-control" name="ingredients"/>
+                                <div id="ingredientdHelp" class="form-text">
+                                    <label style="font-size:12px">Veuillez separez les ingrédients par ";"</label>
+                                </div>
                             </div>
                         </div>
 					    <div class="row form-group small_top_spacer">
@@ -179,6 +204,7 @@
      <!-- ##### Footer Area End ##### -->
 
      <?php include('./include/connexion_profil.php'); ?>
+     <?php include('./include/add_recipe.php'); ?>
 
     <!-- ##### All Javascript Files ##### -->
     <!-- jQuery-2.2.4 js -->
@@ -194,22 +220,32 @@
      <script src="../js/canvas.js"></script>
      <!-- Registration security js -->
      <script src="../js/registration.js"></script>
-     <!-- List Ingredient multiple select js -->
+     <!-- Add button new recipe js -->
+     <script src="../js/add_button_recipe.js"></script>
+
+     <div id="myModal" class="modal fade">
+         <div class="modal-dialog" role="document">
+             <div class="modal-content">
+                 <div class="modal-header">
+                     <h5 class="modal-title">Ajout d'une recette</h5>
+                     <button type="button" class="close" data-dismiss="modal" onclick="relocate_home()">&times;</button>
+                 </div>
+                 <div class="modal-body">
+                     <?php if($already_add == false) {
+                         ?><p>La recette <?php echo $name_add_recipe;?> a bien été ajouté</p><?php
+                     }else{
+                         ?><p>Erreur : La recette <?php echo $name_add_recipe;?> a déja été ajouté par vous</p><?php
+                     }?>
+                 </div>
+             </div>
+         </div>
+     </div>
+
      <script>
-        var listIngredientsJson = <?php echo $list_ingredients; ?>;
-        var listIngredients = [];
-
-        for(var i = 0; i < listIngredientsJson.length; i++){
-            listIngredients.push(listIngredientsJson[i]);
-        }
-
-        $("#list_ingredients").mSelectDBox({
-            "list": listIngredients,
-            "builtInInput": 0,
-            "multiple": true,
-            "autoComplete": true,
-            "name": "b"
-        });
+         function relocate_home() {
+             window.location = "http://localhost/BigCookingData/src/front/www/index.php";
+         }
      </script>
+
 </body>
 </html>

@@ -17,7 +17,7 @@
                                 </div>
                                 <div class="rating-commentary">
                                 <?php
-                                    $rating = $assess->getRating();
+                                    $rating = $assess->getScore();
 
                                     for($i=0; $i<5; $i++){
                                         if($rating > 0){?>
@@ -29,7 +29,7 @@
                                     <?php
                                         }
                                     }?>
-                                    <label><?php echo $assess->getRating();?>/5</label>
+                                    <label><?php echo $assess->getScore();?>/5</label>
                                 </div>
                             </div>
                         </div>

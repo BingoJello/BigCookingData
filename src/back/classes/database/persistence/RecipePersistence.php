@@ -12,27 +12,24 @@ class RecipePersistence
      ******************/
 
     /**
-     * @brief Récupère le meilleur cluster des recettes évaluées par l'utilisateur
+     * @brief vérifie si une recette a déja été créé par un utilisateur.
+     * @param string $name_recipe
      * @param int $id_client
-     * @return int
+     * @return bool
      */
-    public static function getBestRatedClusterUser($id_client)
-    {
-        $favorites_rated_cluster = null;
-
-        $query="SELECT recipe.clusterNumber, AVG(assess.rating) AS rate FROM assess
-				INNER JOIN recipe ON recipe.id_recipe = assess.id_recipe
-				WHERE assess.id_client = ?
-				GROUP BY (recipe.clusterNumber)
-                ORDER BY AVG(assess.rating) DESC LIMIT 1";
-        $params = [$id_client];
+    public static function recipeAlreadyAddByClient($name_recipe, $id_client){
+        $query = "SELECT COUNT(*) AS cpt FROM recipe 
+                  WHERE recipe.name = ? and id_author = ?";
+        $params = [$name_recipe, $id_client];
 
         $result = DatabaseQuery::selectQuery($query, $params);
 
         foreach($result as $row) {
-            $favorites_rated_cluster = $row['clusterNumber'];
+            if($row['cpt'] > 0){
+                return true;
+            }
         }
-        return $favorites_rated_cluster;
+        return false;
     }
 
     /**
@@ -84,9 +81,10 @@ class RecipePersistence
         $result = DatabaseQuery::selectQuery($query, $params);
 
         foreach($result as $row) {
+            $directions = explode("||", $row['directions']);
             $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
-                $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
-                $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']);
+                $directions, $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to'], mt_rand(3, 4));
             $recipe->setIngredients(self::getIngredientsByRecipes([$row['id_recipe']]));
             array_push($recipes, $recipe);
         }
@@ -101,21 +99,61 @@ class RecipePersistence
      * @param int $id_client
      * @return array
      */
-    public static function getBestRatedRecipesUser($id_client){
+    public static function getBestRatedRecipesUser($id_client, $limit = null){
         $recipes = array();
 
         $query = "SELECT DISTINCT recipe.* FROM recipe
                   INNER JOIN assess ON assess.id_recipe = recipe.id_recipe
                   INNER JOIN client ON client.id_client = assess.id_client
-                  WHERE client.id_client = ? AND assess.rating >=3";
+                  WHERE client.id_client = ? AND assess.rating >=3
+                  ORDER BY(date_assess) DESC";
+
+        if(false == is_null($limit)){
+            $query.=" LIMIT ".$limit;
+        }
         $params = [$id_client];
 
         $result = DatabaseQuery::selectQuery($query, $params);
 
         foreach($result as $row) {
+            $directions = explode("||", $row['directions']);
             $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
-                $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                $directions, $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
                 $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']);
+            $recipe->setIngredients(self::getIngredientsByRecipes([$row['id_recipe']]));
+            array_push($recipes, $recipe);
+        }
+        if(true === empty($recipes)){
+            return null;
+        }
+        return $recipes;
+    }
+
+    /**
+     * @brief Récupère les recettes évaluées par l'utilisateur
+     * @param int $id_client
+     * @return array
+     */
+    public static function getRatedRecipesUser($id_client, $limit=null){
+        $recipes = array();
+
+        $query = "SELECT DISTINCT recipe.*, assess.rating FROM recipe
+                  INNER JOIN assess ON assess.id_recipe = recipe.id_recipe
+                  WHERE assess.id_client = ?
+                  ORDER BY(date_assess) DESC";
+        if(false == is_null($limit)){
+            $query.=" LIMIT ".$limit;
+        }
+
+        $params = [$id_client];
+
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            $directions = explode("||", $row['directions']);
+            $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
+                $directions, $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to'], $row['rating']);
             $recipe->setIngredients(self::getIngredientsByRecipes([$row['id_recipe']]));
             array_push($recipes, $recipe);
         }
@@ -163,8 +201,9 @@ class RecipePersistence
         $result = DatabaseQuery::selectQuery($query);
 
         foreach($result as $row) {
+            $directions = explode("||", $row['directions']);
             array_push($recipes_cluster, new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
-                $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                $directions, $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
                 $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']));
         }
 
@@ -189,94 +228,10 @@ class RecipePersistence
     /**
      * @brief Récupère les recettes par rapport aux ingrédients (inclus et exclus) et à l'ID du cluster
      * @param int $id_cluster
-     * @param string $ingredients
-     * @param boolean $is_exclude_ingredient
-     * @return array
-     */
-    public static function getRecipesByIngredientsAndCluster($id_cluster, $ingredients, $is_array = false,
-                                                             $is_exclude_ingredient = false)
-    {
-        $recipes = array();
-
-        if(false === $is_array) {
-            $searching = new ProcessTextSearch();
-            $ingredients = explode(";", $ingredients);
-            array_pop($ingredients);
-
-            $nbr_ingredients = count($ingredients);
-
-            for ($i = 0; $i < $nbr_ingredients; $i++) {
-                $ingredients[$i] = str_replace("'", "''", $ingredients[$i]);
-                $searching->setWords($ingredients[$i]);
-                $searching->build();
-                $ingredients[$i] = $searching->getWords();
-            }
-        }
-        if(false === $is_exclude_ingredient){
-            $query = "SELECT DISTINCT recipe.* FROM recipe 
-                      INNER JOIN contain_recipe_ingredient AS cri ON cri.id_recipe = recipe.id_recipe 
-                      INNER JOIN ingredient ON ingredient.id_ingredient = cri.id_ingredient 
-                      WHERE recipe.clusterNumber = ? AND ";
-            $cpt = 0;
-
-            foreach($ingredients as $ingredient){
-                if(0 == $cpt){
-                    $query.="ingredient.name LIKE('";
-                    foreach($ingredient as $ingredient_part){
-                        $query.="%".$ingredient_part;
-
-                    }
-                }else {
-                    $query .= " OR ingredient.name LIKE('";
-                    foreach ($ingredients as $ingredient_part) {
-                        $query .= "%" . $ingredient_part;
-                    }
-                }
-                $query.="%')";
-                $cpt++;
-            }
-            $query.=" GROUP BY recipe.id_recipe 
-                      HAVING COUNT(recipe.id_recipe) >= ".$nbr_ingredients;
-        }else{
-            $ingredients = explode(";", $ingredients);
-            array_pop($ingredients);
-            $ingredients = "'".join("','",$ingredients)."'";
-
-            $query = "SELECT DISTINCT recipe.* FROM recipe 
-                      INNER JOIN contain_recipe_ingredient AS cri ON cri.id_recipe = recipe.id_recipe 
-                      INNER JOIN ingredient ON ingredient.id_ingredient = cri.id_ingredient
-                      WHERE recipe.clusterNumber = ? AND ingredient.name IN(".$ingredients.") 
-                      AND recipe.id_recipe NOT IN(
-                        SELECT recipe.id_recipe from ingredient 
-                        INNER JOIN contain_recipe_ingredient as cri ON cri.id_ingredient = ingredient.id_ingredient
-                        INNER JOIN recipe ON recipe.id_recipe = cri.id_recipe
-                        WHERE ingredient.name IN(" . $ingredients . ")
-                      )";
-        }
-        echo $query;
-        exit(0);
-        $params = [$id_cluster];
-
-        $result = DatabaseQuery::selectQuery($query, $params);
-
-        foreach($result as $row) {
-            array_push($recipes, new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
-                $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
-                $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']));
-        }
-
-        if(true === empty($recipes)){
-            return null;
-        }
-        return $recipes;
-    }
-
-    /**
-     * @param int $id_cluster
      * @param array $ingredients
      * @return array|null
      */
-    public static function getRecipesByIngredientsCluster($id_cluster, $ingredients){
+    public static function getRecipesByIngredientsCluster($id_cluster, $ingredients, $is_object = false, $session = array()){
         $recipes = array();
 
         $query = "SELECT DISTINCT recipe.* FROM recipe 
@@ -287,30 +242,82 @@ class RecipePersistence
 
         foreach($ingredients as $ingredient){
             if(0 == $cpt){
-                $query.="ingredient.name LIKE('".$ingredient."')";
+                if(true === $is_object){
+                    $query.="ingredient.name LIKE('".addslashes($ingredient->getName())."')";
+                }else{
+                    $query.="ingredient.name LIKE('".addslashes($ingredient)."')";
+                }
             }else {
-                $query .= " OR ingredient.name LIKE('".$ingredient."')";
+                if(true === $is_object) {
+                    $query .= " OR ingredient.name LIKE('" . addslashes($ingredient->getName()) . "')";
+                }else{
+                    $query .= " OR ingredient.name LIKE('" . addslashes($ingredient) . "')";
+                }
             }
             $cpt++;
         }
         $query.=" GROUP BY recipe.id_recipe";
 
         $params = [$id_cluster];
-
         $result = DatabaseQuery::selectQuery($query, $params);
 
         foreach($result as $row) {
-            $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
-                $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
-                $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']);
-            $recipe->setIngredients(self::getIngredientsByRecipes([$row['id_recipe']]));
-            array_push($recipes, $recipe);
+            if(false === empty($session)){
+                if(false === in_array($row['id_recipe'], $session['visualization'])){
+                    $directions = explode("||", $row['directions']);
+                    $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
+                        $directions, $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                        $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']);
+                    $recipe->setIngredients(self::getIngredientsByRecipes([$row['id_recipe']]));
+                    array_push($recipes, $recipe);
+                }
+            }else{
+                $directions = explode("||", $row['directions']);
+                $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
+                    $directions, $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                    $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']);
+                $recipe->setIngredients(self::getIngredientsByRecipes([$row['id_recipe']]));
+                array_push($recipes, $recipe);
+            }
         }
 
         if(true === empty($recipes)){
             return null;
         }
         return $recipes;
+    }
+
+    /**
+     * @brief Récupère les recettes par rapport aux ingrédients et à l'ID du cluster
+     * @param $id_cluster
+     * @param $ingredients
+     * @return array
+     */
+    public static function getIdRecipesByIngredientsCluster($id_cluster, $ingredients){
+        $id_recipes = array();
+
+        $query = "SELECT DISTINCT recipe.id_recipe FROM recipe 
+                  INNER JOIN contain_recipe_ingredient AS cri ON cri.id_recipe = recipe.id_recipe 
+                  INNER JOIN ingredient ON ingredient.id_ingredient = cri.id_ingredient 
+                  WHERE recipe.clusterNumber = ? AND (";
+        $cpt = 0;
+        foreach($ingredients as $ingredient){
+            if(0 == $cpt){
+                $query.=" ingredient.name LIKE('".addslashes($ingredient)."')";
+            }else {
+                $query .= " OR ingredient.name LIKE('" . addslashes($ingredient) . "')";
+            }
+            $cpt++;
+        }
+        $query.=" )";
+
+        $params = [$id_cluster];
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            array_push($id_recipes, $row['id_recipe']);
+        }
+        return $id_recipes;
     }
 
     /**
@@ -321,6 +328,7 @@ class RecipePersistence
     public static function getRecipesBySearching($keywords){
         $recipes = array();
         $query="SELECT recipe.id_recipe, recipe.name, recipe.url_pic FROM recipe WHERE recipe.name LIKE '%".$keywords[0]."%'";
+
         array_shift($keywords);
 
         if(true == is_array($keywords)){
@@ -339,6 +347,49 @@ class RecipePersistence
         return $recipes;
     }
 
+    public static function getRecipesById($recipes_id){
+        $recipes = array();
+        $recipes_id = join(",", $recipes_id);
+
+        $query = "SELECT recipe.* FROM recipe
+                  WHERE recipe.id_recipe IN(".$recipes_id.")";
+
+        $result = DatabaseQuery::selectQuery($query);
+
+        foreach($result as $row) {
+            $directions = explode("||", $row['directions']);
+            $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
+                $directions, $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']);
+            $recipe->setIngredients(self::getIngredientsByRecipes([$row['id_recipe']]));
+            array_push($recipes, $recipe);
+        }
+        if(true === empty($recipes)){
+            return null;
+        }
+        return $recipes;
+    }
+
+    public static function getSortRecipesById($id_recipes){
+        $recipes = array();
+
+        foreach($id_recipes as $id_recipe){
+            $query = "SELECT recipe.* FROM recipe
+                  WHERE recipe.id_recipe = ?";
+            $params = [$id_recipe];
+            $result = DatabaseQuery::selectQuery($query, $params);
+            foreach($result as $row) {
+                $directions = explode("||", $row['directions']);
+                $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
+                    $directions, $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                    $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']);
+                $recipe->setIngredients(self::getIngredientsByRecipes([$row['id_recipe']]));
+                array_push($recipes, $recipe);
+            }
+        }
+        return $recipes;
+    }
+
     /**
      * @brief Récupère l'ensemble des recettes
      * @return array
@@ -351,62 +402,14 @@ class RecipePersistence
         $result = DatabaseQuery::selectQuery($query);
 
         foreach($result as $row) {
+            $directions = explode("||", $row['directions']);
             array_push($recipes, new Recipe($row['id_recipe'], $row['name'], $row['url_pic'], $row['categories'],
-                $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                $directions, $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
                 $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']));
         }
         return $recipes;
     }
 
-    /**
-     * @brief Récupère l'ensemble des ingrédients d'un (ou plusieurs) cluster(s)
-     * @param array $id_clusters
-     * @return array
-     */
-    public static function getIngredientsByCluster($id_clusters)
-    {
-        $ingredients = array();
-        $id_clusters = join(",", $id_clusters);
-
-        $query="SELECT DISTINCT ingredient.id_ingredient, ingredient.name, ingredient.url_pic FROM ingredient
-                INNER JOIN contain_recipe_ingredient ON contain_recipe_ingredient.id_ingredient = ingredient.id_ingredient
-                INNER JOIN recipe ON recipe.id_recipe = contain_recipe_ingredient.id_recipe
-                WHERE recipe.clusterNumber IN(".$id_clusters.")";
-
-        $result = DatabaseQuery::selectQuery($query);
-
-        foreach($result as $row) {
-            array_push($ingredients, new Ingredient($row['id_ingredient'], $row['name'], $row['url_pic']));
-        }
-        return $ingredients;
-    }
-
-    /**
-     * @param $ingredients_name
-     * @return array
-     */
-    public static function getIngredientsByName($ingredients_name){
-        $ingredients = array();
-        $query = "SELECT DISTINCT ingredient.* FROM ingredient 
-                  WHERE ";
-        $cpt = 0;
-
-        foreach($ingredients_name as $ingredient){
-            if(0 == $cpt){
-                $query.="ingredient.name LIKE('".$ingredient."')";
-            }else {
-                $query .= " OR ingredient.name LIKE('".$ingredient."')";
-            }
-            $cpt++;
-        }
-
-        $result = DatabaseQuery::selectQuery($query);
-
-        foreach($result as $row) {
-            array_push($ingredients, new Ingredient($row['id_ingredient'], $row['name'], $row['url_pic']));
-        }
-        return $ingredients;
-    }
     /**
      * @brief Récupère les noms des ingrédients
      * @param array $words
@@ -421,12 +424,13 @@ class RecipePersistence
         foreach($words as $word){
             $name_ingredient = "";
             foreach($word as $part_word){
-                $name_ingredient.="%".$part_word;
+                $name_ingredient.="%".addslashes($part_word);
             }
             $name_ingredient.="%";
             array_push($list_words, $name_ingredient);
         }
-        $query = "SELECT ingredient.name FROM ingredient WHERE ingredient.name LIKE('".$list_words[0]."')";
+        $query = "SELECT ingredient.name FROM ingredient 
+                  WHERE ingredient.name LIKE('".$list_words[0]."') AND ingredient.is_active = 1";
 
         array_shift($list_words);
 
@@ -444,6 +448,62 @@ class RecipePersistence
         }
 
         return $list_ingredient_name;
+    }
+
+    /**
+     * @brief Récupère les ID des ingrédients
+     * @param array $words
+     */
+    public static function getIdIngredientByWord($words){
+        if(true === empty($words)){
+            return null;
+        }
+        $list_words = array();
+        $list_ingredient_name = array();
+
+        foreach($words as $word){
+            $name_ingredient = "";
+            foreach($word as $part_word){
+                $name_ingredient.="%".$part_word;
+            }
+            $name_ingredient.="%";
+            array_push($list_words, $name_ingredient);
+        }
+        $query = "SELECT ingredient.id_ingredient FROM ingredient 
+                  WHERE ingredient.name LIKE('".$list_words[0]."') AND ingredient.is_active = 1";
+
+        array_shift($list_words);
+
+        if(true == is_array($list_words)){
+            if(0 != count($list_words)) {
+                foreach ($list_words as $name_ingredient) {
+                    $query .= " OR ingredient.name LIKE('".$name_ingredient."')";
+                }
+            }
+        }
+        $result = DatabaseQuery::selectQuery($query);
+
+        foreach($result as $row) {
+            array_push($list_ingredient_name,  addslashes($row['id_ingredient']));
+        }
+
+        return $list_ingredient_name;
+    }
+
+    /**
+     * @brief Récupère l'ID de l'ingrédient par son nom
+     * @param string $name_ingredient
+     */
+    public static function getIdIngredientByName($name_ingredient){
+        $query = "SELECT ingredient.id_ingredient FROM ingredient 
+                  WHERE ingredient.name LIKE('".$name_ingredient."')";
+        $result = DatabaseQuery::selectQuery($query);
+
+        foreach($result as $row) {
+            return $row['id_ingredient'];
+        }
+
+        return null;
     }
 
     /**
@@ -466,7 +526,9 @@ class RecipePersistence
         $result = DatabaseQuery::selectQuery($query, $params);
 
         foreach($result as $row) {
-            array_push($ingredients, new Ingredient($row['id_ingredient'], $row['name'], $row['url_pic']));
+            if(false === in_array($row['name'], REMOVED_INGREDIENTS)) {
+                array_push($ingredients, new Ingredient($row['id_ingredient'], $row['name'], $row['url_pic']));
+            }
         }
         return $ingredients;
     }
@@ -481,7 +543,7 @@ class RecipePersistence
         $ingredients = array();
         $id_recipes = join(",", $id_recipes);
 
-        $query="SELECT ingredient.id_ingredient, ingredient.name, ingredient.url_pic FROM ingredient
+        $query="SELECT ingredient.id_ingredient, ingredient.name, ingredient.url_pic, cri.quantity, cri.unity FROM ingredient
                 INNER JOIN contain_recipe_ingredient AS cri ON cri.id_ingredient = ingredient.id_ingredient
                 INNER JOIN recipe ON recipe.id_recipe = cri.id_recipe
                 WHERE recipe.id_recipe IN(".$id_recipes.")";
@@ -489,33 +551,10 @@ class RecipePersistence
         $result = DatabaseQuery::selectQuery($query);
 
         foreach($result as $row) {
-            array_push($ingredients, new Ingredient($row['id_ingredient'], $row['name'], $row['url_pic']));
+            array_push($ingredients, new Ingredient($row['id_ingredient'], $row['name'], $row['url_pic'],
+                $row['quantity'], $row['unity']));
         }
         return $ingredients;
-    }
-
-    /**
-     * @brief Récupère l'ID de(s) l'ingrédient(s)
-     * @param array $ingredients_name
-     * @return array
-     */
-    public static function getIdIngredientByName($ingredients_name)
-    {
-        $id_ingredients = array();
-        for($i=0; $i<count($ingredients_name);$i++){
-            $ingredients_name[$i] = addslashes($ingredients_name[$i]);
-        }
-        $ingredients_name_join = "'".join("','",$ingredients_name)."'";
-
-        $query="SELECT ingredient.id_ingredient FROM ingredient
-                WHERE ingredient.name IN(".$ingredients_name_join.")";
-
-        $result = DatabaseQuery::selectQuery($query);
-
-        foreach($result as $row) {
-            array_push($id_ingredients, $row['id_ingredient']);
-        }
-        return $id_ingredients;
     }
 
     /**
@@ -527,7 +566,7 @@ class RecipePersistence
     {
         $assessed_recipe = array();
 
-        $query="SELECT client.pseudo, assess.rating, assess.commentary, assess.date_assess FROM assess 
+        $query="SELECT client.pseudo, assess.* FROM assess 
                 INNER JOIN recipe ON recipe.id_recipe = assess.id_recipe
                 INNER JOIN client ON client.id_client = assess.id_client
                 WHERE recipe.id_recipe = ?";
@@ -536,7 +575,7 @@ class RecipePersistence
         $result = DatabaseQuery::selectQuery($query, $params);
 
         foreach($result as $row) {
-            array_push($assessed_recipe, new Assess($row['pseudo'], $row['rating'], $row['commentary'], $row['date_assess']));
+            array_push($assessed_recipe, new Rating($row['id_recipe'], $row['rating'], $row['pseudo'], $row['commentary'], $row['date_assess']));
         }
         return $assessed_recipe;
     }
@@ -549,18 +588,41 @@ class RecipePersistence
     public static function getRandomRecipes($limit)
     {
         $recipes = array('recipe' => array());
-        $query="SELECT * FROM recipe ORDER BY RAND ( ) LIMIT ".$limit;
+
+        $query = "SELECT * FROM recipe ORDER BY RAND ( ) LIMIT ".$limit;
 
         $result = DatabaseQuery::selectQuery($query);
 
         foreach($result as $row) {
+            $directions = explode("||", $row['directions']);
             array_push($recipes['recipe'], new Recipe($row['id_recipe'], $row['name'], $row['url_pic'],$row['categories'],
-                $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
-                // $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']));
+                $directions, $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
                 $row['serving'], $row['clusterNumber'], $row['coordonnees']));
 
         }
+        return $recipes;
+    }
 
+    /**
+     * @brief Récupère des recettes aléatoires d'un cluster
+     * @param int $limit
+     * @return array
+     */
+    public static function getRandomRecipesByCluster($limit, $id_cluster)
+    {
+        $query = "SELECT * FROM recipe WHERE recipe.clusterNumber = ? ORDER BY RAND ( ) LIMIT ".$limit;
+        $params = [$id_cluster];
+
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            $directions = explode("||", $row['directions']);
+            $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'],$row['categories'], $directions,
+                $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                $row['serving'], $row['clusterNumber'], $row['coordonnees']);
+            $recipe->setIngredients(self::getIngredientsByRecipes([$row['id_recipe']]));
+            array_push($recipes['recipe'], $recipe);
+        }
         return $recipes;
     }
 
@@ -579,6 +641,19 @@ class RecipePersistence
             return array('score' => $row['score'], 'nbr_reviews' => $row['nbr_reviews']);
         }
         return null;
+    }
+
+    public static function getDistinctCluster(){
+        $clusters = array();
+        $query = "SELECT DISTINCT recipe.clusterNumber FROM recipe";
+
+        $result = DatabaseQuery::selectQuery($query);
+
+        foreach($result as $row) {
+            array_push($clusters, $row['clusterNumber']);
+        }
+
+        return $clusters;
     }
 
     /**
@@ -608,8 +683,9 @@ class RecipePersistence
 
         $result = DatabaseQuery::selectQuery($query, $params);
         foreach($result as $row) {
+            $directions = explode("||", $row['directions']);
             $recipe = new Recipe($row['id_recipe'], $row['name'], $row['url_pic'],$row['categories'],
-                $row['directions'], $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
+                $directions, $row['prep_time'], $row['cook_time'], $row['break_time'], $row['difficulty'], $row['budget'],
                 $row['serving'], $row['clusterNumber'], $row['coordonnees'], $row['close_to']);
         }
         $recipe->setIngredients(self::getIngredientsByRecipes([$row['id_recipe']]));
@@ -628,6 +704,21 @@ class RecipePersistence
 
         foreach($result as $row) {
             return $row['nbr_recipe'];
+        }
+        return 0;
+    }
+
+    /**
+     * @brief Récupère le nombre total d'ingrédients
+     * @return int|mixed
+     */
+    public static function getNbrIngredients(){
+        $query="SELECT COUNT(*) as nbr_ingredient FROM ingredient";
+
+        $result = DatabaseQuery::selectQuery($query);
+
+        foreach($result as $row) {
+            return $row['nbr_ingredient'];
         }
         return 0;
     }
@@ -675,6 +766,154 @@ class RecipePersistence
         return $recipes;
     }
 
+    /**
+     * @param int $random_limit
+     * @param array $not_in_ingredients
+     * @return array
+     */
+    public static function getRandomIngredients($random_limit, $not_in_ingredients){
+        $ingredients = array();
+
+        $query = "SELECT ingredient.id_ingredient FROM ingredient 
+                  WHERE ingredient.id_ingredient";
+        if(0 == empty($not_in_ingredients)){
+            $not_in_ingredients = join(",", $not_in_ingredients);
+            $query.=" NOT IN(".$not_in_ingredients.")";
+        }
+        $query.=" ORDER BY RAND() LIMIT ".$random_limit;
+        $result = DatabaseQuery::selectQuery($query);
+
+        foreach($result as $row) {
+            array_push($ingredients, $row['id_ingredient']);
+        }
+        return $ingredients;
+    }
+
+    /**
+     * @brief Récupère les clients qui ont évalué au moins une recette de celles évalués par l'utilisateur ciblé
+     * @param int $id_client
+     * @param array $id_recipes
+     * @return array
+     */
+    public static function getClientsOfRatingsSimilarRecipes($id_client, $id_recipes){
+        $recipes_users = array('id_users' => array(), 'users' => array(), 'id_recipes' => array());
+
+        $id_recipes = join(",", $id_recipes);
+
+        $query = " SELECT assess.id_recipe, assess.id_client, assess.rating FROM assess
+                   WHERE assess.id_recipe IN(".$id_recipes.") AND assess.id_client != ?
+                   ORDER BY assess.id_client";
+
+        $params = [$id_client];
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            if (false === in_array($row['id_recipe'], $recipes_users['id_recipes'])) {
+                array_push($recipes_users['id_recipes'], $row['id_recipe']);
+            }
+
+            if (false === in_array($row['id_client'], $recipes_users['id_users'])) {
+                $client = new Client($row['id_client']);
+                array_push($recipes_users['id_users'], $client->getId());
+                array_push($recipes_users['users'], $client);
+            }
+            $key_client = array_search($row['id_client'], $recipes_users['id_users']);
+            $client = $recipes_users['users'][$key_client];
+
+            $client->addRatedRecipes(new Rating($row['id_recipe'], $row['rating']));
+
+            $recipes_users['users'][$key_client] = $client;
+        }
+        return $recipes_users;
+    }
+
+    /**
+     * @param $id_client
+     * @param $id_recipes
+     * @return array|array[]
+     */
+    public static function getRatedRecipesSimilarUser($id_client, $id_client_similar_user){
+        $recipes_users = array('id_users' => array(), 'users' => array(), 'id_recipes' => array());
+
+        $id_client_similar_user = join(",", $id_client_similar_user);
+
+        $query = " SELECT assess.id_recipe, assess.id_client, assess.rating FROM assess
+                   WHERE assess.i IN(".$id_client_similar_user.") AND assess.id_client != ?
+                   ORDER BY assess.id_client";
+
+        $params = [$id_client];
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            if (false === in_array($row['id_recipe'], $recipes_users['id_recipes'])) {
+                array_push($recipes_users['id_recipes'], $row['id_recipe']);
+            }
+
+            if (false === in_array($row['id_client'], $recipes_users['id_users'])) {
+                $client = new Client($row['id_client']);
+                array_push($recipes_users['id_users'], $client->getId());
+                array_push($recipes_users['users'], $client);
+            }
+            $key_client = array_search($row['id_client'], $recipes_users['id_users']);
+            $client = $recipes_users['users'][$key_client];
+
+            $client->addRatedRecipes(new Rating($row['id_recipe'], $row['rating']));
+
+            $recipes_users['users'][$key_client] = $client;
+        }
+        return $recipes_users;
+    }
+
+    public static function getSimilarRecipes($id_recipe, $nbr_similar_recipes){
+        $recipes = array();
+
+        $query = "SELECT recipe.close_to FROM recipe WHERE id_recipe = ?";
+
+        $params = [$id_recipe];
+        $result = DatabaseQuery::selectQuery($query, $params);
+
+        foreach($result as $row) {
+            $similar_id_recipes = explode(",", $row['close_to']);
+            if(true === is_null($row['close_to'])){
+                continue;
+            }
+            for($i = 0; $i < $nbr_similar_recipes; $i++){
+                array_push($recipes, RecipePersistence::getRecipe($similar_id_recipes[$i]));
+            }
+        }
+        return $recipes;
+    }
+
+    /**
+     * @brief Récupère le dernier ID de la table Recipe
+     * @return int
+     */
+    public static function getLastIdRecipe()
+    {
+        $query="SELECT id_recipe FROM recipe ORDER BY id_recipe DESC LIMIT 1";
+        $result = DatabaseQuery::selectQuery($query);
+
+        foreach($result as $row) {
+            return $row['id_recipe'];
+        }
+        return 0;
+    }
+
+    /**
+     * @brief Récupère le dernier ID de la table Ingredient
+     * @return int
+     */
+    public static function getLastIdIngredient()
+    {
+        $query="SELECT id_ingredient FROM ingredient ORDER BY id_ingredient DESC LIMIT 1";
+        $result = DatabaseQuery::selectQuery($query);
+
+        foreach($result as $row) {
+            return $row['id_ingredient'];
+        }
+        return 0;
+    }
+
     /*******************
      * UPDATE Methods
      ******************/
@@ -690,5 +929,104 @@ class RecipePersistence
                   SET close_to = '".$recipes_close_to."'
                   WHERE recipe.id_recipe = ".$id_recipe;
         DatabaseQuery::updateQuery($query);
+    }
+
+    /*******************
+     * INSERT Methods
+     ******************/
+
+    public static function insertRecipe($recipe, $new_ingredients = array(), $id_author){
+        $id_recipe = self::getLastIdRecipe() + 1;
+        $recipe->setId($id_recipe);
+        $name = $recipe->getName();
+        $categories = $recipe->getCategories();
+        $url_pic = $recipe->getUrlPic();
+        $directions_string = null;
+        foreach($recipe->getDirections() as $direction){
+            $directions_string.=$direction;
+        }
+        $prep_time = $recipe->getPrepTime();
+        $cook_time = $recipe->getCookTime();
+        $break_time = $recipe->getBreakTime();
+        $difficulty = $recipe->getDifficulty();
+        $budget = $recipe->getBudget();
+        $serving = $recipe->getServing();
+        $coord = $recipe->getCoord();
+        $cluster = $recipe->getCluster();
+        $close_to = $recipe->getCloseTo();
+        $ingredients = $recipe->getIngredients();
+
+        $query = "INSERT INTO recipe(id_recipe, name, categories, url_pic, clusterNumber, directions, prep_time, cook_time,
+                   break_time, difficulty, close_to, budget, serving, coordonnees, id_author) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+
+        $params = [$id_recipe, $name, $categories, $url_pic, $cluster, $directions_string, $prep_time, $cook_time,
+            $break_time, $difficulty, $close_to, $budget, $serving, $coord, $id_author];
+
+        DatabaseQuery::insertQuery($query, $params);
+
+        foreach($new_ingredients as $new_ingredient){
+            $new_ingredient->setId(self::insertIngredient($new_ingredient));
+            array_push($ingredients, $new_ingredient);
+        }
+        foreach($recipe->getIngredients() as $ingredient){
+            self::insertIngredientRecipe($id_recipe, $ingredient);
+        }
+        foreach($new_ingredients as $ingredient){
+            self::insertIngredientRecipe($id_recipe, $ingredient);
+        }
+        $recipe->setIngredients($ingredients);
+
+        self::updateProximityRecipes($id_recipe);
+        return $recipe;
+    }
+
+    public static function insertIngredient($ingredient){
+        $id_ingredient = self::getLastIdIngredient() + 1;
+        $name = $ingredient->getName();
+        $url_pic = $ingredient->getUrlPic();
+        $is_active = 0;
+        $query = "INSERT INTO ingredient(id_ingredient, name, url_pic, is_active) VALUES (?,?,?,?)";
+
+        $params = [$id_ingredient, $name, $url_pic, $is_active];
+        DatabaseQuery::insertQuery($query, $params);
+        return $id_ingredient;
+    }
+
+    public static function insertIngredientRecipe($id_recipe, $ingredient)
+    {
+        $id_ingredient = $ingredient->getId();
+        $quantity = $ingredient->getQuantity();
+        $unity = $ingredient->getUnity();
+        $query = "INSERT INTO contain_recipe_ingredient(id_recipe, id_ingredient, quantity, unity) VALUES (?,?,?,?)";
+
+        $params = [$id_recipe, $id_ingredient, $quantity, $unity];
+        DatabaseQuery::insertQuery($query, $params);
+    }
+
+    /*******************
+     * UPDATE Methods
+     ******************/
+
+    public static function updateProximityRecipes($id_new_recipe){
+        $recipes = self::getProximityRecipes([$id_new_recipe]);
+        foreach($recipes as $recipe){
+           $close_to = $recipe->getCloseTo().",".$id_new_recipe;
+           $query = "UPDATE recipe SET recipe.close_to = ? WHERE recipe.id_recipe = ?";
+
+           $params = [$close_to, $recipe->getId()];
+           DatabaseQuery::updateQuery($query, $params);
+        }
+    }
+
+    /*******************
+     * DELETE Methods
+     ******************/
+
+    public static function deleteRatedRecipeClient($id_client, $id_recipe){
+        $query = "DELETE FROM assess WHERE assess.id_client = ? AND assess.id_recipe = ?";
+        $params = [$id_client, $id_recipe];
+
+        DatabaseQuery::deleteQuery($query, $params);
+
     }
 }

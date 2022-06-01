@@ -1,3 +1,5 @@
+<!-- jQuery-2.2.4 js -->
+<script src="../js/jquery/jquery-2.2.4.min.js"></script>
 <?php
     session_start();
     require_once('./require/require_index.php');
@@ -5,23 +7,69 @@
 
 <?php
     $random = false;
+    if(isset($_POST['add_recipe']) and "true" === $_POST['add_recipe'] and isset($_SESSION['client'])){
+        if(true == RecipePersistence::recipeAlreadyAddByClient($_POST['name'],  $client = getClient()->getId())){
+            $already_add = true;
+            $name_add_recipe = $_POST['name'];
+        }else{
+            $already_add = false;
+            $name_add_recipe = RecipeFacade::addRecipe($_POST, getClient()->getId())->getName();
+        }?>
+        <script>
+        $(document).ready(function(){
+            $("#myModal").modal('show');
+        });
+        </script>
+<?php
+    }
 
     if(false === isset($_SESSION['visualization'])){
         $_SESSION['visualization'] = array();
     }
     if(isset($_SESSION['client']) and !empty($_SESSION['client'])) {
         $client = getClient();
-        try {
-            $recipes = RecipeFacade::getSuggestedRecipes($client, $_SESSION);
-            if(true == empty($recipes['recipe'])){
-                $random = true;
-                $recipes = RecipeFacade::getRandomRecipes();
-                $json_recipes = getJsonRecipes($recipes);
-                $limit = LIMIT_PAGINATION;
-                $total_pages = ceil(count($recipes['recipe']) / $limit);
+        $recipes = array();
+        if(isset($_SESSION['algo']) and !empty($_SESSION['algo'])){
+            if($_SESSION['algo'] == "collaborative"){
+                try {
+                    $recipes = RecipeFacade::getSuggestedRecipesByCollaborative($client, $_SESSION);
+                    if(true == empty($recipes['recipe'])){
+                        $random = true;
+                        $recipes = RecipeFacade::getRandomRecipes();
+                        $json_recipes = getJsonRecipes($recipes);
+                        $limit = LIMIT_PAGINATION;
+                        $total_pages = ceil(count($recipes['recipe']) / $limit);
+                    }
+                } catch (Exception $e) {
+                    var_dump($e);
+                }
+            }else{
+                try {
+                    $recipes = RecipeFacade::getSuggestedRecipesByContent($client, $_SESSION);
+                    if(true == empty($recipes['recipe'])){
+                        $random = true;
+                        $recipes = RecipeFacade::getRandomRecipes();
+                        $json_recipes = getJsonRecipes($recipes);
+                        $limit = LIMIT_PAGINATION;
+                        $total_pages = ceil(count($recipes['recipe']) / $limit);
+                    }
+                } catch (Exception $e) {
+                    var_dump($e);
+                }
             }
-        } catch (Exception $e) {
-            var_dump($e);
+        }else{
+            try {
+                $recipes = RecipeFacade::getSuggestedRecipesByContent($client, $_SESSION);
+                if(true == empty($recipes['recipe'])){
+                    $random = true;
+                    $recipes = RecipeFacade::getRandomRecipes();
+                    $json_recipes = getJsonRecipes($recipes);
+                    $limit = LIMIT_PAGINATION;
+                    $total_pages = ceil(count($recipes['recipe']) / $limit);
+                }
+            } catch (Exception $e) {
+                var_dump($e);
+            }
         }
         $json_recipes = getJsonRecipes($recipes);
         $limit = LIMIT_PAGINATION;
@@ -116,47 +164,6 @@
         </div>
     </section>
     <!-- ##### Best Recipe Area End ##### -->
-	
-	 <!-- ##### Top Catagory Area Start ##### -->
-    <section class="top-category-area section-padding-80-0">
-		<div class="row">
-			<div class="col-12">
-				<div class="section-heading">
-					<h3 style="margin-top: -150px">Catégories suggérées</h3>
-                </div>
-            </div>
-        </div>
-		
-        <div class="container">
-            <div class="row">
-                <!-- Top Catagory Area -->
-                <div class="col-12 col-lg-6">
-                    <div class="single-top-category">
-                        <img src="../img/bg-img/bg2.jpg" alt="">
-                        <!-- Content -->
-                        <div class="top-cta-content">
-                            <h3>Strawberry Cake</h3>
-                            <h6>Simple &amp; Delicios</h6>
-                            <a href="recipe-post.php" class="btn delicious-btn">See Full Recipe</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Top Catagory Area -->
-                <div class="col-12 col-lg-6">
-                    <div class="single-top-category">
-                        <img src="../img/bg-img/bg3.jpg" alt="">
-                        <!-- Content -->
-                        <div class="top-cta-content">
-                            <h3>Chinesse Noodles</h3>
-                            <h6>Simple &amp; Delicios</h6>
-                            <a href="recette" class="btn delicious-btn">See Full Recipe</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <!-- ##### Top Category Area End ##### -->
 
     <!-- ##### CTA Area Start ##### -->
     <section class="cta-area bg-img bg-overlay" style="background-image: url(../img/bg-img/bg4.jpg);">
@@ -166,8 +173,8 @@
                     <!-- Cta Content -->
                     <div class="cta-content text-center">
                         <h2>Meal Planner</h2>
-                        <p>Créez des plans de repas personnalisés en fonction de vos préférences alimentaires. Atteignez votre régime alimentaire et vos objectifs nutritionnels avec notre calculateur de calories.
-						</p>
+                        <p>Créez des plans de repas personnalisés en fonction de vos préférences alimentaires. Atteignez votre régime alimentaire et vos objectifs nutritionnels avec notre calculateur de calories.</p>
+                        <p>Cette fonctionnalité est toujours en développement</p>
                         <a href="./mealPlanner.php" class="btn delicious-btn">Discover</a>
                     </div>
                 </div>
@@ -181,10 +188,9 @@
     <!-- ##### Footer Area End ##### -->
 
     <?php include('./include/connexion_profil.php'); ?>
+    <?php include('./include/add_recipe.php'); ?>
 
     <!-- ##### All Javascript Files ##### -->
-    <!-- jQuery-2.2.4 js -->
-    <script src="../js/jquery/jquery-2.2.4.min.js"></script>
     <!-- Popper js -->
     <script src="../js/bootstrap/popper.min.js"></script>
     <!-- Bootstrap js -->
@@ -193,6 +199,10 @@
     <script src="../js/plugins/plugins.js"></script>
     <!-- Active js -->
     <script src="../js/tools/active/active.js"></script>
+    <!-- Active js -->
+    <script src="../js/tools/active/active.js"></script>
+    <!-- Add button new recipe js -->
+    <script src="../js/add_button_recipe.js"></script>
 
     <script>
         $(document).ready(function() {
@@ -247,6 +257,30 @@
                 });
             });
         });
+    </script>
+
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Ajout d'une recette</h5>
+                    <button type="button" class="close" data-dismiss="modal" onclick="relocate_home()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <?php if($already_add == false) {
+                        ?><p>La recette <?php echo $name_add_recipe;?> a bien été ajouté</p><?php
+                    }else{
+                        ?><p>Erreur : La recette <?php echo $name_add_recipe;?> a déja été ajouté par vous</p><?php
+                    }?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function relocate_home() {
+            window.location = "http://localhost/BigCookingData/src/front/www/index.php";
+        }
     </script>
 </body>
 </html>
