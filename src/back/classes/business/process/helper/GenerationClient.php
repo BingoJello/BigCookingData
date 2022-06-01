@@ -4,6 +4,7 @@
 class GenerationClient
 {
     public static function generateClients($nbrClient){
+        ini_set('max_execution_time', 0);
         $cpt = 0;
         while ($cpt < $nbrClient){
             $new_id_client = ClientPersistence::getLastIdClient() + 1;

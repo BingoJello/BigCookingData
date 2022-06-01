@@ -750,11 +750,16 @@ class RecipePersistence
 
         foreach($result as $row) {
             $proximity_recipes = explode(',', $row['close_to']);
+            $index = 0;
             foreach($proximity_recipes as $id_recipe){
+                if($index > NBR_CLOSE){
+                    break;
+                }
                 if(false === in_array($id_recipe, $id_recipes_proximity) and false == in_array($id_recipe, $id_recipes)){
                     array_push($id_recipes_proximity, $id_recipe);
                     $recipe = self::getRecipe($id_recipe);
                     array_push($recipes, $recipe);
+                    $index++;
                 }
             }
         }

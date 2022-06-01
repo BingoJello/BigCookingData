@@ -16,7 +16,7 @@ class CollaborativeFilteringUserRecommenderSystem implements RecommenderSystem
     private $recipes;
 
     /**
-     * ContentBasedRecommenderSystem constructor.
+     * CollaborativeFilteringUserRecommenderSystem constructor.
      * @param string $mail
      * @param string $password
      * @throws Exception
@@ -113,11 +113,15 @@ class CollaborativeFilteringUserRecommenderSystem implements RecommenderSystem
             }
         }
         $this->client->setRatedRecipes($recipes['ratings']);
-
+        if(count($rated_recipes_client) > 20){
+            $max = NBR_SIMILAR_RECIPES;
+        }else{
+            $max = NBR_SIMILAR_RECIPES_SMALL;
+        }
         foreach($rated_recipes_client as $recipe){
             $cpt = 0;
             foreach(explode(",", $recipe->getCloseTo()) as $id_close_recipe){
-                if($cpt == NBR_SIMILAR_RECIPES){
+                if($cpt == $max){
                     break;
                 }
                 if (false === in_array($id_close_recipe, $recipes['id_recipes'])) {
@@ -164,6 +168,7 @@ class CollaborativeFilteringUserRecommenderSystem implements RecommenderSystem
             array_push($vector, round($sum_score / $nbr_rates, 2));
             array_push($matrix, $vector);
         }
+
         return $matrix;
     }
 

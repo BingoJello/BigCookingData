@@ -157,10 +157,10 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
                 array_push($ingredients, $ingredient_user);
             }
         }
-
         $ingredients_percentage = $this->buildPercentageIngredient($ingredients_user);
         $row_user = $this->buildVectorUser($ingredients_percentage);
         $matrix = $this->buildMatrix($proximity_recipes, $ingredients);
+
         $similarity_recipes = $this->cosinusSimilarityRecipes($matrix, $row_user);
 
         if(0 == count($similarity_recipes)){

@@ -140,16 +140,28 @@ class RecipeFacade
     }
 
     /**
+     * @brief Récupère le nombre total d'ingrédients
      * @return int|mixed
      */
     public static function getNbrIngredients(){
         return RecipePersistence::getNbrIngredients();
     }
 
+    /**
+     * @brief Récupère les recettes similaires à une recette
+     * @param $id_recipe
+     * @return array
+     */
     public static function getSimilarRecipes($id_recipe){
         return RecipePersistence::getSimilarRecipes($id_recipe, 3);
     }
 
+    /**
+     * @brief Ajoute une recette dans la base de données
+     * @param $params
+     * @param $id_client
+     * @return mixed
+     */
     public static function addRecipe($params, $id_client){
         $name = $_POST['name'];
         if("" != $_POST['url_pic']){
@@ -249,11 +261,20 @@ class RecipeFacade
         return InsertionRecipe::main($recipe, $id_client);
     }
 
-
+    /**
+     * @brief Récupère les évaluations des recettes d'un client
+     * @param $client
+     * @return array|null
+     */
     public static function getRatingRecipesClient($client){
         return RecipePersistence::getRatedRecipesUser($client->getId());
     }
 
+    /**
+     * @brief Supprime une recette évaluée par un client
+     * @param $client
+     * @param $id_recipe
+     */
     public static function deleteRatedRecipeClient($client, $id_recipe){
         return RecipePersistence::deleteRatedRecipeClient($client->getId(), $id_recipe);
     }
