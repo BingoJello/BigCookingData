@@ -292,6 +292,7 @@ function printSimilarRecipes($recipes){
 }
 ?>
 
+
 <?php
 function printRatedRecipesClient($recipes){
     foreach($recipes as $recipe){?>
