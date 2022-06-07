@@ -71,7 +71,7 @@ function printIngredients($recipe){
             <label class="ingredient-label">
                 <img src=<?php echo $ingredient->getUrlPic();?> height="40" width="40">
                 <?php
-                    echo $ingredient->getQuantity()." ".$ingredient->getName();
+                    echo $ingredient->getQuantity()." ".$ingredient->getUnity()." ".$ingredient->getName();
                 ?>
             </label>
         </div>
@@ -310,6 +310,25 @@ function printRatedRecipesClient($recipes){
                     </div>
                 </div>
             </div>
+        </div>
+    <?php }
+}
+?>
+
+<?php
+function printDirections($recipe){
+    $index = 1;
+    foreach($recipe->getDirections() as $direction){ ?>
+        <div class="single-preparation-step d-flex">
+            <?php
+            if($index < 10){
+                $index_string = "0".$index;
+            }else{
+                $index_string = $index;
+            }
+            $index++;?>
+            <h4><?php echo $index_string;?>.</h4>
+            <p><?php echo $direction;?></p>
         </div>
     <?php }
 }

@@ -39,12 +39,17 @@ class UpdateProximityRecipes
 
         foreach($recipes_cluster as $recipe_cluster){
             $coord_recipe_cluster = self::normalizeCoord($recipe_cluster->getCoord());
-            array_push($recipes_with_distance['distance'], (sqrt(
+            $distance_value = 0;
+            for($i = 0; $i < count($coord_recipe_cluster);$i++){
+                $distance_value+=pow($coord_recipe[$i]-$coord_recipe_cluster[$i], 2);
+            }
+            array_push($recipes_with_distance['distance'], (sqrt($distance_value)));
+           /* array_push($recipes_with_distance['distance'], (sqrt(
                 (pow($coord_recipe[0]-$coord_recipe_cluster[0], 2)) +
                      (pow($coord_recipe[1]-$coord_recipe_cluster[1], 2)) +
                      (pow($coord_recipe[2]-$coord_recipe_cluster[2], 2)))
                 )
-            );
+            );*/
             array_push($recipes_with_distance['recipe'], $recipe_cluster->getId());
         }
 

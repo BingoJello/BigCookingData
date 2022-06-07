@@ -49,7 +49,6 @@ class GenerationClient
                         $score -= 1;
                     }
                 }
-                echo $score."\n";
                 switch(true){
                     case $score < 0 and $score >= -$score_recipe['quarter']:
                         $score = 2;

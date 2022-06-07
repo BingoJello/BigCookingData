@@ -192,7 +192,7 @@
                                     <input class="form-check-input" type="radio" value="collaborative" name="algo" id="flexRadioDefault2"
                                         <?php if(true == isset($_SESSION['algo']) and 'collaborative' == $_SESSION['algo']) { ?> checked <?php } ?>>
                                     <label class="form-check-label" for="flexCheckChecked">
-                                        Algorithme de filtrage collaborative
+                                        Algorithme de filtrage collaboratif
                                     </label>
                                 </div>
                             </div>

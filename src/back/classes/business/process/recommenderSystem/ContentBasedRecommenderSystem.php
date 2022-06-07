@@ -87,7 +87,6 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
         if(true === is_null($preferences_recipes_user) AND true === is_null($rated_recipes_user) AND true === is_null($visualized_recipes_user)){
            return $recipes_to_suggest;
         }
-
         $builded_recipes = $this->buildContentBasedRecommender($rated_recipes_user, $preferences_recipes_user,
             $visualized_recipes_user, $ingredients_user);
 

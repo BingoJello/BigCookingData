@@ -23,9 +23,11 @@ require_once('./src/back/classes/business/process/informationRetrieval/FrenchSte
 require_once('./src/back/classes/business/process/informationRetrieval/StopWords.php');
 require_once('./src/back/classes/business/service/DecisionTreeCluster.php');
 require_once('./src/back/classes/business/process/helper/InsertionRecipe.php');
+require_once('./src/back/classes/business/process/helper/ReformatQuantity.php');
 include('./src/back/functions/utils.php');
 include('./src/back/utils/constants.php');
 require_once ('./src/back/classes/business/process/helper/GenerationClient.php');
+require_once ('./src/back/classes/business/process/helper/AddDescription.php');
 
     header('Location: ./src/front/www/accueil');
     exit();
