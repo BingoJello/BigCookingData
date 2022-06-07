@@ -1,5 +1,3 @@
-#@author mamadou bella DIALLO
-
 #!/usr/bin/env python
 # coding: utf-8
 
