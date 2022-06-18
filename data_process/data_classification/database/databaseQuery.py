@@ -1,10 +1,9 @@
-#@author arthur mimouni
-
 def getAllIngredients(mydb):
     mycursor = mydb.cursor()
     ingredients = []
-    query = "SELECT DISTINCT name FROM ingredient"
-
+    query = "SELECT DISTINCT ingredient.name FROM ingredient" \
+            " WHERE ingredient.is_active = 1" \
+            " ORDER BY ingredient.id_ingredient"
     mycursor.execute(query)
 
     myresult = mycursor.fetchall()

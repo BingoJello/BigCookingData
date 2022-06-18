@@ -1,5 +1,3 @@
-#@author arthur mimouni
-
 import pickle
 
 def serialize(object, file_name):

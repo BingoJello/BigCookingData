@@ -1,12 +1,10 @@
-#author arthur mimouni
-
 from ladon.ladonizer import ladonize
 from database import databaseConnection as dc
 from database import databaseQuery as dq
 import utils as ut
 
-#Pour activer le server en local ecrire dans la console : "python venv/Scripts/ladon-3.9-ctl.py testserve DecisionTreeService.py -p 8080"
-#Pour visualiser le web service : http://localhost:8080/
+#Pour activer le server : ecrire dans la console "python venv/Scripts/ladon-3.9-ctl.py testserve DecisionTreeService.py -p 8080"
+#http://localhost:8080/
 
 class DecisionTreeService(object):
     @ladonize(str, rtype=int)

@@ -1,5 +1,3 @@
-#@author arthur mimouni
-
 import mysql.connector
 
 def get_co():

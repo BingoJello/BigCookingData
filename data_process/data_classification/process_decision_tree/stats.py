@@ -74,9 +74,9 @@ def stats1(X, Y, criterion, nb_split_kfold):
         framesAccuracy.append(frame)
         framesAverageAccuracy.append(frame2)
 
-    fig, [[ax1, ax2], [ax3, ax4]] = plt.subplots(2, 2, figsize=(15, 10))
+    fig, ax1 = plt.subplots(1, 1, figsize=(15, 10))
     fig.suptitle("Accuracy of a tree with different depths and percentages of data set");
-    axes = [ax1, ax2, ax3, ax4]
+    axes = [ax1]
     j = -1
     for i in axes :
         j = j + 1
@@ -98,11 +98,11 @@ def stats1(X, Y, criterion, nb_split_kfold):
         frame = framesAccuracy[j]
         frame2 = framesAverageAccuracy[j]
 
-        i.plot(frame['train_acc'].values, label='accuracy')
+        #i.plot(frame['train_acc'].values, label='accuracy')
         i.plot(frame2['average_acc'].values, label='Average accuracy')
         i.tick_params(axis='both', which='major', labelsize=11)
-        i.set_xticks(np.arange(len(frame['max_depth'].values)))
-        i.set_xticklabels(frame['max_depth'].values)
+        i.set_xticks(np.arange(len(frame2['max_depth'].values)))
+        i.set_xticklabels(frame2['max_depth'].values)
         i.set_xlabel("Depth", fontsize='11')
         i.set_ylabel('Performance', fontsize='11')
         i.legend(fontsize="13")

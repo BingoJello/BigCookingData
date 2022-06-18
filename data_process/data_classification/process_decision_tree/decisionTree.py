@@ -1,5 +1,3 @@
-#@author arthur mimouni
-
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import train_test_split
 import pandas as pd
@@ -28,7 +26,7 @@ def predictCluster(tree, data):
     print(y_pred)
     return y_pred
 
-def getTreePDF(outputTree, features, classes = ['0', '1', '2', '3', '4']):
+def getTreePDF(outputTree, features, classes = ['0', '1', '2', '3', '5', '6', '7', '8', '9', '10', '11', '12', '13']):
     features.remove('cluster')
     dot_data = tree.export_graphviz(outputTree, out_file=None, feature_names=features,class_names=classes)
 
