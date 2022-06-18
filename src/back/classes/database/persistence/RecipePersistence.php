@@ -75,7 +75,8 @@ class RecipePersistence
         $id_recipes_visualization = join(",", $session['visualization']);
 
         $query = "SELECT recipe.* FROM recipe
-                  WHERE recipe.clusterNumber = ? AND recipe.id_recipe IN(".$id_recipes_visualization.")";
+                  WHERE recipe.id_recipe IN(".$id_recipes_visualization.")
+                  LIMIT 50";
         $params = [$id_cluster];
 
         $result = DatabaseQuery::selectQuery($query, $params);
@@ -91,6 +92,7 @@ class RecipePersistence
         if(true === empty($recipes)){
             return null;
         }
+
         return $recipes;
     }
 

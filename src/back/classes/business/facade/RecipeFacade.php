@@ -108,7 +108,9 @@ class RecipeFacade
             $process_text_ingredient = new ProcessTextIngredient($exclude_ingredients, ';', true);
             $process_text_ingredient->build();
             $exclude_ingredients_name = RecipePersistence::getIngredientNameByWord($process_text_ingredient->getWords());
-
+            if(true === is_null($recipes_include)){
+                return;
+            }
             foreach($recipes_include as $recipe_include){
                 $is_exclude = false;
                 foreach($exclude_ingredients_name as $exclude_ingredient){

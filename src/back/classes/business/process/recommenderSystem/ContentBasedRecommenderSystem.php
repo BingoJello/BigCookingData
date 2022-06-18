@@ -36,7 +36,7 @@ class ContentBasedRecommenderSystem implements RecommenderSystem
         $recipes_to_suggest = array('recipe' => array());
         $ingredients_user = array();
 
-        $rated_recipes_user = RecipePersistence::getBestRatedRecipesUser($this->client->getId(), NBR_RECIPES_TO_RATE);
+        $rated_recipes_user = RecipePersistence::getBestRatedRecipesUser($this->client->getId(), 30);
 
         if(true === is_null($rated_recipes_user)){
             $ingredients_preferences = ClientPersistence::getPreferencesIngredientsClient($this->client->getId());

@@ -199,7 +199,7 @@
                         </div>
                         <div class="row form-group small_top_spacer">
                             <div class="col-12 col-md-3 offset-md-4 offset-lg-5">
-                                <button class="btn btn-lg btn-block btn-orange gen_button" id="generate-btn" type="submit">SUBMIT</button>
+                                <button class="btn btn-lg btn-block btn-orange gen_button" id="generate-btn" type="submit">SOUMETTRE</button>
                             </div>
                         </div>
                     </form>

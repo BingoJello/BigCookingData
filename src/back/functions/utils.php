@@ -295,6 +295,9 @@ function printSimilarRecipes($recipes){
 
 <?php
 function printRatedRecipesClient($recipes){
+    if(true === is_null($recipes)){
+        return;
+    }
     foreach($recipes as $recipe){?>
         <div class="generator_header col-12 col-md-9 col-lg-9" style="margin:0 auto;margin-top:20px">
             <div class="row">
